@@ -4,6 +4,7 @@
 import os
 import json
 from pprint import pprint
+import requests
 
 # import json files from a folder
 def import_json_files(folder_path):
@@ -28,44 +29,47 @@ def import_json_files(folder_path):
                 print(f"Error loading JSON from {file_name}: {e}")
     
     return json_data
+
+def save_image_from_url(url, save_path):
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            with open(save_path, 'wb') as f:
+                f.write(response.content)
+            print("Image saved successfully.")
+        else:
+            print("Failed to download image. Status code:", response.status_code)
+    except Exception as e:
+        print("An error occurred:", str(e))
+
 #%%
 ### EXECUTION ###
 
 # import all JSON files from the folder
-folder_path = '../data/coco_search18_TP'
+folder_path = '/Users/filippomerlo/Desktop/Datasets/data/coco_search18_TP'
 all_sets = import_json_files(folder_path)
-pprint(all_sets[0])
+
 image_ids = []
 for set in all_sets:
     for trial in set:
         if trial['name'] not in image_ids:
             image_ids.append(trial['name'])
-
 print(len(image_ids))
 
 
 #%%
 from pycocotools.coco import COCO
-import requests
 from PIL import Image
 
+imgs = []
 dataType=['train2017','val2017']
-annFile='/Users/filippomerlo/Documents/GitHub/MakingAScene/data/coco_annotations/annotations/instances_val2017.json'
-# initialize COCO api for instance annotations
-coco=COCO(annFile)
+save_path = '/Users/filippomerlo/Desktop/Datasets/data/images/'
+for path in dataType:
+    annotations_path = f'/Users/filippomerlo/Desktop/Datasets/data/coco_annotations/annotations/instances_{path}.json'
+    with open(annotations_path) as f:
+        annotations = json.load(f)
+        for i in annotations['images']:
+            if i['file_name'] in image_ids:
+                #save_image_from_url(i['coco_url'],save_path+i['file_name'])
 
-#%%
-i = 0
-for filename in image_ids:
-    try:
-        imgIds = coco.getImgIds(imgIds=coco.getImgIds(filename=filename))
-        print(imgIds)
-        image = coco.loadImgs(imgIds)
-    except:
-        i += 1
-        continue
-    # Define the path where you want to save the image
-    folder_path = "/Users/filippomerlo/Desktop/Datasets/coco-search18/"
-
-    # Save the image to the specified folder with a new name if desired
-    image.save(folder_path + filename)
+# %%
