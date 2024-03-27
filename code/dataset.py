@@ -5,6 +5,7 @@ from pprint import pprint
 import json
 from tqdm import tqdm
 
+#%%
 class Dataset:
     def __init__(self):
         self.data = dict()
@@ -60,7 +61,7 @@ class Dataset:
 
     def save(self, path):
         with open(path, 'w') as f:
-            json.dump(self.data, f)
+            json.dump(self.data, f, indent=4)
     
 dataset = Dataset()
 dataset.make_dataset(coco_ann_path, coco_search_ann_path, images_path)
