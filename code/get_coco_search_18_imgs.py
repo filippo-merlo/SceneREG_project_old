@@ -70,6 +70,6 @@ for path in dataType:
         annotations = json.load(f)
         for i in annotations['images']:
             if i['file_name'] in image_ids:
-                #save_image_from_url(i['coco_url'],save_path+i['file_name'])
+                save_image_from_url(i['coco_url'],save_path+i['file_name'])
 
 # %%
