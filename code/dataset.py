@@ -4,11 +4,20 @@ from utils import *
 from pprint import pprint
 import json
 from tqdm import tqdm
+import random as rn
+import cv2
+import matplotlib.pyplot as plt
+from PIL import Image
+import numpy as np
 
-#%%
 class Dataset:
-    def __init__(self):
-        self.data = dict()
+
+    def __init__(self, dataset_path = None):
+        if dataset_path:
+            with open(dataset_path) as f:
+                self.data = json.load(f)
+        else:
+            self.data = dict()
 
     def make_dataset(self, coco_ann_path, coco_search_ann_path, images_path):
             image_names = list()
@@ -59,11 +68,57 @@ class Dataset:
                                 if ann['image_id'] == image_id:
                                     self.data[filename][ann_name].append(ann)
 
-    def save(self, path):
+    def save_dataset(self, path):
         with open(path, 'w') as f:
             json.dump(self.data, f, indent=4)
     
-dataset = Dataset()
-dataset.make_dataset(coco_ann_path, coco_search_ann_path, images_path)
-dataset.save('/Users/filippomerlo/Desktop/Datasets/data/coco_search18_annotated.json')
+    def visualize_img(self, img_name = None):
+        
+        if img_name:
+            image = self.data[img_name]
+        else:
+            img_name = rn.choice(list(self.data.keys()))
+            image = self.data[img_name]
+        
+        pprint(image)
+        images_paths = get_files(images_path)
+        image_picture = None
+        for image_path in images_paths:
+            if img_name in image_path:
+                image_picture = Image.open(image_path)
+                break
+
+        # Convert PIL image to OpenCV format
+        image_cv2 = cv2.cvtColor(np.array(image_picture), cv2.COLOR_RGB2BGR)
+
+        # Draw the box on the image
+        color = (0, 0, 255)  # Red color
+        thickness = 2
+        for fix in image['fixations']:
+            if 'task' in fix.keys():
+                target = fix['task']
+            else:
+                target = None
+
+        for ann in image['instances_train2017_annotations']:
+            id = ann['category_id']
+            for cat in coco_categories:
+                if cat['id'] == id:
+                    cat_name = cat['name']
+            if target == cat_name:
+                color = (255, 0, 0)
+
+            x, y, width, height = ann['bbox']
+            cv2.rectangle(image_cv2, (int(x), int(y)), (int(x + width), int(y + height)), color, thickness)
+
+        # Convert back to PIL format for displaying
+        image_with_box = Image.fromarray(cv2.cvtColor(image_cv2, cv2.COLOR_BGR2RGB))
+
+        # Display the image with the box
+        plt.imshow(image_with_box)
+        plt.axis('off')  # Turn off axis
+        plt.show()
+
+dataset = Dataset(dataset_path = '/Users/filippomerlo/Desktop/Datasets/data/coco_search18_annotated.json')
+dataset.visualize_img()
 #%%
