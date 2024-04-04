@@ -74,13 +74,26 @@ class Dataset:
     
     def visualize_img(self, img_name = None):
         
-        if img_name:
+        if img_name != None:
             image = self.data[img_name]
         else:
-            img_name = rn.choice(list(self.data.keys()))
-            image = self.data[img_name]
-        
+            while img_name == None:
+                img_name = rn.choice(list(self.data.keys()))
+                image = self.data[img_name]
+                for fix in image['fixations']:
+                    if fix['condition'] == 'absent':
+                        target = None
+                        break
+                    if 'task' in fix.keys():
+                        target = fix['task']
+                        break
+                    else:
+                        target = None
+                if target == None:
+                    img_name = None
+                
         pprint(image)
+        print('*',target)
         images_paths = get_files(images_path)
         image_picture = None
         for image_path in images_paths:
@@ -92,23 +105,27 @@ class Dataset:
         image_cv2 = cv2.cvtColor(np.array(image_picture), cv2.COLOR_RGB2BGR)
 
         # Draw the box on the image
-        color = (0, 0, 255)  # Red color
-        thickness = 2
-        for fix in image['fixations']:
-            if 'task' in fix.keys():
-                target = fix['task']
-            else:
-                target = None
-
+        
+        #for fix in image['fixations']:
+        #    if 'task' in fix.keys():
+        #        target = fix['task']
+        #    else:
+        #        target = None
+        
         for ann in image['instances_train2017_annotations']:
             id = ann['category_id']
+            color = (255, 0, 0)  # Red color
             for cat in coco_categories:
                 if cat['id'] == id:
                     cat_name = cat['name']
+                    print(cat_name)
             if target == cat_name:
-                color = (255, 0, 0)
+                print(target)
+                color = (0, 0, 255)
+            
 
             x, y, width, height = ann['bbox']
+            thickness = 2
             cv2.rectangle(image_cv2, (int(x), int(y)), (int(x + width), int(y + height)), color, thickness)
 
         # Convert back to PIL format for displaying
@@ -120,5 +137,6 @@ class Dataset:
         plt.show()
 
 dataset = Dataset(dataset_path = '/Users/filippomerlo/Desktop/Datasets/data/coco_search18_annotated.json')
+#%%
 dataset.visualize_img()
 #%%
