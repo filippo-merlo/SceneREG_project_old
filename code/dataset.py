@@ -10,6 +10,8 @@ import matplotlib.pyplot as plt
 from PIL import Image
 import numpy as np
 
+
+
 class Dataset:
 
     def __init__(self, dataset_path = None):
@@ -92,7 +94,6 @@ class Dataset:
                 if target == None:
                     img_name = None
                 
-        pprint(image)
         print('*',target)
         images_paths = get_files(images_path)
         image_picture = None
@@ -100,43 +101,119 @@ class Dataset:
             if img_name in image_path:
                 image_picture = Image.open(image_path)
                 break
-
         # Convert PIL image to OpenCV format
         image_cv2 = cv2.cvtColor(np.array(image_picture), cv2.COLOR_RGB2BGR)
 
         # Draw the box on the image
         
-        #for fix in image['fixations']:
-        #    if 'task' in fix.keys():
-        #        target = fix['task']
-        #    else:
-        #        target = None
         
-        for ann in image['instances_train2017_annotations']:
+        ann_key = 'instances_train2017_annotations'
+        try:
+            image[ann_key]
+        except:
+            ann_key = 'instances_val2017_annotations'
+
+        for ann in image[ann_key]:
             id = ann['category_id']
             color = (255, 0, 0)  # Red color
+            object_names = list()
             for cat in coco_categories:
                 if cat['id'] == id:
                     cat_name = cat['name']
-                    print(cat_name)
-            if target == cat_name:
-                print(target)
+                    object_names.append(cat_name)
+            if target in object_names:
+                print('correct')
                 color = (0, 0, 255)
-            
-
             x, y, width, height = ann['bbox']
             thickness = 2
             cv2.rectangle(image_cv2, (int(x), int(y)), (int(x + width), int(y + height)), color, thickness)
 
+        # retrieve captions
+
+        image_captions = []
+        cap_key = 'captions_train2017_annotations'
+        try:
+            image[cap_key]
+        except:
+            cap_key = 'captions_val2017_annotations'
+        for ann in image[cap_key]:
+            caption = ann['caption']
+            print(caption)
+            image_captions.append(caption)
+
+         # Classify scene
+
+        # observe results
+
         # Convert back to PIL format for displaying
         image_with_box = Image.fromarray(cv2.cvtColor(image_cv2, cv2.COLOR_BGR2RGB))
-
+    
         # Display the image with the box
         plt.imshow(image_with_box)
         plt.axis('off')  # Turn off axis
         plt.show()
+        classify_scene(image_picture, image_captions)
 
+    def edit_image(self, img_name = None):
+        # Select Image
+        if img_name != None:
+            image = self.data[img_name]
+        else:
+            while img_name == None:
+                img_name = rn.choice(list(self.data.keys()))
+                image = self.data[img_name]
+                # check it has a target
+                for fix in image['fixations']:
+                    if fix['condition'] == 'absent':
+                        target = None
+                        break
+                    if 'task' in fix.keys():
+                        target = fix['task']
+                        break
+                    else:
+                        target = None
+                if target == None:
+                    img_name = None
+                
+        print('*',target)
+        # Get Image
+        images_paths = get_files(images_path)
+        image_picture = None
+        for image_path in images_paths:
+            if img_name in image_path:
+                image_picture = Image.open(image_path)
+                break
+        # Convert PIL image to OpenCV format
+        #image_cv2 = cv2.cvtColor(np.array(image_picture), cv2.COLOR_RGB2BGR)
+        
+        ann_key = 'instances_train2017_annotations'
+        try:
+            image[ann_key]
+        except:
+            ann_key = 'instances_val2017_annotations'
+
+        for ann in image[ann_key]:
+            id = ann['category_id']
+            object_names = list()
+            for cat in coco_categories:
+                if cat['id'] == id:
+                    cat_name = cat['name']
+                    object_names.append(cat_name)
+            if target in object_names:
+                print('correct')
+
+            bbox = ann['bbox'] # x, y, width, height
+        
+        # Classify scene
+        
 dataset = Dataset(dataset_path = '/Users/filippomerlo/Desktop/Datasets/data/coco_search18_annotated.json')
+
 #%%
 dataset.visualize_img()
+
 #%%
+dataset.edit_image()
+
+#%%
+
+print_dict_structure(dataset.data)
