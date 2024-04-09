@@ -12,4 +12,11 @@ df = pd.read_excel(obscene_path, sheet_name='Table S2 - SCENES (245)', engine='o
 
 scene_labels = list(set(list(df['Scene Modal Name [EN translation]'])))
 
-scene_labels_context = [f"a photo of a {label}" for label in scene_labels]
+scene_labels_context = []
+vowels = ['a', 'e', 'i', 'o', 'u']
+for label in scene_labels:
+    if label[0].lower() in vowels:
+        scene_labels_context.append(f"a photo of an {label}")
+    else:
+        scene_labels_context.append(f"a photo of a {label}")
+

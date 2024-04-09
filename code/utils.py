@@ -88,16 +88,6 @@ def classify_scene(image_picture, image_captions):
         print('img: ',[scene_labels[i] for i in img_indices])
         print('mix: ',[scene_labels[i] for i in mix_indices])
 
-        #scene_label_txt = scene_labels_context[caption_prob.argmax()]
-        #scene_label_img = scene_labels_context[img_prob.argmax()]
-        #scene_label_mix = scene_labels_context[mix_prob.argmax()]
-#
-        #print('txt: ',scene_label_txt)
-        #print('img: ',scene_label_img)
-        #print('mix: ',scene_label_mix)
-
-
-
 def similarity_score(tensor, tensor_list):
     similarities = []
     for c in tensor_list:
