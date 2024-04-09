@@ -141,10 +141,7 @@ class Dataset:
             print(caption)
             image_captions.append(caption)
 
-         # Classify scene
-
         # observe results
-
         # Convert back to PIL format for displaying
         image_with_box = Image.fromarray(cv2.cvtColor(image_cv2, cv2.COLOR_BGR2RGB))
     
@@ -152,6 +149,8 @@ class Dataset:
         plt.imshow(image_with_box)
         plt.axis('off')  # Turn off axis
         plt.show()
+        
+         # Classify scene
         classify_scene(image_picture, image_captions)
 
     def edit_image(self, img_name = None):

@@ -47,7 +47,7 @@ processor = AutoProcessor.from_pretrained("openai/clip-vit-base-patch32")
 # Classify scene
 def classify_scene(image_picture, image_captions):
         text_inputs = tokenizer(image_captions, padding=True, return_tensors="pt").to(device)
-        cat_inputs = processor(text=scene_labels_complete, return_tensors="pt", padding=True).to(device)
+        cat_inputs = processor(text=scene_labels_context, return_tensors="pt", padding=True).to(device)
         img_inputs = processor(images=image_picture, return_tensors="pt").to(device)
         with torch.no_grad():
             # Get the image and text features
@@ -67,16 +67,35 @@ def classify_scene(image_picture, image_captions):
         img_similarities = similarity_score(image_features, cat_features)
 
         # Apply softmax along the specified dimension
-        final_probs = torch.nn.functional.softmax(img_similarities, dim=0)
-        for c in caption_similarities:
-            final_probs *= torch.nn.functional.softmax(c, dim=0)
-        scene_label = scene_labels_complete[final_probs.argmax()]
-        print(scene_label)
+        # img
+        img_prob = torch.nn.functional.softmax(img_similarities, dim=0)
+        # caption
+        caption_prob = torch.nn.functional.softmax(sum(caption_similarities), dim=0)
+        # mix
+        mix_prob = torch.nn.functional.softmax(img_similarities*5 + sum(caption_similarities))
 
-        #logits_per_image = outputs.logits_per_image.to('cpu')  # this is the image-text similarity score
-        #probs = logits_per_image.softmax(dim=1)  # we can take the softmax to get the label probabilities
-        #scene_label = scene_labels_complete[probs.argmax()]
-        #print(scene_label)
+        k = 3
+        _ , txt_indices = torch.topk(caption_prob, k)
+        txt_indices = txt_indices.tolist()
+
+        _ , img_indices = torch.topk(img_prob, k)
+        img_indices = img_indices.tolist()
+
+        _ , mix_indices = torch.topk(mix_prob, k)
+        mix_indices = mix_indices.tolist()
+
+        print('txt: ',[scene_labels[i] for i in txt_indices])
+        print('img: ',[scene_labels[i] for i in img_indices])
+        print('mix: ',[scene_labels[i] for i in mix_indices])
+
+        #scene_label_txt = scene_labels_context[caption_prob.argmax()]
+        #scene_label_img = scene_labels_context[img_prob.argmax()]
+        #scene_label_mix = scene_labels_context[mix_prob.argmax()]
+#
+        #print('txt: ',scene_label_txt)
+        #print('img: ',scene_label_img)
+        #print('mix: ',scene_label_mix)
+
 
 
 def similarity_score(tensor, tensor_list):
