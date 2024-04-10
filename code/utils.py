@@ -44,8 +44,22 @@ model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32").to(device)
 tokenizer = AutoTokenizer.from_pretrained("openai/clip-vit-base-patch32")
 processor = AutoProcessor.from_pretrained("openai/clip-vit-base-patch32")
 
+#from transformers import AutoProcessor, LlavaForConditionalGeneration
+#
+#llava_model = LlavaForConditionalGeneration.from_pretrained("llava-hf/llava-1.5-7b-hf")
+#llava_processor = AutoProcessor.from_pretrained("llava-hf/llava-1.5-7b-hf")
+
 # Classify scene
 def classify_scene(image_picture, image_captions):
+        # Generate LLaVa caption
+        #prompt = "<image>\nUSER: What's the content of the image?\nASSISTANT:"
+        #llava_inputs = processor(text=prompt, images=image_picture, return_tensors="pt")
+        ## Generate
+        #generate_ids = model.generate(**llava_inputs, max_length=30)
+        #llava_caption = processor.batch_decode(generate_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False)[0]
+        #print(llava_caption)
+
+        # Get CLIP caption and image features
         text_inputs = tokenizer(image_captions, padding=True, return_tensors="pt").to(device)
         cat_inputs = processor(text=scene_labels_context, return_tensors="pt", padding=True).to(device)
         img_inputs = processor(images=image_picture, return_tensors="pt").to(device)
