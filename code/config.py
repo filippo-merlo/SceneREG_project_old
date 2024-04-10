@@ -15,7 +15,7 @@ scene_labels_context = []
 vowels = ['a', 'e', 'i', 'o', 'u']
 for label in scene_labels:
     if label[0].lower() in vowels:
-        scene_labels_context.append(f"a photo of an {label}")
+        scene_labels_context.append(f"a picture of an {label}")
     else:
-        scene_labels_context.append(f"a photo of a {label}")
+        scene_labels_context.append(f"a picture of a {label}")
 
