@@ -113,6 +113,7 @@ class Dataset:
         except:
             ann_key = 'instances_val2017_annotations'
 
+        target_bbox = None
         for ann in image[ann_key]:
             id = ann['category_id']
             color = (255, 0, 0)  # Red color
@@ -124,6 +125,7 @@ class Dataset:
             if target in object_names:
                 print('correct')
                 color = (0, 0, 255)
+                target_bbox = ann['bbox']
             x, y, width, height = ann['bbox']
             thickness = 2
             cv2.rectangle(image_cv2, (int(x), int(y)), (int(x + width), int(y + height)), color, thickness)
@@ -149,9 +151,25 @@ class Dataset:
         plt.imshow(image_with_box)
         plt.axis('off')  # Turn off axis
         plt.show()
-        
-         # Classify scene
-        classify_scene(image_picture, image_captions)
+
+        x,y,w,h = target_bbox
+        x = if_less_zero_then_zero(int(x-20))
+        y = if_less_zero_then_zero(int(y-20))
+        w = if_less_zero_then_zero(int(x+w+20))
+        h = if_less_zero_then_zero(int(y+h+20))
+        cropped_image = image_picture.crop((x,y,w,h))
+
+        # Display the cropped image
+        plt.imshow(cropped_image)
+        plt.axis('off')  # Turn off axis
+        plt.show()
+       
+        # Classify scene
+        scene_class = classify_scene(image_picture, image_captions)
+
+        # retrieve info from obscene
+
+
 
     def edit_image(self, img_name = None):
         # Select Image

@@ -7,9 +7,9 @@ coco_categories =  [{"supercategory": "person","id": 1,"name": "person"},{"super
 import pandas as pd
 
 obscene_path = '/Users/filippomerlo/Desktop/Datasets/ObScene/ObSceneDatabase_SupplementalTables.xlsx'
-df = pd.read_excel(obscene_path, sheet_name='Table S2 - SCENES (245)', engine='openpyxl')
+obscene_dataset = pd.read_excel(obscene_path, sheet_name='Table S2 - SCENES (245)', engine='openpyxl')
 
-scene_labels = list(set(list(df['Scene Modal Name [EN translation]'])))
+scene_labels = list(set(list(obscene_dataset['Scene Modal Name [EN translation]'])))
 
 scene_labels_context = []
 vowels = ['a', 'e', 'i', 'o', 'u']
@@ -19,3 +19,13 @@ for label in scene_labels:
     else:
         scene_labels_context.append(f"a picture of a {label}")
 
+
+tp_object_property_path = '/Users/filippomerlo/Desktop/Datasets/THINGSplus/Metadata/Concept-specific/objectProperties_meanRatings.tsv'
+tp_size_mean_path = '/Users/filippomerlo/Desktop/Datasets/THINGSplus/Metadata/Concept-specific/size_meanRatings.tsv'
+tp_category_path = '/Users/filippomerlo/Desktop/Datasets/THINGSplus/Metadata/Concept-specific/category53_wideFormat.tsv'
+tp_tipicality_path = '/Users/filippomerlo/Desktop/Datasets/THINGSplus/Metadata/Concept-specific/typicality_meanRatings.tsv'
+
+df_tp_object_property = pd.read_csv(tp_object_property_path, sep='\t')
+df_tp_size_mean = pd.read_csv(tp_size_mean_path, sep='\t')
+df_tp_category = pd.read_csv(tp_category_path, sep='\t')
+df_tp_tipicality = pd.read_csv(tp_tipicality_path, sep='\t')

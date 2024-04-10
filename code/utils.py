@@ -9,7 +9,6 @@ print(torch.backends.mps.is_available())
 print(torch.backends.mps.is_built())
 device = torch.device("mps")
 
-
 def get_files(directory):
     """
     Get all files in a directory with specified extensions.
@@ -43,8 +42,6 @@ from transformers import AutoTokenizer, AutoProcessor, CLIPModel
 model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32").to(device)
 tokenizer = AutoTokenizer.from_pretrained("openai/clip-vit-base-patch32")
 processor = AutoProcessor.from_pretrained("openai/clip-vit-base-patch32")
-
-
 
 # Classify scene
 def classify_scene(image_picture, image_captions):
@@ -125,6 +122,8 @@ def classify_scene(image_picture, image_captions):
         print('llava_txt: ',[scene_labels[i] for i in llava_txt_indices])
         print('mix: ',[scene_labels[i] for i in mix_indices])
 
+        return scene_labels[0]
+
 def similarity_score(tensor, tensor_list):
     similarities = []
     for c in tensor_list:
@@ -158,3 +157,9 @@ def convert_to_base64(pil_image):
     pil_image.save(buffered, format="JPEG")  # You can change the format if needed
     img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
     return img_str
+
+def if_less_zero_then_zero(x):
+    if x < 0:
+        return 0
+    else:
+        return x
