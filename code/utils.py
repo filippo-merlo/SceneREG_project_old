@@ -44,21 +44,15 @@ model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32").to(device)
 tokenizer = AutoTokenizer.from_pretrained("openai/clip-vit-base-patch32")
 processor = AutoProcessor.from_pretrained("openai/clip-vit-base-patch32")
 
-#from transformers import AutoProcessor, LlavaForConditionalGeneration
-#
-#llava_model = LlavaForConditionalGeneration.from_pretrained("llava-hf/llava-1.5-7b-hf")
-#llava_processor = AutoProcessor.from_pretrained("llava-hf/llava-1.5-7b-hf")
+
 
 # Classify scene
 def classify_scene(image_picture, image_captions):
         # Generate LLaVa caption
-        #prompt = "<image>\nUSER: What's the content of the image?\nASSISTANT:"
-        #llava_inputs = processor(text=prompt, images=image_picture, return_tensors="pt")
-        ## Generate
-        #generate_ids = model.generate(**llava_inputs, max_length=30)
-        #llava_caption = processor.batch_decode(generate_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False)[0]
-        #print(llava_caption)
-
+        llava_prompt = "Where is the picture taken?"
+        llava_output = generate_llava_caption(image_picture, llava_prompt)
+        print(llava_output)
+        
         # Get CLIP caption and image features
         text_inputs = tokenizer(image_captions, padding=True, return_tensors="pt").to(device)
         cat_inputs = processor(text=scene_labels_context, return_tensors="pt", padding=True).to(device)
@@ -107,4 +101,31 @@ def similarity_score(tensor, tensor_list):
     for c in tensor_list:
         similarities.append(torch.matmul(tensor, c.T).item())
     return torch.tensor(similarities)
-    
+
+
+from transformers import AutoProcessor, LlavaForConditionalGeneration
+# LLaVa with Ollama 
+from langchain_community.llms import Ollama
+llava = Ollama(model="llava")
+llava_prompt = "Where is the picture taken?"
+
+def generate_llava_caption(image_picture, prompt):
+    image_b64 = convert_to_base64(image_picture)
+    llm_with_image_context = llava.bind(images=[image_b64])
+    llm_with_image_context.invoke(prompt)
+
+
+import base64
+from io import BytesIO
+
+def convert_to_base64(pil_image):
+    """
+    Convert PIL images to Base64 encoded strings
+
+    :param pil_image: PIL image
+    :return: Re-sized Base64 string
+    """
+    buffered = BytesIO()
+    pil_image.save(buffered, format="JPEG")  # You can change the format if needed
+    img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
+    return img_str
