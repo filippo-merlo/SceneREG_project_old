@@ -163,3 +163,9 @@ def if_less_zero_then_zero(x):
         return 0
     else:
         return x
+    
+def if_more_max_then_max(x, max):
+    if x > max:
+        return max
+    else:
+        return x

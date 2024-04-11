@@ -153,10 +153,11 @@ class Dataset:
         plt.show()
 
         x,y,w,h = target_bbox
+        max_h, max_w, _ = image.shape
         x = if_less_zero_then_zero(int(x-20))
         y = if_less_zero_then_zero(int(y-20))
-        w = if_less_zero_then_zero(int(x+w+20))
-        h = if_less_zero_then_zero(int(y+h+20))
+        w = if_more_max_then_max(int(x+w+20),max_w)
+        h = if_more_max_then_max(int(y+h+20),max_h)
         cropped_image = image_picture.crop((x,y,w,h))
 
         # Display the cropped image
