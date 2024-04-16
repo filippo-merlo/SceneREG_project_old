@@ -46,12 +46,10 @@ for encoding in encodings:
 ada20k_objects.columns
 
 #%%
-ade20k_prepath = '/Users/filippomerlo/Desktop/Datasets/'
 index_ade20k_path = '/Users/filippomerlo/Desktop/Datasets/ADE20K_2021_17_01/index_ade20k.pkl'
 
 with open(index_ade20k_path, 'rb') as f:
     index_ade20k = pickle.load(f)
-pprint(index_ade20k.keys())
 #%%
 '''
 'filename': 'array of length N=27574 with the image file '
@@ -98,24 +96,40 @@ pprint(index_ade20k.keys())
 '''
 filenames = index_ade20k['filename']
 filepaths = index_ade20k['folder']
-
+ade20k_prepath = '/Users/filippomerlo/Desktop/Datasets/'
+all_json_files = []
 for folder_path in filepaths:
     # List all files in the directory
     annotation_files = os.listdir(os.path.join(ade20k_prepath, folder_path))
     # Filter JSON files
-    json_files = [file for file in annotation_files if file.endswith('.json')]
-    for ann_file in json_files:
-        with open(os.path.join(ade20k_prepath, folder_path, ann_file)) as f:
-            ann = json.load(f)
-            pprint(ann)
-        break
+    all_json_files += [os.path.join(ade20k_prepath, folder_path, file) for file in annotation_files if file.endswith('.json')]
+print(all_json_files[0])
+print(len(all_json_files))
+#%%
+cooccurencies = dict()
 
+for jsonfile in all_json_files:
+    try:
+        with open(jsonfile, "r") as f:
+            annotation = json.load(f)
+            scene = annotation['annotation']['scene']
+            scene = list(scene)
+            scene = str(scene)
+            if scene not in cooccurencies.keys():
+                cooccurencies[scene] = dict()
 
+            for object in annotation['annotation']['object']:
+                if object['raw_name'] not in cooccurencies[scene].keys():
+                    cooccurencies[scene][object['raw_name']] = 1
+                else:
+                    cooccurencies[scene][object['raw_name']] += 1
+    except:
+        continue
 
-
-
-
-
+with open('cooccurencies.json', 'w') as f:
+    json.dump(cooccurencies, f, indent=4)
+#%%
+pprint(cooccurencies)
 #%%
 scene_labels = index_ade20k['scene']
 objectnames = index_ade20k['objectnames']
