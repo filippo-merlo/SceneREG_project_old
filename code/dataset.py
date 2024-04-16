@@ -10,8 +10,6 @@ import matplotlib.pyplot as plt
 from PIL import Image
 import numpy as np
 
-
-
 class Dataset:
 
     def __init__(self, dataset_path = None):
@@ -153,12 +151,14 @@ class Dataset:
         plt.show()
 
         x,y,w,h = target_bbox
-        max_h, max_w, _ = image.shape
-        x = if_less_zero_then_zero(int(x-20))
-        y = if_less_zero_then_zero(int(y-20))
-        w = if_more_max_then_max(int(x+w+20),max_w)
-        h = if_more_max_then_max(int(y+h+20),max_h)
-        cropped_image = image_picture.crop((x,y,w,h))
+        print(x,y,w,h)
+        max_w, max_h = image_picture.size
+        x_c = subtract_in_bounds(x,20)
+        y_c = subtract_in_bounds(y,20)
+        w_c = add_in_bounds(x,w+20,max_w)
+        h_c = add_in_bounds(y,h+20,max_h)
+        print(x,y,w,h)
+        cropped_image = image_picture.crop((x_c,y_c,w_c,h_c))
 
         # Display the cropped image
         plt.imshow(cropped_image)
@@ -169,7 +169,6 @@ class Dataset:
         scene_class = classify_scene(image_picture, image_captions)
 
         # retrieve info from obscene
-
 
 
     def edit_image(self, img_name = None):

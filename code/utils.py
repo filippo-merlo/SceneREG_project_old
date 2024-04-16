@@ -158,14 +158,15 @@ def convert_to_base64(pil_image):
     img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
     return img_str
 
-def if_less_zero_then_zero(x):
-    if x < 0:
-        return 0
-    else:
-        return x
     
-def if_more_max_then_max(x, max):
-    if x > max:
-        return max
+def subtract_in_bounds(x, y):
+    if x - y > 0:
+        return int(x - y) 
     else:
-        return x
+        return 0
+    
+def add_in_bounds(x, y, max):
+    if x + y < max:
+        return int(x + y)
+    else:
+        return int(max)
