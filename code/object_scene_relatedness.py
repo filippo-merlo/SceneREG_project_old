@@ -1,4 +1,5 @@
 #%%
+# IMPORT LIBRARIES
 import pandas as pd
 import json
 from config import *
@@ -6,9 +7,7 @@ from pprint import pprint
 import pickle
 import os
 
-#%%
-# Measure semnatic relatedness between objects and scenes
-# get object list from dataset
+# OBJECT LIST FROM DATASET
 dataset_path = '/Users/filippomerlo/Desktop/Datasets/data/coco_search18_annotated.json'
 with open(dataset_path) as f:
     data = json.load(f)
@@ -26,13 +25,14 @@ for img in data.values():
                 object_name = cat['name']
                 if object_name not in objects_list:
                     objects_list.append(object_name)
+print('Target Objects')
+pprint(objects_list)
 print(len(objects_list))
 
-#%%
-# using cococcurencies in ADA20K dataset
-ada20k_path = '/Users/filippomerlo/Desktop/Datasets/ADE20K_2021_17_01/objects.txt'
 
-encodings = ['utf-8', 'latin1', 'ISO-8859-1', 'utf-16']
+# OPEN ADA20K
+ada20k_path = '/Users/filippomerlo/Desktop/Datasets/ADE20K_2021_17_01/objects.txt'
+encodings = ['latin1', 'ISO-8859-1']
 
 for encoding in encodings:
     try:
@@ -41,59 +41,15 @@ for encoding in encodings:
         break
     except UnicodeDecodeError:
         print("Failed to read with encoding:", encoding)
-# fucntion to find the most similar object according to these properties
-
-ada20k_objects.columns
-
 #%%
+print(ada20k_objects.head())
+#%%
+# OPEN INDEX ADE20K
 index_ade20k_path = '/Users/filippomerlo/Desktop/Datasets/ADE20K_2021_17_01/index_ade20k.pkl'
-
 with open(index_ade20k_path, 'rb') as f:
     index_ade20k = pickle.load(f)
+
 #%%
-'''
-'filename': 'array of length N=27574 with the image file '
-                             'names',
-                 'folder': 'array of length N with the image folder names.',
-                 'objectIsPart': 'array of size [C, N] counting how many times '
-                                 'an object is a part in each image. '
-                                 'objectIsPart[c,i]=m if in image i object '
-                                 'class c is a part of another object m times. '
-                                 'For objects, objectIsPart[c,i]=0, and for '
-                                 'parts we will find: objectIsPart[c,i] = '
-                                 'objectPresence(c,i)',
-                 'objectPresence': 'array of size [C, N] with the object '
-                                   'counts per image. objectPresence(c,i)=n if '
-                                   'in image i there are n instances of object '
-                                   'class c.',
-                 'objectcounts': 'array of length C with the number of '
-                                 'instances for each object class.',
-                 'objectnames': 'array of length C with the object class '
-                                'names.',
-                 'proportionClassIsPart': 'array of length C with the '
-                                          'proportion of times that class c '
-                                          'behaves as a part. If '
-                                          'proportionClassIsPart[c]=0 then it '
-                                          'means that this is a main object '
-                                          '(e.g., car, chair, ...). See bellow '
-                                          'for a discussion on the utility of '
-                                          'this variable.',
-                 'scene': 'array of length N providing the scene name (same '
-                          'classes as the Places database) for each image.',
-                 'wordnet_found': 'array of length C. It indicates if the '
-                                  'objectname was found in Wordnet.',
-                 'wordnet_frequency': 'array of length C. How many times each '
-                                      'wordnet appears',
-                 'wordnet_gloss': 'list of length C. WordNet definition.',
-                 'wordnet_hypernym': 'list of length C. WordNet hypernyms for '
-                                     'each object name.',
-                 'wordnet_level1': 'list of length C. WordNet associated.',
-                 'wordnet_synonyms': 'list of length C. Synonyms for the '
-                                     'WordNet definition.',
-                 'wordnet_synset': 'list of length C. WordNet synset for each '
-                                   'object name. Shows the full hierarchy '
-                                   'separated by .'
-'''
 filenames = index_ade20k['filename']
 filepaths = index_ade20k['folder']
 ade20k_prepath = '/Users/filippomerlo/Desktop/Datasets/'
@@ -126,40 +82,63 @@ for jsonfile in all_json_files:
     except:
         continue
 
-with open('cooccurencies.json', 'w') as f:
-    json.dump(cooccurencies, f, indent=4)
+#with open('cooccurencies.json', 'w') as f:
+#    json.dump(cooccurencies, f, indent=4)
 #%%
-pprint(cooccurencies)
-#%%
-scene_labels = index_ade20k['scene']
-objectnames = index_ade20k['objectnames']
-objectclasses = list(ada20k_objects[' ADE names '].values)
-i = 0
-final_objects = list()
-discarded_objects = list()
-print(len(objectclasses))
-for cls in objectclasses:
-    clss = cls.split(',')
-    for c in clss:
-        for obj in objectnames:
-            objs = obj.split(',')
-            for o in objs:
-                if c == o:
-                    final_objects.append((cls,obj))
+import pickle as pkl
+import numpy as np
 
-pprint(final_objects)
+# Load index with global information about ADE20K
+DATASET_PATH = '/Users/filippomerlo/Desktop/Datasets/ADE20K_2021_17_01'
+index_file = 'index_ade20k.pkl'
+with open('{}/{}'.format(DATASET_PATH, index_file), 'rb') as f:
+    index_ade20k = pkl.load(f)
 #%%
-for ada_name in objectnames:
-    if ada_name == ' ':
-        continue
-    if ada_name in objects_list:
-        final_objects.append(ada_name)
+print("File loaded, description of the attributes:")
+print('--------------------------------------------')
+for attribute_name, desc in index_ade20k['description'].items():
+    print('* {}: {}'.format(attribute_name, desc))
+print('--------------------------------------------\n')
+#%%
+i = 100
+nfiles = len(index_ade20k['filename'])
+file_name = index_ade20k['filename'][i]
+num_obj = index_ade20k['objectPresence'][:, i].sum()
+num_parts = index_ade20k['objectIsPart'][:, i].sum()
+
+count_obj = index_ade20k['objectPresence'][:, i].max()
+obj_id = np.where(index_ade20k['objectPresence'][:, i] == count_obj)[0][0]
+obj_name = index_ade20k['objectnames'][obj_id]
+full_file_name = '{}/{}'.format(index_ade20k['folder'][i], index_ade20k['filename'][i])
+print("The dataset has {} images".format(nfiles))
+print("The image at index {} is {}".format(i, file_name))
+print("It is located at {}".format(full_file_name))
+print("It happens in a {}".format(index_ade20k['scene'][i]))
+print("It has {} objects, of which {} are parts".format(num_obj, num_parts))
+print("The most common object is object {} ({}), which appears {} times".format(obj_name, obj_id, count_obj))
+#%%
+cooccurencies = dict()
+for i in range(0,nfiles):
+    scene = index_ade20k['scene'][i]
+    if scene.split('/')[0] != '':
+        scene = scene.split('/')[0]
     else:
-        wordnetnames = ada20k_objects[ada20k_objects[' ADE names '].str.contains(ada_name, na=False)]['Wordnet name '].values
-        for wn in wordnetnames:
-            for data_name in objects_list:
-                if data_name == wn:
-                    final_objects.append((ada_name,data_name,wn))
+        scene = scene.split('/')[1]
+    scene = scene.split('_')[0]
 
-pprint(final_objects)
+    if scene not in cooccurencies.keys():
+        cooccurencies[scene] = dict()
 
+    file_name = index_ade20k['filename'][i]
+    count_obj = index_ade20k['objectPresence'][:, i]
+    present_objects_idx = np.where(count_obj > 0)[0]
+    # add objects with number of occurrences
+    for idx in present_objects_idx:
+        obj_name = index_ade20k['objectnames'][idx]
+        if obj_name not in cooccurencies[scene].keys():
+            cooccurencies[scene][obj_name] = count_obj[idx]
+        else:
+            cooccurencies[scene][obj_name] += count_obj[idx]
+
+pprint(len(cooccurencies.keys()))
+pprint(cooccurencies)
