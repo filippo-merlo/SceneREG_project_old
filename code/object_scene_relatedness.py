@@ -127,9 +127,11 @@ def compute_obj_scene_cooccurrency(os_cooccurrency_df, index = 0):
         scene_specific_object_presence_mat = os_cooccurrency_df.div(os_cooccurrency_df.sum(axis=0), axis=1)
         return scene_specific_object_presence_mat
     
+# COMPUTE RELATIVE QUANTITY OF OBJECTS IN SCENES
 n_objects_per_scene_df, n_objects_tot = compute_n_objs_per_scene(index_ade20k)
 os_cooccurrency_df = compute_obj_scene_cooccurrency_matrix(index_ade20k)
 #%%
+# COMPUTE COOCCURRENCIES OF OBJECTS IN SCENES
 co_mat = compute_obj_scene_cooccurrency(os_cooccurrency_df, 0)
 object_name = 'wall'
 target_index = index_ade20k['objectnames'].index(object_name)
