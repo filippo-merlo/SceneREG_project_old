@@ -30,51 +30,6 @@ pprint(objects_list)
 print(len(objects_list))
 
 #%%
-# FIRST TRY OF COUNTING COOCCURRENCIES: Looking into images json files INDEX ADE20K
-# Load index with global information about ADE20K
-index_ade20k_path = '/Users/filippomerlo/Desktop/Datasets/ADE20K_2021_17_01/index_ade20k.pkl'
-with open(index_ade20k_path, 'rb') as f:
-    index_ade20k = pickle.load(f)
-
-# Get all JSON files
-filenames = index_ade20k['filename']
-filepaths = index_ade20k['folder']
-ade20k_prepath = '/Users/filippomerlo/Desktop/Datasets/'
-all_json_files = []
-for folder_path in filepaths:
-    # List all files in the directory
-    annotation_files = os.listdir(os.path.join(ade20k_prepath, folder_path))
-    # Filter JSON files
-    all_json_files += [os.path.join(ade20k_prepath, folder_path, file) for file in annotation_files if file.endswith('.json')]
-
-# viuslaize
-print(all_json_files[0])
-print(len(all_json_files))
-
-# Count cooccurrences
-cooccurencies = dict()
-for jsonfile in all_json_files:
-    try:
-        with open(jsonfile, "r") as f:
-            annotation = json.load(f)
-            scene = annotation['annotation']['scene']
-            scene = list(scene)
-            scene = str(scene)
-            if scene not in cooccurencies.keys():
-                cooccurencies[scene] = dict()
-
-            for object in annotation['annotation']['object']:
-                if object['raw_name'] not in cooccurencies[scene].keys():
-                    cooccurencies[scene][object['raw_name']] = 1
-                else:
-                    cooccurencies[scene][object['raw_name']] += 1
-    except:
-        continue
-
-# Save cooccurencies
-#with open('cooccurencies.json', 'w') as f:
-#    json.dump(cooccurencies, f, indent=4)
-#%%
 # SECOND TRY OF COUNTING COOCCURRENCIES: Looking just into images json files INDEX ADE20K
 import pickle as pkl
 import numpy as np
@@ -123,30 +78,23 @@ def parse_category_name(name):
     return name
 
 def compute_n_objs_per_scene(index_ade20k):
-    n_objs_per_scene = dict()
-    n_obj_tot = dict()
+    n_obj_tot = [0 for i in range(len(index_ade20k['objectnames']))]
     nfiles = len(index_ade20k['filename'])
-    for i in range(0,nfiles):
-        scene = parse_category_name(index_ade20k['scene'][i])
-        if scene not in n_objs_per_scene.keys():
-            n_objs_per_scene[scene] = dict()
+    scenes_categories = [parse_category_name(scene) for scene in index_ade20k['scene']]
+    scenes_categories = list(set(scenes_categories))
+    n_obj_per_scene_df = pd.DataFrame(columns=scenes_categories, index=range(len(index_ade20k['objectnames'])))
+    n_obj_per_scene_df = n_obj_per_scene_df.fillna(0)
 
-        file_name = index_ade20k['filename'][i]
+    for i in tqdm(range(0,nfiles)):
+        scene = parse_category_name(index_ade20k['scene'][i])
         count_obj = index_ade20k['objectPresence'][:, i]
         present_objects_idx = np.where(count_obj > 0)[0]
-        # add objects with number of occurrences
-        for idx in present_objects_idx:
-            obj_name = index_ade20k['objectnames'][idx]
-            if obj_name not in n_obj_tot.keys():
-                n_obj_tot[obj_name] = count_obj[idx]
-            else:
-                n_obj_tot[obj_name] += count_obj[idx]
 
-            if obj_name not in n_objs_per_scene[scene].keys():
-                n_objs_per_scene[scene][obj_name] = count_obj[idx]
-            else:
-                n_objs_per_scene[scene][obj_name] += count_obj[idx]
-    return n_objs_per_scene, n_obj_tot
+        for obj_idx in present_objects_idx:
+            n_obj_per_scene_df.loc[obj_idx,scene] += count_obj[obj_idx]
+            n_obj_tot[obj_idx] += count_obj[obj_idx]
+
+    return n_obj_per_scene_df, n_obj_tot
 
 # COMPUTE COOCCURRENCY OF OBJECTS IN SCENES
 def compute_obj_scene_cooccurrency_matrix(index_ade20k):
@@ -178,7 +126,8 @@ def compute_obj_scene_cooccurrency(os_cooccurrency_df, index = 0):
         # Normalize by sum of columns
         scene_specific_object_presence_mat = os_cooccurrency_df.div(os_cooccurrency_df.sum(axis=0), axis=1)
         return scene_specific_object_presence_mat
-   
+    
+n_objects_per_scene_df, n_objects_tot = compute_n_objs_per_scene(index_ade20k)
 os_cooccurrency_df = compute_obj_scene_cooccurrency_matrix(index_ade20k)
 #%%
 co_mat = compute_obj_scene_cooccurrency(os_cooccurrency_df, 0)
@@ -186,6 +135,59 @@ object_name = 'wall'
 target_index = index_ade20k['objectnames'].index(object_name)
 scene = 'bathroom'
 co_mat.iloc[target_index][scene]
+
+#%%
+# COUMPUTE SIMILARITY WITH BERT
+from sentence_transformers import SentenceTransformer
+import torch
+
+if torch.backends.mps.is_available():
+   device = torch.device("mps")
+   print('CUDA Ok')
+else:
+   print ("MPS device not found.")
+
+#%%
+model = SentenceTransformer('bert-base-nli-mean-tokens').to(device)
+
+object_names = list(index_ade20k['objectnames'])
+scene_names = list(set([parse_category_name(scene) for scene in index_ade20k['scene']]))
+#Encoding:
+with torch.no_grad():
+    objects_name_embeddings = model.encode(object_names)
+    scene_name_embeddings = model.encode(scene_names)
+
+#%%
+# cosine similarity 
+from sklearn.metrics.pairwise import cosine_similarity
+cosine_similarity_matrix = cosine_similarity(objects_name_embeddings, scene_name_embeddings)
+print(cosine_similarity_matrix.shape)
+
+def name2idx(name, name_list):
+    return name_list.index(name)
+
+def idx2name(idx, name_list):
+    return name_list[idx]
+
+# Uniform Matrices
+nfiles = len(index_ade20k['filename'])
+scenes_categories = [parse_category_name(scene) for scene in index_ade20k['scene']]
+scenes_categories = list(set(scenes_categories))
+object_indexes = range(len(index_ade20k['objectnames']))
+bert_similarities = pd.DataFrame(columns=scenes_categories, index=object_indexes)
+
+for scene_name in scenes_categories:
+    scene_idx = name2idx(scene_name, scenes_categories)
+    for obj_idx in object_indexes:
+        bert_similarities.loc[obj_idx,scene_name] = cosine_similarity_matrix[obj_idx,scene_idx]
+
+#%%
+
+target_object = 'wall'
+target_object_idx = name2idx(target_object, object_names)
+target_scene = 'bathroom'
+max_index = bert_similarities[target_scene].idxmax()
+object_names[max_index]
 
 #%%
 # CHECK IF OBJECTS IN OBJECTS_LIST ARE PRESENT IN ADE20K
