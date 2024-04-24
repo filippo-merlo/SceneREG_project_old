@@ -185,8 +185,7 @@ tokenizer = AutoTokenizer.from_pretrained("openai/clip-vit-base-patch32")
 # Classify scene categories
 object_names = list(index_ade20k['objectnames'])
 scene_names = list(set([parse_category_name(scene) for scene in index_ade20k['scene']]))
-pprint(object_names)
-#%%
+
 #Encoding:
 scenes_name_input = tokenizer(scene_names, padding=True, return_tensors="pt").to(device)
 objects_name_input = tokenizer(object_names, padding=True, return_tensors="pt").to(device)
@@ -211,7 +210,7 @@ clip_similarities = similarity_score(objects_name_features, scene_categories_fea
 scenes_categories = [parse_category_name(scene) for scene in index_ade20k['scene']]
 object_indexes = range(len(index_ade20k['objectnames']))
 clip_similarities_mat = pd.DataFrame(columns=scenes_categories, index=object_indexes)
-#%%
+
 print(clip_similarities_mat.shape)
 clip_similarities_mat.head()
 
@@ -235,11 +234,29 @@ def mat_correlation(df1, df2):
     
     return correlation_df
 
+def def_array_corr(df1,df2):
+        # Concatenate all rows of each dataset separately
+    concatenated_df1 = [df1.iloc[i].values for i in range(len(df1))]
+    concatenated_df2 = [df2.iloc[i].values for i in range(len(df2))]
+
+    array_1 = list()
+    for i in concatenated_df1:
+        array_1.extend(i)
+    
+    array_2 = list()
+    for i in concatenated_df2:
+        array_2.extend(i)
+
+    # Compute correlation between the arrays
+    correlation = np.corrcoef(array_1, array_2)
+    return correlation
+
 # tf_idf_scores_mat
 # object_occurrence_ratio_mat
 # scene_specific_object_presence_mat
 # bert_similarities_mat
-
+print(def_array_corr(tf_idf_scores_mat, bert_similarities_mat))
+#%%
 # Assuming tf_idf_scores_mat and bert_similarities_mat are your DataFrames
 # Compute correlation matrix
 correlation_matrix = mat_correlation(tf_idf_scores_mat, bert_similarities_mat)
@@ -250,14 +267,6 @@ plt.figure(figsize=(8, 6))
 sns.heatmap(correlation_matrix, annot=False, cmap='coolwarm', vmin=-1, vmax=1)
 plt.title('Correlation Matrix')
 plt.show()
-
-
-
-
-
-
-
-
 
 #%%
 # CHECK IF OBJECTS IN OBJECTS_LIST ARE PRESENT IN ADE20K
