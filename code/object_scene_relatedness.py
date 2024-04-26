@@ -2,6 +2,7 @@
 import json
 from config import *
 from pprint import pprint
+import requests
 
 # TARGET OBJECT LIST COCO-SEARCH18
 dataset_path = '/Users/filippomerlo/Desktop/Datasets/data/coco_search18_annotated.json'
@@ -126,13 +127,80 @@ def compute_tf_idf(cooccurencies_df):
     tf_idf_scores_mat = tf_scores_mat.mul(idf_values, axis=0)
 
     return tf_idf_scores_mat.fillna(0)
+
+
+def get_at_location_relations_for_scenes(object_name):
+    # Base URL for ConceptNet API
+    base_url = "http://api.conceptnet.io/"
+
+    # Endpoint for querying relations
+    endpoint = "query"
+
+    # Parameters for the query
+    params = {
+        "rel": "/r/AtLocation",
+        "node": f"/c/en/{object_name}",  # Specific object name
+        "limit": 1000  # Limiting the number of results to 1000, you can adjust as needed
+    }
+
+    # Make the request
+    response = requests.get(base_url + endpoint, params=params)
+
+    # Check if request was successful
+    if response.status_code == 200:
+        data = response.json()
+
+        # Extracting edges from the response
+        edges = data['edges']
+
+        # Filtering only the edge information
+        at_location_edges = [edge for edge in edges if edge['rel']['@id'] == '/r/AtLocation']
+
+        return at_location_edges
+    else:
+        # If the request fails, print the status code
+        print("Request failed with status code:", response.status_code)
+        return None
+
+# Get 
+scene_categories = [parse_category_name(scene) for scene in index_ade20k['scene']]
+scene_categories = list(set(scene_categories))
+conceptnet_scene_object = dict()
+for scene in scene_categories:
+    conceptnet_scene_object[scene] = []
+    print('***',scene,'***')
+    at_location_relations = get_at_location_relations_for_scenes(scene)
+    if at_location_relations:
+        for relation in at_location_relations:
+            obj = relation['start']['label']
+            conceptnet_scene_object[scene].append(obj)
+            
+pprint(conceptnet_scene_object)
+# File path to save the pickle file
+file_path = "conceptnet_scene_object.pkl"
+
+# Saving the dictionary as a pickle file
+#with open(file_path, "wb") as f:
+#    pkl.dump(conceptnet_scene_object, f)
+
+#%%
+pprint(scene_categories)
+#%%
+i = 0
+for k,v in conceptnet_scene_object.items():
+    if v == []:
+        continue
+    print(k)
+    i += 1
+print(i)
 #%% COMPUTE STATISTICS
 os_cooccurrency_df = compute_obj_scene_cooccurrency_matrix(index_ade20k)
-
 tf_idf_scores_mat = compute_tf_idf(os_cooccurrency_df)
 object_occurrence_ratio_mat = compute_obj_scene_cooccurrency(os_cooccurrency_df, 0)
 scene_specific_object_presence_mat = compute_obj_scene_cooccurrency(os_cooccurrency_df, 1)
-
+# Save matrices
+#os_cooccurrency_df.to_pickle("object_scenes_cooccurrency.pkl")
+#tf_idf_scores_mat.to_pickle("tf_idf_scores.pkl")
 #%% INITIALIZE CUDA DEVICE
 import torch
 
@@ -214,7 +282,7 @@ clip_similarities_mat = pd.DataFrame(columns=scenes_categories, index=object_ind
 print(clip_similarities_mat.shape)
 clip_similarities_mat.head()
 
-#%%
+#%% 
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -234,7 +302,7 @@ def mat_correlation(df1, df2):
     
     return correlation_df
 
-def def_array_corr(df1,df2):
+def array_corr(df1,df2):
         # Concatenate all rows of each dataset separately
     concatenated_df1 = [df1.iloc[i].values for i in range(len(df1))]
     concatenated_df2 = [df2.iloc[i].values for i in range(len(df2))]
@@ -255,18 +323,34 @@ def def_array_corr(df1,df2):
 # object_occurrence_ratio_mat
 # scene_specific_object_presence_mat
 # bert_similarities_mat
-print(def_array_corr(tf_idf_scores_mat, bert_similarities_mat))
-#%%
-# Assuming tf_idf_scores_mat and bert_similarities_mat are your DataFrames
-# Compute correlation matrix
-correlation_matrix = mat_correlation(tf_idf_scores_mat, bert_similarities_mat)
-correlation_matrix = correlation_matrix.sort_values(by='Correlation', ascending=False)
 
-# Plot heatmap
-plt.figure(figsize=(8, 6))
-sns.heatmap(correlation_matrix, annot=False, cmap='coolwarm', vmin=-1, vmax=1)
-plt.title('Correlation Matrix')
-plt.show()
+relatedness_metrics = {
+    'tf-idf scores': tf_idf_scores_mat,
+    't-scene vs other scenes': object_occurrence_ratio_mat,
+    't-object vs other objects': scene_specific_object_presence_mat,
+    'BERT similarities': bert_similarities_mat
+}
+
+# Set to keep track of printed pairs
+printed_pairs = set()
+
+# Iterate through each pair of metrics
+for metric_name, metric_df in relatedness_metrics.items():
+    for metric_name2, metric_df2 in relatedness_metrics.items():
+        if metric_name != metric_name2 and (metric_name, metric_name2) not in printed_pairs and (metric_name2, metric_name) not in printed_pairs:
+            # Print correlation between the two metrics
+            print('Corr: \n* {}\n* {}'.format(metric_name, metric_name2))
+            correlation_matrix = mat_correlation(metric_df, metric_df2)
+            correlation_matrix = correlation_matrix.sort_values(by='Correlation', ascending=False)
+            # Plot heatmap
+            plt.figure(figsize=(8, 6))
+            sns.heatmap(correlation_matrix, annot=False, cmap='coolwarm', vmin=-1, vmax=1)
+            plt.title('Correlation Matrix')
+            plt.show()
+            print(array_corr(metric_df, metric_df2))
+            print('\n\n')
+            # Add the pair to printed_pairs set
+            printed_pairs.add((metric_name, metric_name2))
 
 #%%
 # CHECK IF OBJECTS IN OBJECTS_LIST ARE PRESENT IN ADE20K
