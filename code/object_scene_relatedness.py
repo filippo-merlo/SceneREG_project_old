@@ -23,7 +23,6 @@ for img in data.values():
                 if object_name not in objects_list:
                     objects_list.append(object_name)
 print('Target Objects, N:',len(objects_list))
-pprint(objects_list)
 
 #%% LOAD ADE20K INDEX
 import pickle as pkl
@@ -162,37 +161,27 @@ def get_at_location_relations_for_scenes(object_name):
         print("Request failed with status code:", response.status_code)
         return None
 
+#%%
 # Get 
-scene_categories = [parse_category_name(scene) for scene in index_ade20k['scene']]
-scene_categories = list(set(scene_categories))
-conceptnet_scene_object = dict()
-for scene in scene_categories:
-    conceptnet_scene_object[scene] = []
-    print('***',scene,'***')
-    at_location_relations = get_at_location_relations_for_scenes(scene)
-    if at_location_relations:
-        for relation in at_location_relations:
-            obj = relation['start']['label']
-            conceptnet_scene_object[scene].append(obj)
-            
-pprint(conceptnet_scene_object)
-# File path to save the pickle file
-file_path = "conceptnet_scene_object.pkl"
+#scene_categories = [parse_category_name(scene) for scene in index_ade20k['scene']]
+#scene_categories = list(set(scene_categories))
+#conceptnet_scene_object = dict()
+#for scene in scene_categories:
+#    conceptnet_scene_object[scene] = []
+#    print('***',scene,'***')
+#    at_location_relations = get_at_location_relations_for_scenes(scene)
+#    if at_location_relations:
+#        for relation in at_location_relations:
+#            obj = relation['start']['label']
+#            conceptnet_scene_object[scene].append(obj)
+#
+#pprint(conceptnet_scene_object)
 
 # Saving the dictionary as a pickle file
+#file_path = "conceptnet_scene_object.pkl"
 #with open(file_path, "wb") as f:
 #    pkl.dump(conceptnet_scene_object, f)
 
-#%%
-pprint(scene_categories)
-#%%
-i = 0
-for k,v in conceptnet_scene_object.items():
-    if v == []:
-        continue
-    print(k)
-    i += 1
-print(i)
 #%% COMPUTE STATISTICS
 os_cooccurrency_df = compute_obj_scene_cooccurrency_matrix(index_ade20k)
 tf_idf_scores_mat = compute_tf_idf(os_cooccurrency_df)
