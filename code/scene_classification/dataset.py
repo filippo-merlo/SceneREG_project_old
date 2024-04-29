@@ -3,17 +3,7 @@ import pickle as pkl
 from torch.utils.data import Dataset
 from torchvision.io import read_image
 import os
-import torch
-from transformers import AutoTokenizer, AutoProcessor
 from PIL import Image
-
-if torch.backends.mps.is_available():
-   device = torch.device("mps")
-   print('CUDA Ok')
-else:
-   print ("MPS device not found.")
-
-processor = AutoProcessor.from_pretrained("openai/clip-vit-base-patch32")
 
 # Load index with global information about ADE20K
 DATASET_PATH = '/Users/filippomerlo/Desktop/Datasets/ADE20K_2021_17_01'
