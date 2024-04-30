@@ -8,7 +8,7 @@ if torch.cuda.is_available():
         print(f"GPU {i}: {torch.cuda.get_device_name(i)}")
     
     # Choose the GPU you want to use
-    gpu_index = 2  # Replace 0 with the index of the GPU you want to use
+    gpu_index = 1  # Replace 0 with the index of the GPU you want to use
     torch.cuda.set_device(gpu_index)
     device = torch.device("cuda")
     print('CUDA Ok')
