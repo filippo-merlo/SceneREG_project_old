@@ -104,7 +104,7 @@ trainer = Trainer(
 import argparse
 if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
-    argparser.add_argument('--out_path', '-o',
+    argparser.add_argument('--out_path',
                 help='Model memory output path', required=True)
 
     args = argparser.parse_args()
