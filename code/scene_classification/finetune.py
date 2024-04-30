@@ -1,11 +1,18 @@
 #%% CUDA
-import torch
-
 if torch.cuda.is_available():
-   device = torch.device("cuda")
-   print('CUDA Ok')
+    device_count = torch.cuda.device_count()
+    print("Available GPUs:", device_count)
+    for i in range(device_count):
+        print(f"GPU {i}: {torch.cuda.get_device_name(i)}")
+    
+    # Choose the GPU you want to use
+    gpu_index = 1  # Replace 0 with the index of the GPU you want to use
+    torch.cuda.set_device(gpu_index)
+    device = torch.device("cuda")
+    print('CUDA Ok')
 else:
-   print ("Device not found.")
+    print("CUDA not available. Using CPU.")
+    device = torch.device("cpu")
 
 #%% IMPORT DATASET 
 from datasets import load_dataset
