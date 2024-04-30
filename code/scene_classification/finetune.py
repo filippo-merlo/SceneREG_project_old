@@ -1,4 +1,6 @@
 #%% CUDA
+import torch 
+
 if torch.cuda.is_available():
     device_count = torch.cuda.device_count()
     print("Available GPUs:", device_count)
