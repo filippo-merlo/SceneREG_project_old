@@ -10,7 +10,7 @@ else:
 
 class clipModel():
     def __init__(self):
-        self.model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32", device=device)
+        self.model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32", device_map = device)
         self.processor = AutoProcessor.from_pretrained("openai/clip-vit-base-patch32")
     
     def predict(self, labels, image):
@@ -20,6 +20,7 @@ class clipModel():
         ).to(device)
 
         with torch.no_grad():
-            logits_per_image, logits_per_text = self.model(**inputs)
-            probs = logits_per_image.softmax(dim=1).cpu().numpy()
+            outputs = self.model(**inputs)
+            logits_per_image = outputs.logits_per_image  # this is the image-text similarity score
+            probs = logits_per_image.softmax(dim=1)
         return probs

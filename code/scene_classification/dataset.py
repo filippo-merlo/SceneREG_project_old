@@ -37,4 +37,5 @@ class CustomImageDataset(Dataset):
             image = read_image(img_path)
         label = self.img_labels[idx]
         return image, label
-    
+
+
