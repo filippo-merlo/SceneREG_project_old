@@ -84,7 +84,7 @@ training_args = TrainingArguments(
 
 # WANDB
 import wandb
-wandb.init(project='Finetuning VIT for classification', entity='ViT_ade20k_classification')
+wandb.init(project='Finetuning VIT for classification')
 wandb.config.update(training_args)
 
 
