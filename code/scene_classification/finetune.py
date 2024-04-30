@@ -78,14 +78,15 @@ training_args = TrainingArguments(
   save_total_limit=2,
   remove_unused_columns=False,
   push_to_hub=False,
-  report_to='tensorboard',
+  report_to='wandb',
   load_best_model_at_end=True
 )
 
 # WANDB
 import wandb
-wandb.init(project='Finetuning VIT for classification')
-wandb.config.update(training_args)
+import os
+os.environ["WANDB_PROJECT"]="Finetuning VIT for classification"
+os.environ["WANDB_LOG_MODEL"] = "checkpoint"
 
 
 from transformers import Trainer
@@ -97,8 +98,7 @@ trainer = Trainer(
     compute_metrics=compute_metrics,
     train_dataset=prepared_ds["train"],
     eval_dataset=prepared_ds["val"],
-    tokenizer=processor,
-    callbacks=[wandb.WandbCallback()]
+    tokenizer=processor
 )
 
 import argparse
