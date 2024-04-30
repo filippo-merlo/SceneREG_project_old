@@ -1,8 +1,8 @@
 #%% CUDA
 import torch
 
-if torch.backends.mps.is_available():
-   device = torch.device("gpu")
+if torch.cuda.is_available():
+   device = torch.device("cuda")
    print('CUDA Ok')
 else:
    print ("Device not found.")
