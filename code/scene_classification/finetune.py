@@ -2,10 +2,10 @@
 import torch
 
 if torch.backends.mps.is_available():
-   device = torch.device("mps")
+   device = torch.device("gpu")
    print('CUDA Ok')
 else:
-   print ("MPS device not found.")
+   print ("Device not found.")
 
 #%% IMPORT DATASET 
 from datasets import load_dataset
