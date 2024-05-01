@@ -73,11 +73,18 @@ from transformers import ViTForImageClassification
 
 labels = ds['train'].features['label'].names
 
+import json
+with open('./code/scene_classification/data_id2label.json', 'r') as f:
+    data_id2label = json.load(f)
+with open('./code/scene_classification/data_label2id.json', 'r') as f:
+    data_label2id = json.load(f)
 model = ViTForImageClassification.from_pretrained(
     model_name_or_path,
     num_labels=len(labels),
-    id2label={str(i): c for i, c in enumerate(labels)},
-    label2id={c: str(i) for i, c in enumerate(labels)}
+    #id2label={str(i): c for i, c in enumerate(labels)},
+    #label2id={c: str(i) for i, c in enumerate(labels)}
+    id2label=data_id2label,
+    label2id=data_label2id
 )
 
 from transformers import TrainingArguments

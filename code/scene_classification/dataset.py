@@ -16,10 +16,6 @@ def parse_category_name(name):
         name = name.split('/')[0]
     else:
         name = name.split('/')[1]
-    where_specifiers = ['_indoor','_outdoor']
-    for specifier in where_specifiers:
-        if specifier in name:
-            name = name.replace(specifier, '')
     return name
     
 class CustomImageDataset(Dataset):
