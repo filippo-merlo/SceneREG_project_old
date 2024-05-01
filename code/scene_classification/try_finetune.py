@@ -7,8 +7,7 @@ processor = ViTImageProcessor.from_pretrained(model_name_or_path)
 from datasets import load_dataset
 from PIL import Image
 
-#ds = load_dataset("sezer12138/ade20k_image_classification", cache_dir= '/mnt/cimec-storage6/users/filippo.merlo')
-ds = load_dataset("sezer12138/ade20k_image_classification")
+ds = load_dataset("sezer12138/ade20k_image_classification", cache_dir= '/mnt/cimec-storage6/users/filippo.merlo')
 
 filtered_examples = []
 
