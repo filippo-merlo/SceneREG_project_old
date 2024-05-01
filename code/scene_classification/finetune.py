@@ -28,14 +28,10 @@ import torch
 model_name_or_path = 'google/vit-base-patch16-224-in21k'
 processor = ViTImageProcessor.from_pretrained(model_name_or_path)
 
-from transformers import ViTFeatureExtractor
-
-feature_extractor = ViTFeatureExtractor.from_pretrained(model_name_or_path)
-mean = feature_extractor.image_mean
 #%%
 def transform(example_batch):
     # Take a list of PIL images and turn them to pixel values
-    inputs = mean([x for x in example_batch['image']], return_tensors='pt')
+    inputs = processor([x for x in example_batch['image']], return_tensors='pt')
 
     # Don't forget to include the labels!
     inputs['labels'] = example_batch['label']
