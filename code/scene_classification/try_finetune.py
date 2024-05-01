@@ -28,9 +28,9 @@ def collate_fn(batch):
     }
 
 import numpy as np
-import code.scene_classification.eval as eval 
+import evaluate
 
-metric = eval.load("accuracy")
+metric = evaluate.load("accuracy")
 def compute_metrics(p):
     return metric.compute(predictions=np.argmax(p.predictions, axis=1), references=p.label_ids)
 
