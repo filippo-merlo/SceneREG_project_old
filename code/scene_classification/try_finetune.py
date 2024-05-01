@@ -32,6 +32,8 @@ import evaluate
 
 metric = evaluate.load("accuracy")
 def compute_metrics(p):
+    print(np.argmax(p.predictions, axis=1))
+    print(p.label_ids)
     return metric.compute(predictions=np.argmax(p.predictions, axis=1), references=p.label_ids)
 
 from transformers import ViTForImageClassification
