@@ -9,30 +9,23 @@ from PIL import Image
 
 ds = load_dataset("sezer12138/ade20k_image_classification", cache_dir= '/mnt/cimec-storage6/users/filippo.merlo')
 
-filtered_examples = []
-
+#%%
 # Iterate through the dataset
-for ex in ds['train']:
+for i, ex in enumerate(ds['val']):
     # Open the image
     image = ex['image']
 
     # Check if the mode is not 'L'
-    if image.mode != 'L':
-        filtered_examples.append(ex)
+    if image.mode == 'L':
+        ds['val'].remove_rows(i)
 
-# Create a new dataset with filtered examples
-ds['train'] = filtered_examples 
-
-filtered_examples = []
-for ex in ds['val']:
+for i, ex in enumerate(ds['train']):
     # Open the image
     image = ex['image']
 
     # Check if the mode is not 'L'
-    if image.mode != 'L':
-        filtered_examples.append(ex)
-
-ds['val'] = filtered_examples 
+    if image.mode == 'L':
+        ds['train'].remove_rows(i)
 
 #%%
 def transform(example_batch):
