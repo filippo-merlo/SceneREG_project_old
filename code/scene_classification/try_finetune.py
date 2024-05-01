@@ -11,21 +11,37 @@ ds = load_dataset("sezer12138/ade20k_image_classification", cache_dir= '/mnt/cim
 
 #%%
 # Iterate through the dataset
+exclude_idx = []
 for i, ex in enumerate(ds['val']):
     # Open the image
     image = ex['image']
 
     # Check if the mode is not 'L'
     if image.mode == 'L':
-        ds['val'].remove(i)
+        exclude_idx.append(i)
 
+ds['val'] = ds['val'].select(
+    (
+        i for i in range(len(ds['val'])) 
+        if i not in set(exclude_idx)
+    )
+)
+
+exclude_idx = []
 for i, ex in enumerate(ds['train']):
     # Open the image
     image = ex['image']
 
     # Check if the mode is not 'L'
     if image.mode == 'L':
-        ds['train'].remove(i)
+        exclude_idx.append(i)
+
+ds['train'] = ds['train'].select(
+    (
+        i for i in range(len(ds['train'])) 
+        if i not in set(exclude_idx)
+    )
+)
 
 #%%
 def transform(example_batch):
