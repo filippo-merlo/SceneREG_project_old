@@ -5,14 +5,14 @@ processor = ViTImageProcessor.from_pretrained(model_name_or_path)
 
 from datasets import load_dataset
 
-ds = load_dataset('beans')
+ds = load_dataset("sezer12138/ade20k_image_classification", cache_dir= '/mnt/cimec-storage6/users/filippo.merlo')
 
 def transform(example_batch):
     # Take a list of PIL images and turn them to pixel values
     inputs = processor([x for x in example_batch['image']], return_tensors='pt')
 
     # Don't forget to include the labels!
-    inputs['labels'] = example_batch['labels']
+    inputs['labels'] = example_batch['label']
     return inputs
 
 prepared_ds = ds.with_transform(transform)
@@ -22,7 +22,7 @@ import torch
 def collate_fn(batch):
     return {
         'pixel_values': torch.stack([x['pixel_values'] for x in batch]),
-        'labels': torch.tensor([x['labels'] for x in batch])
+        'labels': torch.tensor([x['label'] for x in batch])
     }
 
 import numpy as np
@@ -46,7 +46,7 @@ model = ViTForImageClassification.from_pretrained(
 from transformers import TrainingArguments
 
 training_args = TrainingArguments(
-  output_dir="./vit-base-beans",
+  output_dir="./vit-base-ade20k",
   per_device_train_batch_size=16,
   evaluation_strategy="steps",
   num_train_epochs=4,
@@ -70,7 +70,7 @@ trainer = Trainer(
     data_collator=collate_fn,
     compute_metrics=compute_metrics,
     train_dataset=prepared_ds["train"],
-    eval_dataset=prepared_ds["validation"],
+    eval_dataset=prepared_ds["val"],
     tokenizer=processor,
 )
 
@@ -80,6 +80,6 @@ trainer.log_metrics("train", train_results.metrics)
 trainer.save_metrics("train", train_results.metrics)
 trainer.save_state()
 
-metrics = trainer.evaluate(prepared_ds['validation'])
+metrics = trainer.evaluate(prepared_ds['val'])
 trainer.log_metrics("eval", metrics)
 trainer.save_metrics("eval", metrics)
