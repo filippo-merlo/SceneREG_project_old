@@ -23,15 +23,35 @@ ds = load_dataset("sezer12138/ade20k_image_classification", cache_dir= '/mnt/cim
 
 #%% PREPARE DATASET
 from transformers import ViTImageProcessor
+import torch
 
 model_name_or_path = 'google/vit-base-patch16-224-in21k'
 processor = ViTImageProcessor.from_pretrained(model_name_or_path)
 
-
 #%%
+#def process_example(example):
+#    inputs = processor(example['image'], return_tensors='pt')
+#    inputs['pixel_values'] = torch.mean(inputs['pixel_values'], dim=1)
+#    inputs['labels'] = example['label']
+#    return inputs
+#ex = ds['train'][0]
+#inputs = process_example(ex)
+#print(inputs['pixel_values'].shape)
+#%%
+#def transform(example_batch):
+#    # Take a list of PIL images and turn them to pixel values
+#    inputs = processor([x for x in example_batch['image']], return_tensors='pt')
+#
+#    # Don't forget to include the labels!
+#    inputs['labels'] = example_batch['label']
+#    return inputs
+
 def transform(example_batch):
     # Take a list of PIL images and turn them to pixel values
     inputs = processor([x for x in example_batch['image']], return_tensors='pt')
+
+    # Calculate and store the mean pixel values for each image
+    inputs['pixel_values'] = torch.mean(inputs['pixel_values'], dim=1)
 
     # Don't forget to include the labels!
     inputs['labels'] = example_batch['label']
