@@ -83,7 +83,7 @@ model = ViTForImageClassification.from_pretrained(
 from transformers import TrainingArguments
 
 training_args = TrainingArguments(
-  output_dir="./vit-base-ade20k",
+  output_dir="/mnt/cimec-storage6/users/filippo.merlo/vit-base-ade20k",
   per_device_train_batch_size=16,
   evaluation_strategy="steps",
   num_train_epochs=4,
