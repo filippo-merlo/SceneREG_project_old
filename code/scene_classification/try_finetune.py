@@ -17,7 +17,7 @@ for i, ex in enumerate(ds['val']):
 
     # Check if the mode is not 'L'
     if image.mode == 'L':
-        ds['val'].remove_rows(i)
+        ds['val'].remove(i)
 
 for i, ex in enumerate(ds['train']):
     # Open the image
@@ -25,7 +25,7 @@ for i, ex in enumerate(ds['train']):
 
     # Check if the mode is not 'L'
     if image.mode == 'L':
-        ds['train'].remove_rows(i)
+        ds['train'].remove(i)
 
 #%%
 def transform(example_batch):
