@@ -34,7 +34,7 @@ def compute_metrics(p):
 
 from transformers import ViTForImageClassification
 
-labels = ds['train'].features['labels'].names
+labels = ds['train'].features['label'].names
 
 model = ViTForImageClassification.from_pretrained(
     model_name_or_path,
