@@ -28,9 +28,9 @@ def collate_fn(batch):
     }
 
 import numpy as np
-from datasets import load_metric
+import evaluate 
 
-metric = load_metric("accuracy")
+metric = evaluate.load("accuracy")
 def compute_metrics(p):
     return metric.compute(predictions=np.argmax(p.predictions, axis=1), references=p.label_ids)
 
