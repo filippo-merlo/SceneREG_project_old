@@ -85,14 +85,14 @@ training_args = TrainingArguments(
   save_total_limit=2,
   remove_unused_columns=False,
   push_to_hub=False,
-  report_to='wandb',
+  report_to='tensorboard',
   load_best_model_at_end=True
 )
 
 # WANDB
-import wandb
-import os
-os.environ["WANDB_PROJECT"]="Finetuning VIT for classification"
+#import wandb
+#import os
+#os.environ["WANDB_PROJECT"]="Finetuning VIT for classification"
 
 from transformers import Trainer
 
