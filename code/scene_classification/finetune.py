@@ -20,12 +20,15 @@ else:
 from datasets import load_dataset
 
 ds = load_dataset("sezer12138/ade20k_image_classification", cache_dir= '/mnt/cimec-storage6/users/filippo.merlo')
+
 #%% PREPARE DATASET
 from transformers import ViTImageProcessor
 
 model_name_or_path = 'google/vit-base-patch16-224-in21k'
 processor = ViTImageProcessor.from_pretrained(model_name_or_path)
 
+
+#%%
 def transform(example_batch):
     # Take a list of PIL images and turn them to pixel values
     inputs = processor([x for x in example_batch['image']], return_tensors='pt')
@@ -53,13 +56,17 @@ def compute_metrics(p):
 
 from transformers import ViTForImageClassification
 
-labels = ds['train'].features['label'].names
+import json 
+with open('data_id2label.json', 'r') as f:
+    data_id2label = json.load(f)
+with open('data_label2id.json', 'r') as f:
+    data_label2id = json.load(f)
 
 model = ViTForImageClassification.from_pretrained(
     model_name_or_path,
-    num_labels=len(labels),
-    id2label={str(i): c for i, c in enumerate(labels)},
-    label2id={c: str(i) for i, c in enumerate(labels)}
+    num_labels=len(data_id2label.keys()),
+    id2label=data_id2label,
+    label2id=data_label2id
 )
 
 from transformers import TrainingArguments
