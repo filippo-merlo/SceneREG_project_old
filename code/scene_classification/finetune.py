@@ -93,8 +93,6 @@ training_args = TrainingArguments(
 import wandb
 import os
 os.environ["WANDB_PROJECT"]="Finetuning VIT for classification"
-os.environ["WANDB_LOG_MODEL"] = "checkpoint"
-
 
 from transformers import Trainer
 
