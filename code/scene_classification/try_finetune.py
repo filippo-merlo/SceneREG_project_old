@@ -5,9 +5,24 @@ model_name_or_path = 'google/vit-base-patch16-224-in21k'
 processor = ViTImageProcessor.from_pretrained(model_name_or_path)
 
 from datasets import load_dataset
+from PIL import Image
 
-ds = load_dataset("sezer12138/ade20k_image_classification", cache_dir= '/mnt/cimec-storage6/users/filippo.merlo')
+#ds = load_dataset("sezer12138/ade20k_image_classification", cache_dir= '/mnt/cimec-storage6/users/filippo.merlo')
+ds = load_dataset("sezer12138/ade20k_image_classification")
 
+filtered_examples = []
+
+# Iterate through the dataset
+for ex in ds['train']:
+    # Open the image
+    image = ex['image']
+
+    # Check if the mode is not 'L'
+    if image.mode != 'L':
+        filtered_examples.append(ex)
+
+# Create a new dataset with filtered examples
+filtered_ds = {'train': filtered_examples}
 #%%
 def transform(example_batch):
     # Take a list of PIL images and turn them to pixel values
@@ -17,7 +32,7 @@ def transform(example_batch):
     inputs['labels'] = example_batch['label']
     return inputs
 
-prepared_ds = ds.with_transform(transform)
+prepared_ds = filtered_ds.with_transform(transform)
 
 import torch
 
