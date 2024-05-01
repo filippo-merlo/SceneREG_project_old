@@ -6,13 +6,44 @@ processor = ViTImageProcessor.from_pretrained(model_name_or_path)
 
 from datasets import load_dataset
 
-#ds = load_dataset("sezer12138/ade20k_image_classification", cache_dir= '/mnt/cimec-storage6/users/filippo.merlo')
-ds = load_dataset("sezer12138/ade20k_image_classification")
+ds = load_dataset("sezer12138/ade20k_image_classification", cache_dir= '/mnt/cimec-storage6/users/filippo.merlo')
 
 #%%
+from PIL import Image
+
+import torch
+
+def normalize(image, mean=[0.5], std=[0.5]):
+    """
+    Normalizes pixel values in an image with a specified mean and standard deviation.
+    
+    Parameters:
+    image (torch.Tensor): Input image as a PyTorch tensor.
+    mean (list of float): Mean value for each channel. Default is [0.5].
+    std (list of float): Standard deviation for each channel. Default is [0.5].
+    
+    Returns:
+    torch.Tensor: Normalized image.
+    """
+    # Convert pixel values to floats
+    image = image.float()
+    
+    # Normalize pixel values
+    image /= 255.0
+    
+    # Apply mean and standard deviation normalization
+    for i in range(len(mean)):
+        image[..., i] = (image[..., i] - mean[i]) / std[i]
+    
+    return image
+
 def transform(example_batch):
     # Take a list of PIL images and turn them to pixel values
-    inputs = processor([x for x in example_batch['image']], return_tensors='pt')
+    images = [Image.open(x).convert('RGB') for x in example_batch['image']]
+    inputs = processor(images, return_tensors='pt')
+
+    # Normalize using the correct mean for grayscale images (assuming mean=0.5)
+    inputs['pixel_values'] = normalize(inputs['pixel_values'], mean=[0.5], std=[0.5])
 
     # Don't forget to include the labels!
     inputs['labels'] = example_batch['label']
