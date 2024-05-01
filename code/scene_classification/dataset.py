@@ -16,6 +16,10 @@ def parse_category_name(name):
         name = name.split('/')[0]
     else:
         name = name.split('/')[1]
+    where_specifiers = ['_indoor','_outdoor']
+    for specifier in where_specifiers:
+        if specifier in name:
+            name = name.replace(specifier, '')
     return name
     
 class CustomImageDataset(Dataset):
@@ -38,4 +42,24 @@ class CustomImageDataset(Dataset):
         label = self.img_labels[idx]
         return image, label
 
+
+#%%
+from datasets import load_dataset
+ds = load_dataset("sezer12138/ade20k_image_classification")
+import json
+with open('/Users/filippomerlo/Documents/GitHub/SceneReg_project/code/scene_classification/data_label2id.json', 'r') as f:
+    data_label2id = json.load(f)
+#%%
+from pprint import pprint 
+name_list = list(set([parse_category_name(x) for x in index_ade20k['scene']]))
+name_list2 = list(set([parse_category_name(x) for x in list(data_label2id.keys())]))
+
+#%%
+
+disjunction = list(set(name_list) ^ set(name_list2))
+print(len(disjunction))
+pprint(disjunction)
+
+conjunction = list(set(name_list) & set(name_list2))
+print(len(conjunction))
 
