@@ -24,7 +24,7 @@ ds = load_dataset("sezer12138/ade20k_image_classification", cache_dir= '/mnt/cim
 from transformers import ViTImageProcessor
 
 model_name_or_path = 'google/vit-base-patch16-224-in21k'
-processor = ViTImageProcessor.from_pretrained(model_name_or_path, mean=[0.5])
+processor = ViTImageProcessor.from_pretrained(model_name_or_path)
 
 def transform(example_batch):
     # Take a list of PIL images and turn them to pixel values
