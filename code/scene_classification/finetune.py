@@ -19,7 +19,7 @@ else:
 #%% IMPORT DATASET 
 from datasets import load_dataset
 
-ds = load_dataset("sezer12138/ade20k_image_classification")
+ds = load_dataset("sezer12138/ade20k_image_classification", cache_dir= '/mnt/cimec-storage6/users/filippo.merlo')
 #%% PREPARE DATASET
 from transformers import ViTImageProcessor
 
