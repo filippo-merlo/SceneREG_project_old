@@ -8,16 +8,11 @@ from datasets import load_dataset
 
 #ds = load_dataset("sezer12138/ade20k_image_classification", cache_dir= '/mnt/cimec-storage6/users/filippo.merlo')
 ds = load_dataset("sezer12138/ade20k_image_classification")
-#%%
-for ex in ds['val']:
-    print(ex['image'].image_mode)
-    break
-# %%
 
 #%%
 def transform(example_batch):
     # Take a list of PIL images and turn them to pixel values
-    inputs = processor([x.draft("L") for x in example_batch['image']], return_tensors='pt')
+    inputs = processor([x for x in example_batch['image']], return_tensors='pt')
 
     # Don't forget to include the labels!
     inputs['labels'] = example_batch['label']
