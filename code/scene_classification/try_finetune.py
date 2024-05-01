@@ -1,3 +1,4 @@
+#%%
 from transformers import ViTImageProcessor
 
 model_name_or_path = 'google/vit-base-patch16-224-in21k'
@@ -7,6 +8,7 @@ from datasets import load_dataset
 
 ds = load_dataset("sezer12138/ade20k_image_classification", cache_dir= '/mnt/cimec-storage6/users/filippo.merlo')
 
+#%%
 def transform(example_batch):
     # Take a list of PIL images and turn them to pixel values
     inputs = processor([x for x in example_batch['image']], return_tensors='pt')
