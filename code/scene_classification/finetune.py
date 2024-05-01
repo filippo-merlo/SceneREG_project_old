@@ -35,7 +35,7 @@ mean = feature_extractor.image_mean
 #%%
 def transform(example_batch):
     # Take a list of PIL images and turn them to pixel values
-    inputs = feature_extractor([x for x in example_batch['image']], return_tensors='pt')
+    inputs = mean([x for x in example_batch['image']], return_tensors='pt')
 
     # Don't forget to include the labels!
     inputs['labels'] = example_batch['label']
