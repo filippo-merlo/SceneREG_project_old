@@ -21,7 +21,19 @@ for ex in ds['train']:
         filtered_examples.append(ex)
 
 # Create a new dataset with filtered examples
-filtered_ds = {'train': filtered_examples}
+ds['train'] = filtered_examples 
+
+filtered_examples = []
+for ex in ds['val']:
+    # Open the image
+    image = ex['image']
+
+    # Check if the mode is not 'L'
+    if image.mode != 'L':
+        filtered_examples.append(ex)
+
+ds['val'] = filtered_examples 
+
 #%%
 def transform(example_batch):
     # Take a list of PIL images and turn them to pixel values
@@ -31,7 +43,7 @@ def transform(example_batch):
     inputs['labels'] = example_batch['label']
     return inputs
 
-prepared_ds = filtered_ds.with_transform(transform)
+prepared_ds = ds.with_transform(transform)
 
 import torch
 
