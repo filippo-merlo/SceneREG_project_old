@@ -53,13 +53,16 @@ with open('/Users/filippomerlo/Documents/GitHub/SceneReg_project/code/scene_clas
 from pprint import pprint 
 name_list = list(set([parse_category_name(x) for x in index_ade20k['scene']]))
 name_list2 = list(set([parse_category_name(x) for x in list(data_label2id.keys())]))
-
+print(len(name_list))
+print(len(name_list2))
 #%%
+unique_1 = list(set(name_list) - set(name_list2))
+print(len(unique_1))
+unique_2 = list(set(name_list2) - set(name_list))
+print(len(unique_2))
 
 disjunction = list(set(name_list) ^ set(name_list2))
 print(len(disjunction))
-pprint(disjunction)
-
 conjunction = list(set(name_list) & set(name_list2))
 print(len(conjunction))
 
