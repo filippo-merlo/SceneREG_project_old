@@ -66,6 +66,7 @@ import numpy as np
 import evaluate
 
 metric = evaluate.load("accuracy")
+
 def compute_metrics(p):
     return metric.compute(predictions=np.argmax(p.predictions, axis=1), references=p.label_ids)
 
@@ -74,10 +75,13 @@ from transformers import ViTForImageClassification
 labels = ds['train'].features['label'].names
 
 import json
+
 with open('data_id2label.json', 'r') as f:
     data_id2label = json.load(f)
+
 with open('data_label2id.json', 'r') as f:
     data_label2id = json.load(f)
+
 model = ViTForImageClassification.from_pretrained(
     model_name_or_path,
     num_labels=len(labels),
