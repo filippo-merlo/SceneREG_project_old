@@ -7,41 +7,33 @@ processor = ViTImageProcessor.from_pretrained(model_name_or_path)
 from datasets import load_dataset
 from PIL import Image
 
-ds = load_dataset("sezer12138/ade20k_image_classification", cache_dir= '/mnt/cimec-storage6/users/filippo.merlo')
-
+#ds = load_dataset("scene_parse_150", cache_dir= '/mnt/cimec-storage6/users/filippo.merlo')
+ds = load_dataset("scene_parse_150")
+#%%
+len(ds['train'].features['scene_category'].names)
 #%%
 # Iterate through the dataset
-exclude_idx = []
-for i, ex in enumerate(ds['val']):
-    # Open the image
-    image = ex['image']
+def exclude_l(ds, split):
+    exclude_idx = []
+    for i, ex in enumerate(ds[split]):
+        # Open the image
+        image = ex['image']
 
-    # Check if the mode is not 'L'
-    if image.mode == 'L':
-        exclude_idx.append(i)
+        # Check if the mode is not 'L'
+        if image.mode == 'L':
+            exclude_idx.append(i)
 
-ds['val'] = ds['val'].select(
-    (
-        i for i in range(len(ds['val'])) 
-        if i not in set(exclude_idx)
+    ds[split] = ds[split].select(
+        (
+            i for i in range(len(ds[split])) 
+            if i not in set(exclude_idx)
+        )
     )
-)
+    return ds
 
-exclude_idx = []
-for i, ex in enumerate(ds['train']):
-    # Open the image
-    image = ex['image']
-
-    # Check if the mode is not 'L'
-    if image.mode == 'L':
-        exclude_idx.append(i)
-
-ds['train'] = ds['train'].select(
-    (
-        i for i in range(len(ds['train'])) 
-        if i not in set(exclude_idx)
-    )
-)
+ds = exclude_l(ds, 'test')
+ds = exclude_l(ds, 'validation')
+ds = exclude_l(ds, 'train')
 
 #%%
 def transform(example_batch):
@@ -72,23 +64,15 @@ def compute_metrics(p):
 
 from transformers import ViTForImageClassification
 
-labels = ds['train'].features['label'].names
-
-import json
-
-with open('data_id2label.json', 'r') as f:
-    data_id2label = json.load(f)
-
-with open('data_label2id.json', 'r') as f:
-    data_label2id = json.load(f)
+labels = ds['train'].features['scene_category'].names
+id2label = {i: label for i, label in enumerate(labels)}
+label2id = {label: i for i, label in enumerate(labels)}
 
 model = ViTForImageClassification.from_pretrained(
     model_name_or_path,
     num_labels=len(labels),
-    #id2label={str(i): c for i, c in enumerate(labels)},
-    #label2id={c: str(i) for i, c in enumerate(labels)}
-    id2label=data_id2label,
-    label2id=data_label2id
+    id2label=id2label,
+    label2id=label2id
 )
 
 from transformers import TrainingArguments
@@ -118,7 +102,7 @@ trainer = Trainer(
     data_collator=collate_fn,
     compute_metrics=compute_metrics,
     train_dataset=prepared_ds["train"],
-    eval_dataset=prepared_ds["val"],
+    eval_dataset=prepared_ds["validation"],
     tokenizer=processor,
 )
 
@@ -128,6 +112,6 @@ trainer.log_metrics("train", train_results.metrics)
 trainer.save_metrics("train", train_results.metrics)
 trainer.save_state()
 
-metrics = trainer.evaluate(prepared_ds['val'])
+metrics = trainer.evaluate(prepared_ds['test'])
 trainer.log_metrics("eval", metrics)
 trainer.save_metrics("eval", metrics)
