@@ -23,13 +23,14 @@ processor = ViTImageProcessor.from_pretrained(model_name_or_path)
 
 from datasets import load_dataset
 from PIL import Image
+import tqdm
 
 ds = load_dataset("scene_parse_150", cache_dir= '/mnt/cimec-storage6/users/filippo.merlo')
 
 # Iterate through the dataset
 def exclude_l(ds, split):
     exclude_idx = []
-    for i, ex in enumerate(ds[split]):
+    for i, ex in tqdm(enumerate(ds[split])):
         # Open the image
         image = ex['image']
 
