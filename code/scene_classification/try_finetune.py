@@ -85,6 +85,7 @@ label2id = {label: i for i, label in enumerate(labels)}
 
 model = ViTForImageClassification.from_pretrained(
     model_name_or_path,
+    cache_dir= '/mnt/cimec-storage6/users/filippo.merlo',
     num_labels=len(labels),
     id2label=id2label,
     label2id=label2id
