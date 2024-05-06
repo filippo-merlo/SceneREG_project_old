@@ -23,7 +23,7 @@ processor = ViTImageProcessor.from_pretrained(model_name_or_path, cache_dir= '/m
 
 from datasets import load_dataset
 from PIL import Image
-import tqdm
+from tqdm import tqdm
 
 ds = load_dataset("scene_parse_150", cache_dir= '/mnt/cimec-storage6/users/filippo.merlo')
 
