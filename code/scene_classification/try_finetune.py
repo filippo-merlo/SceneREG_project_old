@@ -1,3 +1,20 @@
+#%% CUDA
+import torch 
+
+if torch.cuda.is_available():
+    device_count = torch.cuda.device_count()
+    print("Available GPUs:", device_count)
+    for i in range(device_count):
+        print(f"GPU {i}: {torch.cuda.get_device_name(i)}")
+    
+    # Choose the GPU you want to use
+    gpu_index = 1  # Replace 0 with the index of the GPU you want to use
+    torch.cuda.set_device(gpu_index)
+    device = torch.device("cuda")
+    print('CUDA Ok')
+else:
+    print("CUDA not available. Using CPU.")
+    device = torch.device("cpu")
 #%%
 from transformers import ViTImageProcessor
 
@@ -94,7 +111,7 @@ training_args = TrainingArguments(
 from transformers import Trainer
 
 trainer = Trainer(
-    model=model,
+    model=model.to(device),
     args=training_args,
     data_collator=collate_fn,
     compute_metrics=compute_metrics,
