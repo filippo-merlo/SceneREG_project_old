@@ -20,13 +20,16 @@ from transformers import ViTImageProcessor
 
 model_name_or_path = 'openai/clip-vit-large-patch14'
 processor = ViTImageProcessor.from_pretrained(model_name_or_path, cache_dir= '/mnt/cimec-storage6/users/filippo.merlo')
-
+#%%
 from datasets import load_dataset
 from PIL import Image
 from tqdm import tqdm
 
 ds = load_dataset("scene_parse_150", cache_dir= '/mnt/cimec-storage6/users/filippo.merlo')
-
+#ds = load_dataset("scene_parse_150")
+#%%
+#ds['train']['scene_category']
+#%%
 # Iterate through the dataset
 def exclude_l(ds, split):
     exclude_idx = []
@@ -50,13 +53,14 @@ ds = exclude_l(ds, 'test')
 ds = exclude_l(ds, 'validation')
 ds = exclude_l(ds, 'train')
 
+#%%
 
 def transform(example_batch):
     # Take a list of PIL images and turn them to pixel values
     inputs = processor([x for x in example_batch['image']], return_tensors='pt')
 
     # Don't forget to include the labels!
-    inputs['labels'] = example_batch['label']
+    inputs['labels'] = example_batch['scene_category']
     return inputs
 
 prepared_ds = ds.with_transform(transform)
