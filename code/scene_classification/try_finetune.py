@@ -19,7 +19,7 @@ else:
 from transformers import ViTImageProcessor
 
 model_name_or_path = 'openai/clip-vit-large-patch14'
-processor = ViTImageProcessor.from_pretrained(model_name_or_path)
+processor = ViTImageProcessor.from_pretrained(model_name_or_path, cache_dir= '/mnt/cimec-storage6/users/filippo.merlo')
 
 from datasets import load_dataset
 from PIL import Image
