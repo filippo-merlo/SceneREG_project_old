@@ -63,24 +63,27 @@ print("The most common object is object {} ({}), which appears {} times".format(
 
 #%% FUNCTIONS
 # COMPUTE RELATIVE QUANTITY OF OBJECTS IN SCENES
+import json 
+with open('/Users/filippomerlo/Documents/GitHub/SceneReg_project/code/scene_classification/scene_to_category.json', 'r') as f:
+    scene_to_category = json.load(f)
 
-def parse_category_name(name):
-    if name.split('/')[0] != '':
-        name = name.split('/')[0]
-    else:
-        name = name.split('/')[1]
-    return name
+def assign_category_name(name):
+    try:
+        category = scene_to_category[name][0]
+    except:
+        category = 'outlier'
+    return category
 
 # COMPUTE COOCCURRENCY OF OBJECTS IN SCENES
 def compute_obj_scene_cooccurrency_matrix(index_ade20k):
     nfiles = len(index_ade20k['filename'])
-    scenes_categories = [parse_category_name(scene) for scene in index_ade20k['scene']]
+    scenes_categories = [assign_category_name(scene) for scene in index_ade20k['scene']]
     scenes_categories = list(set(scenes_categories))
     cooccurencies_df = pd.DataFrame(columns=scenes_categories, index=range(len(index_ade20k['objectnames'])))
     cooccurencies_df = cooccurencies_df.fillna(0)
 
     for i in tqdm(range(0,nfiles)):
-        scene = parse_category_name(index_ade20k['scene'][i])
+        scene = assign_category_name(index_ade20k['scene'][i])
         count_obj = index_ade20k['objectPresence'][:, i]
         present_objects_idx = np.where(count_obj > 0)[0]
         cooccurencies_df.loc[present_objects_idx,scene] += 1
@@ -127,43 +130,43 @@ def compute_tf_idf(cooccurencies_df):
 
     return tf_idf_scores_mat.fillna(0)
 
-
-def get_at_location_relations_for_scenes(object_name):
-    # Base URL for ConceptNet API
-    base_url = "http://api.conceptnet.io/"
-
-    # Endpoint for querying relations
-    endpoint = "query"
-
-    # Parameters for the query
-    params = {
-        "rel": "/r/AtLocation",
-        "node": f"/c/en/{object_name}",  # Specific object name
-        "limit": 1000  # Limiting the number of results to 1000, you can adjust as needed
-    }
-
-    # Make the request
-    response = requests.get(base_url + endpoint, params=params)
-
-    # Check if request was successful
-    if response.status_code == 200:
-        data = response.json()
-
-        # Extracting edges from the response
-        edges = data['edges']
-
-        # Filtering only the edge information
-        at_location_edges = [edge for edge in edges if edge['rel']['@id'] == '/r/AtLocation']
-
-        return at_location_edges
-    else:
-        # If the request fails, print the status code
-        print("Request failed with status code:", response.status_code)
-        return None
-
+# ConceptNet API 
+#def get_at_location_relations_for_scenes(object_name):
+#    # Base URL for ConceptNet API
+#    base_url = "http://api.conceptnet.io/"
+#
+#    # Endpoint for querying relations
+#    endpoint = "query"
+#
+#    # Parameters for the query
+#    params = {
+#        "rel": "/r/AtLocation",
+#        "node": f"/c/en/{object_name}",  # Specific object name
+#        "limit": 1000  # Limiting the number of results to 1000, you can adjust as needed
+#    }
+#
+#    # Make the request
+#    response = requests.get(base_url + endpoint, params=params)
+#
+#    # Check if request was successful
+#    if response.status_code == 200:
+#        data = response.json()
+#
+#        # Extracting edges from the response
+#        edges = data['edges']
+#
+#        # Filtering only the edge information
+#        at_location_edges = [edge for edge in edges if edge['rel']['@id'] == '/r/AtLocation']
+#
+#        return at_location_edges
+#    else:
+#        # If the request fails, print the status code
+#        print("Request failed with status code:", response.status_code)
+#        return None
+#
 #%%
-# Get 
-#scene_categories = [parse_category_name(scene) for scene in index_ade20k['scene']]
+# Get ConceptNet
+#scene_categories = [assign_category_name(scene) for scene in index_ade20k['scene']]
 #scene_categories = list(set(scene_categories))
 #conceptnet_scene_object = dict()
 #for scene in scene_categories:
@@ -176,8 +179,7 @@ def get_at_location_relations_for_scenes(object_name):
 #            conceptnet_scene_object[scene].append(obj)
 #
 #pprint(conceptnet_scene_object)
-
-# Saving the dictionary as a pickle file
+## Saving the dictionary as a pickle file
 #file_path = "conceptnet_scene_object.pkl"
 #with open(file_path, "wb") as f:
 #    pkl.dump(conceptnet_scene_object, f)
@@ -190,6 +192,7 @@ scene_specific_object_presence_mat = compute_obj_scene_cooccurrency(os_cooccurre
 # Save matrices
 #os_cooccurrency_df.to_pickle("object_scenes_cooccurrency.pkl")
 #tf_idf_scores_mat.to_pickle("tf_idf_scores.pkl")
+
 #%% INITIALIZE CUDA DEVICE
 import torch
 
@@ -211,7 +214,7 @@ from sentence_transformers import SentenceTransformer
 model = SentenceTransformer('bert-base-nli-mean-tokens').to(device)
 
 object_names = list(index_ade20k['objectnames'])
-scene_names = list(set([parse_category_name(scene) for scene in index_ade20k['scene']]))
+scene_names = list(set([assign_category_name(scene) for scene in index_ade20k['scene']]))
 #Encoding:
 with torch.no_grad():
     objects_name_embeddings = model.encode(object_names)
@@ -223,7 +226,7 @@ cosine_similarity_matrix = cosine_similarity(objects_name_embeddings, scene_name
 
 # Uniform with cooccurrencies matrices Matrices
 nfiles = len(index_ade20k['filename'])
-scenes_categories = [parse_category_name(scene) for scene in index_ade20k['scene']]
+scenes_categories = [assign_category_name(scene) for scene in index_ade20k['scene']]
 scenes_categories = list(set(scenes_categories))
 object_indexes = range(len(index_ade20k['objectnames']))
 bert_similarities_mat = pd.DataFrame(columns=scenes_categories, index=object_indexes)
@@ -241,7 +244,7 @@ tokenizer = AutoTokenizer.from_pretrained("openai/clip-vit-base-patch32")
 
 # Classify scene categories
 object_names = list(index_ade20k['objectnames'])
-scene_names = list(set([parse_category_name(scene) for scene in index_ade20k['scene']]))
+scene_names = list(set([assign_category_name(scene) for scene in index_ade20k['scene']]))
 
 #Encoding:
 scenes_name_input = tokenizer(scene_names, padding=True, return_tensors="pt").to(device)
@@ -264,7 +267,7 @@ def similarity_score(features1, features2):
 clip_similarities = similarity_score(objects_name_features, scene_categories_features)
 
 # Uniform with cooccurrencies matrices Matrices
-scenes_categories = [parse_category_name(scene) for scene in index_ade20k['scene']]
+scenes_categories = [assign_category_name(scene) for scene in index_ade20k['scene']]
 object_indexes = range(len(index_ade20k['objectnames']))
 clip_similarities_mat = pd.DataFrame(columns=scenes_categories, index=object_indexes)
 
@@ -272,6 +275,7 @@ print(clip_similarities_mat.shape)
 clip_similarities_mat.head()
 
 #%% 
+# check correlations
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -363,3 +367,13 @@ for obj in objects_list:
 print(len(objects_not_found))
 pprint(objects_not_found)
 pprint(list(index_ade20k['objectnames']))
+
+#%% Check the most and least similar objects to a scene
+k = 5
+top_k_indices = tf_idf_scores_mat['art_gallery'].nlargest(k).index
+bottom_k_indices = tf_idf_scores_mat['art_gallery'].nsmallest(k).index
+for i in top_k_indices:
+    print(object_names[i])
+
+for i in bottom_k_indices:
+    print(object_names[i])

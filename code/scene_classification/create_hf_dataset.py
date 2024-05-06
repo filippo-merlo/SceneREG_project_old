@@ -15,15 +15,25 @@ from PIL import Image
 
 ds = load_dataset("scene_parse_150")
 scene_category = ds['train'].features['scene_category'].names
-#%%
+
 # Map scene list to scene category 
 import itertools
+import re
 
-
-def map_scene_to_category(scene_list, scene_category):
+def map_scene_to_category(scene_list, scene_category, accurate=False):
     category_to_scene = {}
     for scene in scene_list:
-        scene_l = scene.split('/')
+        if accurate:
+            scene_l = re.split('/', scene)
+            scene_l_clean = []
+            for s in scene_l:
+                if s[:2] != 'n_' and s[:2] != 'a_':
+                    scene_l_clean.append(s)
+            scene_l = '_'.join(scene_l_clean)
+            scene_l = re.split('_', scene_l)
+            
+        else:
+            scene_l = re.split('/', scene)
         scene_l = [s for s in scene_l if s]  # Remove empty strings
         scene_l = remove_duplicates(scene_l)
         combinations = []
@@ -53,10 +63,80 @@ def remove_duplicates(lst):
             result.append(item)
     return result
 
-category_to_scene = map_scene_to_category(scene_list, scene_category)
-pprint(len(category_to_scene.keys()))
-pprint(category_to_scene)
+def reverse_dict(dictionary):
+    reversed_dict = {}
+    for key, values in dictionary.items():
+        for value in values:
+            if value not in reversed_dict:
+                reversed_dict[value] = [key]
+            else:
+                reversed_dict[value].append(key)
+    return reversed_dict
 
-import json 
+#%%
+category_to_scene = map_scene_to_category(scene_list, scene_category)
+scene_to_category = reverse_dict(category_to_scene)
+# First check
+print(len(set(scene_category)),len(set(scene_category) - set(category_to_scene.keys())))
+print(len(scene_list),len(scene_list - set(scene_to_category.keys())))
+
+unmatched_scenes = scene_list - set(scene_to_category.keys())
+unmatched_scenes = list(unmatched_scenes)
+accurate_category_to_scene = map_scene_to_category(unmatched_scenes, scene_category, accurate=True)
+accurate_scene_to_category = reverse_dict(accurate_category_to_scene)
+
+for k, v in accurate_category_to_scene.items():
+    category_to_scene[k] += v
+for k, v in accurate_scene_to_category.items():
+    if k not in scene_to_category:
+        scene_to_category[k] = v
+    else:
+        scene_to_category[k] += v
+
+# Correct ambiguity, mapping in scene_to_category has to be one to one
+print('Pre corrections:')
+print(len(set(scene_category)),len(set(scene_category) - set(category_to_scene.keys())))
+print(len(scene_list),len(scene_list - set(scene_to_category.keys())))
+for k, v in scene_to_category.items():
+    if len(v) > 1:
+        print(k, v)
+# copy corrections
+corrections = {
+'/library/outdoor': ['library_outdoor'],
+'library/indoor': ['library_indoor'],
+'/library/indoor': ['library_indoor'],
+'library/outdoor': ['library_outdoor'],
+'utliers/artists_loft/questionable': ['artists_loft'],
+'booth/indoor': ['booth_indoor'],
+'/booth/indoor': ['booth_indoor'],
+'/airport/entrance': ['airport'],
+'/cargo_deck/boat': ['boat'],
+'/cargo_deck/airplane': ['airplane'],
+'/train_station_platform/n_people_waiting_in_a_queue_to_enter_the_train': ['station'],
+'/train_station_platform/n_passengers_leaving_a_train': ['station']
+}
+
+for k, v in scene_to_category.items():
+    if k in corrections.keys():
+        scene_to_category[k] = corrections[k]
+
+print('After corrections:')
+for k, v in scene_to_category.items():
+    if len(v) > 1:
+        print(k, v)
+
+category_to_scene = reverse_dict(scene_to_category)
+
+# Final Check
+print(len(set(scene_category)),len(set(scene_category) - set(category_to_scene.keys())))
+print(len(scene_list),len(scene_list - set(scene_to_category.keys())))
+
+import json
+
 with open('category_to_scene.json', 'w') as f:
-    json.dump(category_to_scene, f)
+    json.dump(category_to_scene, f, indent=4)
+
+with open('scene_to_category.json', 'w') as f:
+    json.dump(scene_to_category, f, indent=4)
+
+# %%
