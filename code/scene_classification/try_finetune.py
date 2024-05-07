@@ -87,8 +87,8 @@ def model_init():
 ## SWEEPS
 # method
 sweep_config = {
-    'method': 'random'
-    
+    'method': 'bayes',
+    "metric": {"goal": "minimize", "name": "loss"},
 }
 
 # hyperparameters
