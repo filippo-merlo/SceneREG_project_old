@@ -2,7 +2,7 @@
 import wandb
 wandb.login()
 import os
-project_name = 'vit_snacks_sweeps'
+project_name = 'vit_final_finetune'
 # Set a single environment variable
 os.environ["WANDB_PROJECT"] = project_name
 os.environ["WANDB_LOG_MODEL"] = 'true'
@@ -10,8 +10,7 @@ os.environ["WANDB_LOG_MODEL"] = 'true'
 from transformers import ViTImageProcessor, ViTFeatureExtractor
 
 cache_dir = '/mnt/cimec-storage6/users/filippo.merlo'
-#cache_dir = '/Users/filippomerlo/Documents/GitHub/SceneReg_project/code/scene_classification/cache_dir'
-#checkpoint = 'openai/clip-vit-large-patch14'
+
 checkpoint = 'google/vit-base-patch16-224-in21k'
 processor = ViTImageProcessor.from_pretrained(checkpoint, cache_dir= cache_dir)
 
@@ -43,10 +42,6 @@ def collate_fn(batch):
 # define function to compute metrics
 import numpy as np
 import evaluate
-
-def compute_metrics(p):
-    metric = evaluate.load("accuracy", cache_dir= cache_dir)
-    return metric.compute(predictions=np.argmax(p.predictions, axis=1), references=p.label_ids)
 
 def compute_metrics_fn(eval_preds):
   metrics = dict()
@@ -88,24 +83,23 @@ def model_init():
 # method
 sweep_config = {
     'method': 'random'
-
 }
 
 # hyperparameters
 parameters_dict = {
     'epochs': {
-        'value': 1
+        'value': 15
         },
     'batch_size': {
-        'values': [8, 16, 32, 64]
+        'values': [32]
         },
     'learning_rate': {
         'distribution': 'log_uniform_values',
-        'min': 1e-5,
-        'max': 1e-3
+        'min': 2e-5,
+        'max': 2e-5
     },
     'weight_decay': {
-        'values': [0.0, 0.1, 0.2, 0.3, 0.4, 0.5]
+        'values': [0.1]
     },
 }
 
@@ -125,10 +119,10 @@ def train(config=None):
     training_args = TrainingArguments(
         output_dir=f'/mnt/cimec-storage6/users/filippo.merlo/{project_name}',
 	    report_to='wandb',  # Turn on Weights & Biases logging
-        num_train_epochs=config.epochs,
-        learning_rate=config.learning_rate,
-        weight_decay=config.weight_decay,
-        per_device_train_batch_size=config.batch_size,
+        num_train_epochs=15,
+        learning_rate=float(2e-5),
+        weight_decay=0.1,
+        per_device_train_batch_size=32,
         per_device_eval_batch_size=64,
         save_strategy='epoch',
         evaluation_strategy='epoch',
@@ -153,4 +147,4 @@ def train(config=None):
     # start training loop
     trainer.train()
 
-wandb.agent(sweep_id, train, count=20)
+wandb.agent(sweep_id, train, count=1)
