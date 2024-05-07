@@ -14,14 +14,13 @@ cache_dir = '/mnt/cimec-storage6/users/filippo.merlo'
 #checkpoint = 'openai/clip-vit-large-patch14'
 checkpoint = 'google/vit-base-patch16-224-in21k'
 processor = ViTImageProcessor.from_pretrained(checkpoint, cache_dir= cache_dir)
-feature_extractor = ViTFeatureExtractor.from_pretrained(checkpoint, cache_dir= cache_dir)
 
 from datasets import load_dataset
 from PIL import Image
 from tqdm import tqdm
 
 datasets = load_dataset("scene_parse_150", cache_dir= cache_dir)
-labels = datasets['train'].features['scene_category']
+labels = datasets['train'].features['scene_category'].names
 
 #%%
 
@@ -47,51 +46,6 @@ labels = datasets['train'].features['scene_category']
 #
 #ds = exclude_l(ds, 'validation')
 #ds = exclude_l(ds, 'train')
-##%%
-## data augmentation transformations
-#from torchvision.transforms import (
-#    Compose,
-#    Normalize,
-#    Resize,
-#    RandomResizedCrop,
-#    RandomHorizontalFlip,
-#    RandomAdjustSharpness,
-#    ToTensor,
-#    ToPILImage
-#)
-#
-## train
-#train_aug_transforms = Compose([
-#    RandomResizedCrop(size=feature_extractor.size),
-#    RandomHorizontalFlip(p=0.5),
-#    RandomAdjustSharpness(sharpness_factor=5, p=0.5),
-#    ToTensor(),
-#    Normalize(mean=feature_extractor.image_mean, std=feature_extractor.image_std),
-#])
-#
-#
-## validation/test
-#valid_aug_transforms = Compose([
-#    Resize(size=(feature_extractor.size, feature_extractor.size)),
-#    ToTensor(),
-#    Normalize(mean=feature_extractor.image_mean, std=feature_extractor.image_std),
-#])
-#
-#def apply_train_aug_transforms(examples):
-#    examples = [train_aug_transforms(img.convert('RGB')) for img in examples['image']]
-#    return examples
-#
-#
-#def apply_valid_aug_transforms(examples):
-#    examples = [valid_aug_transforms(img.convert('RGB')) for img in examples['image']]
-#    return examples
-#
-#
-#datasets['train'].set_transform(apply_train_aug_transforms)
-#datasets['validation'].set_transform(apply_valid_aug_transforms)
-#datasets['test'].set_transform(apply_valid_aug_transforms)
-#datasets_processed = datasets.rename_column('scene_category', 'labels')
-
 
 #%%
 
