@@ -119,16 +119,16 @@ import numpy as np
 import evaluate
 
 def compute_metrics(p):
-    metric = evaluate.load("accuracy")
+    metric = evaluate.load("accuracy", cache_dir= '/mnt/cimec-storage6/users/filippo.merlo')
     return metric.compute(predictions=np.argmax(p.predictions, axis=1), references=p.label_ids)
 
 def compute_metrics_fn(eval_preds):
   metrics = dict()
   
-  accuracy_metric = evaluate.load('accuracy')
-  precision_metric = evaluate.load('precision')
-  recall_metric = evaluate.load('recall')
-  f1_metric = evaluate.load('f1')
+  accuracy_metric = evaluate.load('accuracy', cache_dir= '/mnt/cimec-storage6/users/filippo.merlo')
+  precision_metric = evaluate.load('precision', cache_dir= '/mnt/cimec-storage6/users/filippo.merlo')
+  recall_metric = evaluate.load('recall', cache_dir= '/mnt/cimec-storage6/users/filippo.merlo')
+  f1_metric = evaluate.load('f1', cache_dir= '/mnt/cimec-storage6/users/filippo.merlo')
 
 
   logits = eval_preds.predictions
