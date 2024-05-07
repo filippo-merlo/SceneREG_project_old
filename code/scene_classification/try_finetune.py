@@ -98,9 +98,9 @@ parameters_dict = {
         "distribution": "q_log_uniform_values",
         "max": 256,
         "min": 8,
-        "q": 8,
+        "q": 8
     },
-    "dropout": {"values": [0.3, 0.4, 0.5]},
+    #"dropout": {"values": [0.3, 0.4, 0.5]},
     "learning_rate": {"distribution": "uniform", "max": 0.1, "min": 0},
     'weight_decay': {
         'values': [0.0, 0.1, 0.2, 0.3, 0.4, 0.5]
