@@ -4,7 +4,7 @@ wandb.login()
 import os
 
 # Set a single environment variable
-os.environ["WANDB_PROJECT"] = 'vit_snacks_sweeps'
+os.environ["WANDB_PROJECT"] = 'vit_l_snacks_sweeps_4e'
 os.environ["WANDB_LOG_MODEL"] = 'true'
 #%%
 from transformers import ViTImageProcessor, ViTFeatureExtractor
@@ -12,7 +12,7 @@ from transformers import ViTImageProcessor, ViTFeatureExtractor
 cache_dir = '/mnt/cimec-storage6/users/filippo.merlo'
 #cache_dir = '/Users/filippomerlo/Documents/GitHub/SceneReg_project/code/scene_classification/cache_dir'
 #checkpoint = 'openai/clip-vit-large-patch14'
-checkpoint = 'google/vit-base-patch16-224-in21k'
+checkpoint = 'google/vit-large-patch16-224'
 processor = ViTImageProcessor.from_pretrained(checkpoint, cache_dir= cache_dir)
 
 from datasets import load_dataset
@@ -21,33 +21,6 @@ from tqdm import tqdm
 
 datasets = load_dataset("scene_parse_150", cache_dir= cache_dir)
 labels = datasets['train'].features['scene_category'].names
-
-#%%
-
-# Remove 'L'
-## Iterate through the dataset
-#def exclude_l(ds, split):
-#    exclude_idx = []
-#    for i, ex in tqdm(enumerate(ds[split])):
-#        # Open the image
-#        image = ex['image']
-#
-#        # Check if the mode is not 'L'
-#        if image.mode == 'L':
-#            exclude_idx.append(i)
-#
-#    ds[split] = ds[split].select(
-#        (
-#            i for i in range(len(ds[split])) 
-#            if i not in set(exclude_idx)
-#        )
-#    )
-#    return ds
-#
-#ds = exclude_l(ds, 'validation')
-#ds = exclude_l(ds, 'train')
-
-#%%
 
 def transform(example_batch):
     # Take a list of PIL images and turn them to pixel values
@@ -59,7 +32,6 @@ def transform(example_batch):
 
 datasets_processed = datasets.with_transform(transform)
 
-#%%
 import torch
 
 def collate_fn(batch):
@@ -112,17 +84,16 @@ def model_init():
     )
     return vit_model
 
-
 ## SWEEPS
 # method
 sweep_config = {
-    'method': 'random'
+    'method': 'bayes'
 }
 
 # hyperparameters
 parameters_dict = {
     'epochs': {
-        'value': 1
+        'value': 4
         },
     'batch_size': {
         'values': [8, 16, 32, 64]
@@ -139,7 +110,7 @@ parameters_dict = {
 
 sweep_config['parameters'] = parameters_dict
 
-sweep_id = wandb.sweep(sweep_config, project='vit-snacks-sweeps')
+sweep_id = wandb.sweep(sweep_config, project='vit_l-snacks-sweeps_4e')
 
 from transformers import TrainingArguments, Trainer
 
@@ -151,12 +122,13 @@ def train(config=None):
 
     # set training arguments
     training_args = TrainingArguments(
-        output_dir='/mnt/cimec-storage6/users/filippo.merlo/vit-sweeps',
+        output_dir='/mnt/cimec-storage6/users/filippo.merlo/vit_l-sweeps_4e',
 	    report_to='wandb',  # Turn on Weights & Biases logging
         num_train_epochs=config.epochs,
         learning_rate=config.learning_rate,
         weight_decay=config.weight_decay,
         per_device_train_batch_size=config.batch_size,
+
         per_device_eval_batch_size=16,
         save_strategy='epoch',
         evaluation_strategy='epoch',
@@ -182,12 +154,3 @@ def train(config=None):
     trainer.train()
 
 wandb.agent(sweep_id, train, count=20)
-#train_results = trainer.train()
-#trainer.save_model()
-#trainer.log_metrics("train", train_results.metrics)
-#trainer.save_metrics("train", train_results.metrics)
-#trainer.save_state()
-#
-#metrics = trainer.evaluate(prepared_ds['validation'])
-#trainer.log_metrics("eval", metrics)
-#trainer.save_metrics("eval", metrics)
