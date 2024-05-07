@@ -10,12 +10,12 @@ os.environ["WANDB_LOG_MODEL"] = 'true'
 #%%
 from transformers import ViTImageProcessor, ViTFeatureExtractor
 
-#model_name_or_path = 'openai/clip-vit-large-patch14'
-model_name_or_path = 'google/vit-base-patch16-224-in21k'
-processor = ViTImageProcessor.from_pretrained(model_name_or_path, cache_dir= '/mnt/cimec-storage6/users/filippo.merlo')
-feature_extractor = ViTFeatureExtractor.from_pretrained(model_name_or_path, cache_dir= '/mnt/cimec-storage6/users/filippo.merlo')
-#processor = ViTImageProcessor.from_pretrained(model_name_or_path)
-#feature_extractor = ViTFeatureExtractor.from_pretrained(model_name_or_path)
+#checkpoint = 'openai/clip-vit-large-patch14'
+checkpoint = 'google/vit-base-patch16-224-in21k'
+processor = ViTImageProcessor.from_pretrained(checkpoint, cache_dir= '/mnt/cimec-storage6/users/filippo.merlo')
+feature_extractor = ViTFeatureExtractor.from_pretrained(checkpoint, cache_dir= '/mnt/cimec-storage6/users/filippo.merlo')
+#processor = ViTImageProcessor.from_pretrained(checkpoint)
+#feature_extractor = ViTFeatureExtractor.from_pretrained(checkpoint)
 
 from datasets import load_dataset
 from PIL import Image
@@ -149,13 +149,15 @@ labels = ds['train'].features['scene_category'].names
 id2label = {i: label for i, label in enumerate(labels)}
 label2id = {label: i for i, label in enumerate(labels)}
 
-model = ViTForImageClassification.from_pretrained(
-    model_name_or_path,
-    cache_dir= '/mnt/cimec-storage6/users/filippo.merlo',
-    num_labels=len(labels),
-    id2label=id2label,
-    label2id=label2id
-)
+def model_init():
+    vit_model = ViTForImageClassification.from_pretrained(
+        checkpoint,
+        num_labels=labels.num_classes,
+        id2label=id2label,
+        label2id=label2id
+    )
+    return vit_model
+
 
 ## SWEEPS
 # method
@@ -213,7 +215,7 @@ def train(config=None):
     # define training loop
     trainer = Trainer(
         # model,
-        model_init= model,
+        model_init=model_init,
         args=training_args,
         data_collator=collate_fn,
         train_dataset=datasets_processed['train'],
