@@ -2,9 +2,9 @@
 import wandb
 wandb.login()
 import os
-project_name = 'vit_b_snacks_sweeps'
+
 # Set a single environment variable
-os.environ["WANDB_PROJECT"] = project_name
+os.environ["WANDB_PROJECT"] = 'vit_snacks_sweeps'
 os.environ["WANDB_LOG_MODEL"] = 'true'
 #%%
 from transformers import ViTImageProcessor, ViTFeatureExtractor
@@ -12,8 +12,7 @@ from transformers import ViTImageProcessor, ViTFeatureExtractor
 cache_dir = '/mnt/cimec-storage6/users/filippo.merlo'
 #cache_dir = '/Users/filippomerlo/Documents/GitHub/SceneReg_project/code/scene_classification/cache_dir'
 #checkpoint = 'openai/clip-vit-large-patch14'
-checkpoint = 'google/vit-base-patch16-224'
-
+checkpoint = 'google/vit-base-patch16-224-in21k'
 processor = ViTImageProcessor.from_pretrained(checkpoint, cache_dir= cache_dir)
 
 from datasets import load_dataset
@@ -78,7 +77,6 @@ label2id = {label: i for i, label in enumerate(labels)}
 def model_init():
     vit_model = ViTForImageClassification.from_pretrained(
         checkpoint,
-        ignore_mismatched_sizes= True,
         num_labels=len(labels),
         id2label=id2label,
         label2id=label2id,
@@ -89,29 +87,30 @@ def model_init():
 ## SWEEPS
 # method
 sweep_config = {
-    'method': 'bayes',
-    "metric": {"goal": "minimize", "name": "loss"}
+    'method': 'random'
 }
 
 # hyperparameters
 parameters_dict = {
-    "epochs": {"value": 1},
-    "batch_size": {
-        "distribution": "q_log_uniform_values",
-        "max": 256,
-        "min": 32,
-        "q": 8
+    'epochs': {
+        'value': 1
+        },
+    'batch_size': {
+        'values': [8, 16, 32, 64]
+        },
+    'learning_rate': {
+        'distribution': 'log_uniform_values',
+        'min': 1e-5,
+        'max': 1e-3
     },
-    "dropout": {"values": [0.3, 0.4, 0.5]},
-    "learning_rate": {"distribution": "uniform", "max": 0.1, "min": 0},
     'weight_decay': {
         'values': [0.0, 0.1, 0.2, 0.3, 0.4, 0.5]
-    }
+    },
 }
 
 sweep_config['parameters'] = parameters_dict
 
-sweep_id = wandb.sweep(sweep_config, project=project_name)
+sweep_id = wandb.sweep(sweep_config, project='vit-snacks-sweeps')
 
 from transformers import TrainingArguments, Trainer
 
@@ -123,13 +122,12 @@ def train(config=None):
 
     # set training arguments
     training_args = TrainingArguments(
-        output_dir=f'/mnt/cimec-storage6/users/filippo.merlo/{project_name}',
+        output_dir='/mnt/cimec-storage6/users/filippo.merlo/vit-sweeps',
 	    report_to='wandb',  # Turn on Weights & Biases logging
         num_train_epochs=config.epochs,
         learning_rate=config.learning_rate,
         weight_decay=config.weight_decay,
         per_device_train_batch_size=config.batch_size,
-
         per_device_eval_batch_size=16,
         save_strategy='epoch',
         evaluation_strategy='epoch',
@@ -154,4 +152,4 @@ def train(config=None):
     # start training loop
     trainer.train()
 
-wandb.agent(sweep_id, train, count=100)
+wandb.agent(sweep_id, train, count=20)
