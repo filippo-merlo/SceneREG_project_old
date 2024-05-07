@@ -22,8 +22,8 @@ wandb.login()
 import os
 
 # Set a single environment variable
-os.environ["WANDB_PROJECT"] = vit_snacks_sweeps
-os.environ["WANDB_LOG_MODEL"] = true
+os.environ["WANDB_PROJECT"] = 'vit_snacks_sweeps'
+os.environ["WANDB_LOG_MODEL"] = 'true'
 
 #%%
 from transformers import ViTImageProcessor, ViTFeatureExtractor
