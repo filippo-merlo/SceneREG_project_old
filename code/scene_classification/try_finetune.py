@@ -78,6 +78,7 @@ label2id = {label: i for i, label in enumerate(labels)}
 def model_init():
     vit_model = ViTForImageClassification.from_pretrained(
         checkpoint,
+        ignore_mismatched_sizes= True,
         num_labels=len(labels),
         id2label=id2label,
         label2id=label2id,
