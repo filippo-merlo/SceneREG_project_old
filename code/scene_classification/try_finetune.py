@@ -2,9 +2,9 @@
 import wandb
 wandb.login()
 import os
-
+project_name = 'vit_b_snacks_sweeps'
 # Set a single environment variable
-os.environ["WANDB_PROJECT"] = 'vit_b_snacks_sweeps_4e'
+os.environ["WANDB_PROJECT"] = project_name
 os.environ["WANDB_LOG_MODEL"] = 'true'
 #%%
 from transformers import ViTImageProcessor, ViTFeatureExtractor
@@ -13,6 +13,7 @@ cache_dir = '/mnt/cimec-storage6/users/filippo.merlo'
 #cache_dir = '/Users/filippomerlo/Documents/GitHub/SceneReg_project/code/scene_classification/cache_dir'
 #checkpoint = 'openai/clip-vit-large-patch14'
 checkpoint = 'google/vit-base-patch16-224'
+
 processor = ViTImageProcessor.from_pretrained(checkpoint, cache_dir= cache_dir)
 
 from datasets import load_dataset
@@ -100,7 +101,7 @@ parameters_dict = {
         "min": 8,
         "q": 8
     },
-    #"dropout": {"values": [0.3, 0.4, 0.5]},
+    "dropout": {"values": [0.3, 0.4, 0.5]},
     "learning_rate": {"distribution": "uniform", "max": 0.1, "min": 0},
     'weight_decay': {
         'values': [0.0, 0.1, 0.2, 0.3, 0.4, 0.5]
@@ -109,7 +110,7 @@ parameters_dict = {
 
 sweep_config['parameters'] = parameters_dict
 
-sweep_id = wandb.sweep(sweep_config, project='vit_b-snacks-sweeps_4e')
+sweep_id = wandb.sweep(sweep_config, project=project_name)
 
 from transformers import TrainingArguments, Trainer
 
@@ -121,7 +122,7 @@ def train(config=None):
 
     # set training arguments
     training_args = TrainingArguments(
-        output_dir='/mnt/cimec-storage6/users/filippo.merlo/vit_b-sweeps_4e',
+        output_dir=f'/mnt/cimec-storage6/users/filippo.merlo/{project_name}',
 	    report_to='wandb',  # Turn on Weights & Biases logging
         num_train_epochs=config.epochs,
         learning_rate=config.learning_rate,
