@@ -154,7 +154,8 @@ def model_init():
         checkpoint,
         num_labels=len(labels),
         id2label=id2label,
-        label2id=label2id
+        label2id=label2id,
+        cache_dir= '/mnt/cimec-storage6/users/filippo.merlo'
     )
     return vit_model
 
