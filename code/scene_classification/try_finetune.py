@@ -39,8 +39,8 @@ from datasets import load_dataset
 from PIL import Image
 from tqdm import tqdm
 
-#ds = load_dataset("scene_parse_150", cache_dir= '/mnt/cimec-storage6/users/filippo.merlo')
-ds = load_dataset("scene_parse_150")
+ds = load_dataset("scene_parse_150", cache_dir= '/mnt/cimec-storage6/users/filippo.merlo')
+#ds = load_dataset("scene_parse_150")
 #%%
 
 # Remove 'L'
