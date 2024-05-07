@@ -6,23 +6,23 @@ import os
 # Set a single environment variable
 os.environ["WANDB_PROJECT"] = 'vit_snacks_sweeps'
 os.environ["WANDB_LOG_MODEL"] = 'true'
-
 #%%
 from transformers import ViTImageProcessor, ViTFeatureExtractor
 
+cache_dir = '/mnt/cimec-storage6/users/filippo.merlo'
+#cache_dir = '/Users/filippomerlo/Documents/GitHub/SceneReg_project/code/scene_classification/cache_dir'
 #checkpoint = 'openai/clip-vit-large-patch14'
 checkpoint = 'google/vit-base-patch16-224-in21k'
-processor = ViTImageProcessor.from_pretrained(checkpoint, cache_dir= '/mnt/cimec-storage6/users/filippo.merlo')
-feature_extractor = ViTFeatureExtractor.from_pretrained(checkpoint, cache_dir= '/mnt/cimec-storage6/users/filippo.merlo')
-#processor = ViTImageProcessor.from_pretrained(checkpoint)
-#feature_extractor = ViTFeatureExtractor.from_pretrained(checkpoint)
+processor = ViTImageProcessor.from_pretrained(checkpoint, cache_dir= cache_dir)
+feature_extractor = ViTFeatureExtractor.from_pretrained(checkpoint, cache_dir= cache_dir)
 
 from datasets import load_dataset
 from PIL import Image
 from tqdm import tqdm
 
-ds = load_dataset("scene_parse_150", cache_dir= '/mnt/cimec-storage6/users/filippo.merlo')
-#ds = load_dataset("scene_parse_150")
+datasets = load_dataset("scene_parse_150", cache_dir= cache_dir)
+labels = datasets['train'].features['scene_category']
+
 #%%
 
 # Remove 'L'
@@ -47,65 +47,65 @@ ds = load_dataset("scene_parse_150", cache_dir= '/mnt/cimec-storage6/users/filip
 #
 #ds = exclude_l(ds, 'validation')
 #ds = exclude_l(ds, 'train')
+##%%
+## data augmentation transformations
+#from torchvision.transforms import (
+#    Compose,
+#    Normalize,
+#    Resize,
+#    RandomResizedCrop,
+#    RandomHorizontalFlip,
+#    RandomAdjustSharpness,
+#    ToTensor,
+#    ToPILImage
+#)
+#
+## train
+#train_aug_transforms = Compose([
+#    RandomResizedCrop(size=feature_extractor.size),
+#    RandomHorizontalFlip(p=0.5),
+#    RandomAdjustSharpness(sharpness_factor=5, p=0.5),
+#    ToTensor(),
+#    Normalize(mean=feature_extractor.image_mean, std=feature_extractor.image_std),
+#])
+#
+#
+## validation/test
+#valid_aug_transforms = Compose([
+#    Resize(size=(feature_extractor.size, feature_extractor.size)),
+#    ToTensor(),
+#    Normalize(mean=feature_extractor.image_mean, std=feature_extractor.image_std),
+#])
+#
+#def apply_train_aug_transforms(examples):
+#    examples = [train_aug_transforms(img.convert('RGB')) for img in examples['image']]
+#    return examples
+#
+#
+#def apply_valid_aug_transforms(examples):
+#    examples = [valid_aug_transforms(img.convert('RGB')) for img in examples['image']]
+#    return examples
+#
+#
+#datasets['train'].set_transform(apply_train_aug_transforms)
+#datasets['validation'].set_transform(apply_valid_aug_transforms)
+#datasets['test'].set_transform(apply_valid_aug_transforms)
+#datasets_processed = datasets.rename_column('scene_category', 'labels')
+
+
 #%%
 
-# data augmentation transformations
-from torchvision.transforms import (
-    Compose,
-    Normalize,
-    Resize,
-    RandomResizedCrop,
-    RandomHorizontalFlip,
-    RandomAdjustSharpness,
-    ToTensor,
-    ToPILImage
-)
+def transform(example_batch):
+    # Take a list of PIL images and turn them to pixel values
+    inputs = processor([x.convert('RGB') for x in example_batch['image']], return_tensors='pt')
 
-# train
-train_aug_transforms = Compose([
-    RandomResizedCrop(size=feature_extractor.size),
-    RandomHorizontalFlip(p=0.5),
-    RandomAdjustSharpness(sharpness_factor=5, p=0.5),
-    ToTensor(),
-    Normalize(mean=feature_extractor.image_mean, std=feature_extractor.image_std),
-])
+    # Don't forget to include the labels!
+    inputs['labels'] = example_batch['scene_category']
+    return inputs
 
-# validation/test
-valid_aug_transforms = Compose([
-    Resize(size=(feature_extractor.size, feature_extractor.size)),
-    ToTensor(),
-    Normalize(mean=feature_extractor.image_mean, std=feature_extractor.image_std),
-])
-
-def apply_train_aug_transforms(examples):
-  examples['pixel_values'] = [train_aug_transforms(img.convert('RGB')) for img in examples['image']]
-  return examples
-
-
-def apply_valid_aug_transforms(examples):
-  examples['pixel_values'] = [valid_aug_transforms(img.convert('RGB')) for img in examples['image']]
-  return examples
-
-
-ds['train'].set_transform(apply_train_aug_transforms)
-ds['validation'].set_transform(apply_valid_aug_transforms)
-ds['test'].set_transform(apply_valid_aug_transforms)
-datasets_processed = ds.rename_column('scene_category', 'labels')
+datasets_processed = datasets.with_transform(transform)
 
 #%%
-#
-#def transform(example_batch):
-#    # Take a list of PIL images and turn them to pixel values
-#    inputs = processor([x for x in example_batch['image']], return_tensors='pt')
-#
-#    # Don't forget to include the labels!
-#    inputs['labels'] = example_batch['scene_category']
-#    return inputs
-#
-#prepared_ds = ds.with_transform(transform)
-#
-#%%
-
 import torch
 
 def collate_fn(batch):
@@ -119,16 +119,16 @@ import numpy as np
 import evaluate
 
 def compute_metrics(p):
-    metric = evaluate.load("accuracy", cache_dir= '/mnt/cimec-storage6/users/filippo.merlo')
+    metric = evaluate.load("accuracy", cache_dir= cache_dir)
     return metric.compute(predictions=np.argmax(p.predictions, axis=1), references=p.label_ids)
 
 def compute_metrics_fn(eval_preds):
   metrics = dict()
   
-  accuracy_metric = evaluate.load('accuracy', cache_dir= '/mnt/cimec-storage6/users/filippo.merlo')
-  precision_metric = evaluate.load('precision', cache_dir= '/mnt/cimec-storage6/users/filippo.merlo')
-  recall_metric = evaluate.load('recall', cache_dir= '/mnt/cimec-storage6/users/filippo.merlo')
-  f1_metric = evaluate.load('f1', cache_dir= '/mnt/cimec-storage6/users/filippo.merlo')
+  accuracy_metric = evaluate.load('accuracy', cache_dir= cache_dir)
+  precision_metric = evaluate.load('precision', cache_dir= cache_dir)
+  recall_metric = evaluate.load('recall', cache_dir= cache_dir)
+  f1_metric = evaluate.load('f1', cache_dir= cache_dir)
 
 
   logits = eval_preds.predictions
@@ -145,7 +145,6 @@ def compute_metrics_fn(eval_preds):
 # INIT MODEL
 from transformers import ViTForImageClassification
 
-labels = ds['train'].features['scene_category'].names
 id2label = {i: label for i, label in enumerate(labels)}
 label2id = {label: i for i, label in enumerate(labels)}
 
@@ -155,7 +154,7 @@ def model_init():
         num_labels=len(labels),
         id2label=id2label,
         label2id=label2id,
-        cache_dir= '/mnt/cimec-storage6/users/filippo.merlo'
+        cache_dir= cache_dir
     )
     return vit_model
 
