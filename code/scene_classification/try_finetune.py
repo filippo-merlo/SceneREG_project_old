@@ -88,7 +88,7 @@ def model_init():
 ## SWEEPS
 # method
 sweep_config = {
-    'method': 'random',
+    'method': 'bayes',
     "metric": {"goal": "minimize", "name": "loss"}
 }
 
@@ -98,7 +98,7 @@ parameters_dict = {
     "batch_size": {
         "distribution": "q_log_uniform_values",
         "max": 256,
-        "min": 8,
+        "min": 32,
         "q": 8
     },
     "dropout": {"values": [0.3, 0.4, 0.5]},
