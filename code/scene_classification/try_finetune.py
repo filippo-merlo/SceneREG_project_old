@@ -1,21 +1,3 @@
-#%% CUDA
-import torch 
-
-if torch.cuda.is_available():
-    device_count = torch.cuda.device_count()
-    print("Available GPUs:", device_count)
-    for i in range(device_count):
-        print(f"GPU {i}: {torch.cuda.get_device_name(i)}")
-    
-    # Choose the GPU you want to use
-    gpu_index = 2  # Replace 0 with the index of the GPU you want to use
-    torch.cuda.set_device(gpu_index)
-    device = torch.device("cuda")
-    print('CUDA Ok')
-else:
-    print("CUDA not available. Using CPU.")
-    device = torch.device("cpu")
-
 # WANDB
 import wandb
 wandb.login()
@@ -231,7 +213,7 @@ def train(config=None):
     # define training loop
     trainer = Trainer(
         # model,
-        model_init= model.to(device),
+        model_init= model,
         args=training_args,
         data_collator=collate_fn,
         train_dataset=datasets_processed['train'],
