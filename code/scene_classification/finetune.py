@@ -10,13 +10,10 @@ os.environ["WANDB_LOG_MODEL"] = 'true'
 from transformers import ViTImageProcessor, ViTFeatureExtractor
 
 cache_dir = '/mnt/cimec-storage6/users/filippo.merlo'
-
 checkpoint = 'google/vit-base-patch16-224-in21k'
 processor = ViTImageProcessor.from_pretrained(checkpoint, cache_dir= cache_dir)
 
 from datasets import load_dataset
-from PIL import Image
-from tqdm import tqdm
 
 datasets = load_dataset("scene_parse_150", cache_dir= cache_dir)
 labels = datasets['train'].features['scene_category'].names
@@ -79,72 +76,49 @@ def model_init():
     )
     return vit_model
 
-## SWEEPS
-# method
-sweep_config = {
-    'method': 'random'
-}
 
-# hyperparameters
-parameters_dict = {
-    'epochs': {
-        'value': 15
-        },
-    'batch_size': {
-        'values': [32]
-        },
-    'learning_rate': {
-        'distribution': 'log_uniform_values',
-        'min': 2e-5,
-        'max': 2e-5
-    },
-    'weight_decay': {
-        'values': [0.1]
-    },
-}
-
-sweep_config['parameters'] = parameters_dict
-
-sweep_id = wandb.sweep(sweep_config, project=project_name)
 
 from transformers import TrainingArguments, Trainer
 
 
-def train(config=None):
-  with wandb.init(config=config):
-    # set sweep configuration
-    config = wandb.config
 
-    # set training arguments
-    training_args = TrainingArguments(
-        output_dir=f'/mnt/cimec-storage6/users/filippo.merlo/{project_name}',
-	    report_to='wandb',  # Turn on Weights & Biases logging
-        num_train_epochs=15,
-        learning_rate=float(2e-5),
-        weight_decay=0.1,
-        per_device_train_batch_size=32,
-        per_device_eval_batch_size=64,
-        save_strategy='epoch',
-        evaluation_strategy='epoch',
-        logging_strategy='epoch',
-        load_best_model_at_end=True,
-        remove_unused_columns=False,
-        fp16=True
-    )
+# set training arguments
+training_args = TrainingArguments(
+    output_dir=f'/mnt/cimec-storage6/users/filippo.merlo/{project_name}',
+    report_to='wandb',  # Turn on Weights & Biases logging
+    num_train_epochs=15,
+    learning_rate=float(2e-5),
+    weight_decay=0.1,
+    per_device_train_batch_size=32,
+    per_device_eval_batch_size=64,
+    save_strategy='epoch',
+    evaluation_strategy='epoch',
+    logging_strategy='epoch',
+    load_best_model_at_end=True,
+    remove_unused_columns=False,
+    fp16=True
+)
 
-    # define training loop
-    trainer = Trainer(
-        # model,
-        model_init=model_init,
-        args=training_args,
-        data_collator=collate_fn,
-        train_dataset=datasets_processed['train'],
-        eval_dataset=datasets_processed['validation'],
-        compute_metrics=compute_metrics_fn
-    )
+# define training loop
+trainer = Trainer(
+    # model,
+    model_init=model_init,
+    args=training_args,
+    data_collator=collate_fn,
+    train_dataset=datasets_processed['train'],
+    eval_dataset=datasets_processed['validation'],
+    compute_metrics=compute_metrics_fn
+)
 
 
-    # start training loop
-    trainer.train()
+# start training loop
+train_results = trainer.train()
+trainer.save_model()
+trainer.log_metrics("train", train_results.metrics)
+trainer.save_metrics("train", train_results.metrics)
+trainer.save_state()
 
-wandb.agent(sweep_id, train, count=1)
+# Eval
+metrics = trainer.evaluate(datasets['validation'])
+trainer.log_metrics("eval", metrics)
+trainer.save_metrics("eval", metrics)
