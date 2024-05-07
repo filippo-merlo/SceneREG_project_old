@@ -225,6 +225,7 @@ def train(config=None):
     # start training loop
     trainer.train()
 
+wandb.agent(sweep_id, train, count=20)
 #train_results = trainer.train()
 #trainer.save_model()
 #trainer.log_metrics("train", train_results.metrics)
