@@ -2,7 +2,7 @@
 import wandb
 wandb.login()
 import os
-project_name = 'vit_final_finetune'
+project_name = 'vit_final_finetune_2'
 # Set a single environment variable
 os.environ["WANDB_PROJECT"] = project_name
 os.environ["WANDB_LOG_MODEL"] = 'true'
