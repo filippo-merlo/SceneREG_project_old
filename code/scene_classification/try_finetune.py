@@ -88,16 +88,16 @@ def model_init():
 # method
 sweep_config = {
     'method': 'random'
-
+    
 }
 
 # hyperparameters
 parameters_dict = {
     'epochs': {
-        'value': 1
+        'value': 10
         },
     'batch_size': {
-        'values': [8, 16, 32, 64]
+        'values': [8, 16, 32, 64, 128, 256]
         },
     'learning_rate': {
         'distribution': 'log_uniform_values',
@@ -107,6 +107,9 @@ parameters_dict = {
     'weight_decay': {
         'values': [0.0, 0.1, 0.2, 0.3, 0.4, 0.5]
     },
+    "dropout": {"values": [0.3, 0.4, 0.5]},
+    "optimizer": {"values": ["adam", "sgd"]}
+
 }
 
 sweep_config['parameters'] = parameters_dict
@@ -153,4 +156,4 @@ def train(config=None):
     # start training loop
     trainer.train()
 
-wandb.agent(sweep_id, train, count=20)
+wandb.agent(sweep_id, train, count=100)
