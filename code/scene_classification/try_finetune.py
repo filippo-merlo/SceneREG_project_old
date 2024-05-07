@@ -19,9 +19,11 @@ else:
 # WANDB
 import wandb
 wandb.login()
+import os
 
-%env WANDB_PROJECT=vit_snacks_sweeps
-%env WANDB_LOG_MODEL=true
+# Set a single environment variable
+os.environ["WANDB_PROJECT"] = vit_snacks_sweeps
+os.environ["WANDB_LOG_MODEL"] = true
 
 #%%
 from transformers import ViTImageProcessor, ViTFeatureExtractor
@@ -240,7 +242,6 @@ def train(config=None):
 
     # start training loop
     trainer.train()
-
 
 #train_results = trainer.train()
 #trainer.save_model()
