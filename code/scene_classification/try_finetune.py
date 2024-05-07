@@ -87,25 +87,24 @@ def model_init():
 ## SWEEPS
 # method
 sweep_config = {
-    'method': 'bayes'
+    'method': 'bayes',
+    "metric": {"goal": "minimize", "name": "loss"}
 }
 
 # hyperparameters
 parameters_dict = {
-    'epochs': {
-        'value': 4
-        },
-    'batch_size': {
-        'values': [8, 16, 32, 64]
-        },
-    'learning_rate': {
-        'distribution': 'log_uniform_values',
-        'min': 1e-5,
-        'max': 1e-3
+    "epochs": {"value": 1},
+    "batch_size": {
+        "distribution": "q_log_uniform_values",
+        "max": 256,
+        "min": 32,
+        "q": 8,
     },
+    "dropout": {"values": [0.3, 0.4, 0.5]},
+    "learning_rate": {"distribution": "uniform", "max": 0.1, "min": 0},
     'weight_decay': {
         'values': [0.0, 0.1, 0.2, 0.3, 0.4, 0.5]
-    },
+    }
 }
 
 sweep_config['parameters'] = parameters_dict
@@ -122,7 +121,7 @@ def train(config=None):
 
     # set training arguments
     training_args = TrainingArguments(
-        output_dir='/mnt/cimec-storage6/users/filippo.merlo/vit_l-sweeps_4e',
+        output_dir='/mnt/cimec-storage6/users/filippo.merlo/vit-sweeps_4e',
 	    report_to='wandb',  # Turn on Weights & Biases logging
         num_train_epochs=config.epochs,
         learning_rate=config.learning_rate,
@@ -153,4 +152,4 @@ def train(config=None):
     # start training loop
     trainer.train()
 
-wandb.agent(sweep_id, train, count=20)
+wandb.agent(sweep_id, train, count=50)
