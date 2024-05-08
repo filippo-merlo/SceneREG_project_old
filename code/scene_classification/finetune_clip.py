@@ -2,16 +2,18 @@
 import wandb
 wandb.login()
 import os
-project_name = 'vit-large-patch16-224-in21k'
+project_name = 'clip-vit-large-patch14'
 # Set a single environment variable
 os.environ["WANDB_PROJECT"] = project_name
 os.environ["WANDB_LOG_MODEL"] = 'true'
 #%%
-from transformers import ViTImageProcessor
+from transformers import CLIPProcessor, CLIPModel
 
 cache_dir = '/mnt/cimec-storage6/users/filippo.merlo'
-checkpoint = 'google/vit-large-patch16-224-in21k'
-processor = ViTImageProcessor.from_pretrained(checkpoint, cache_dir= cache_dir)
+checkpoint = 'openai/clip-vit-large-patch14'
+
+model = CLIPModel.from_pretrained("openai/clip-vit-large-patch14", cache_dir= cache_dir)
+processor = CLIPProcessor.from_pretrained("openai/clip-vit-large-patch14", cache_dir= cache_dir)
 
 from datasets import load_dataset
 
