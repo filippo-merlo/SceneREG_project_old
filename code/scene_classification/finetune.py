@@ -107,7 +107,6 @@ trainer = Trainer(
     compute_metrics=compute_metrics_fn
 )
 
-
 # start training loop
 train_results = trainer.train()
 trainer.save_model()

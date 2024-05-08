@@ -50,33 +50,29 @@ def compute_metrics_fn(eval_preds):
   recall_metric = evaluate.load('recall', cache_dir= cache_dir)
   f1_metric = evaluate.load('f1', cache_dir= cache_dir)
 
-
-  logits = eval_preds.predictions
-  labels = eval_preds.label_ids
-  preds = np.argmax(logits, axis=-1)  
+  logits = eval_preds.logits
+  predicted_label = logits.argmax(-1).item()
   
-  metrics.update(accuracy_metric.compute(predictions=preds, references=labels))
-  metrics.update(precision_metric.compute(predictions=preds, references=labels, average='weighted'))
-  metrics.update(recall_metric.compute(predictions=preds, references=labels, average='weighted'))
-  metrics.update(f1_metric.compute(predictions=preds, references=labels, average='weighted'))
+  metrics.update(accuracy_metric.compute(predictions=predicted_label, references=labels))
+  metrics.update(precision_metric.compute(predictions=predicted_label, references=labels, average='weighted'))
+  metrics.update(recall_metric.compute(predictions=predicted_label, references=labels, average='weighted'))
+  metrics.update(f1_metric.compute(predictions=predicted_label, references=labels, average='weighted'))
 
   return metrics
 
 # INIT MODEL
-from transformers import ViTForImageClassification
+from transformers import CLIPForImageClassification
 
 id2label = {i: label for i, label in enumerate(labels)}
 label2id = {label: i for i, label in enumerate(labels)}
 
 def model_init():
-    vit_model = ViTForImageClassification.from_pretrained(
+    model = CLIPForImageClassification.from_pretrained(
         checkpoint,
-        num_labels=len(labels),
-        id2label=id2label,
-        label2id=label2id,
+        labels = [int(x) for x in id2label.keys()],
         cache_dir= cache_dir
     )
-    return vit_model
+    return model
 
 
 from transformers import TrainingArguments, Trainer
