@@ -106,10 +106,7 @@ parameters_dict = {
     },
     'weight_decay': {
         'values': [0.0, 0.1, 0.2, 0.3, 0.4, 0.5]
-    },
-    "dropout": {"values": [0.3, 0.4, 0.5]},
-    "optimizer": {"values": ["adam", "sgd"]}
-
+    }
 }
 
 sweep_config['parameters'] = parameters_dict
@@ -132,7 +129,7 @@ def train(config=None):
         learning_rate=config.learning_rate,
         weight_decay=config.weight_decay,
         per_device_train_batch_size=config.batch_size,
-        per_device_eval_batch_size=64,
+        per_device_eval_batch_size=config.batch_size,
         save_strategy='epoch',
         evaluation_strategy='epoch',
         logging_strategy='epoch',

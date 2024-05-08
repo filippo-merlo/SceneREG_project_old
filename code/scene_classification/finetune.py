@@ -2,7 +2,7 @@
 import wandb
 wandb.login()
 import os
-project_name = 'vit_final_finetune_2'
+project_name = 'vit_l_final_finetune_2'
 # Set a single environment variable
 os.environ["WANDB_PROJECT"] = project_name
 os.environ["WANDB_LOG_MODEL"] = 'true'
@@ -10,7 +10,7 @@ os.environ["WANDB_LOG_MODEL"] = 'true'
 from transformers import ViTImageProcessor, ViTFeatureExtractor
 
 cache_dir = '/mnt/cimec-storage6/users/filippo.merlo'
-checkpoint = 'google/vit-base-patch16-224-in21k'
+checkpoint = 'google/vit-large-patch16-224-in21k'
 processor = ViTImageProcessor.from_pretrained(checkpoint, cache_dir= cache_dir)
 
 from datasets import load_dataset
@@ -85,9 +85,9 @@ training_args = TrainingArguments(
     report_to='wandb',  # Turn on Weights & Biases logging
     num_train_epochs=15,
     learning_rate=float(2e-4),
-    weight_decay=0.1,
-    per_device_train_batch_size=32,
-    per_device_eval_batch_size=64,
+    weight_decay=0.4,
+    per_device_train_batch_size=16,
+    per_device_eval_batch_size=16,
     save_strategy='epoch',
     evaluation_strategy='epoch',
     logging_strategy='epoch',
