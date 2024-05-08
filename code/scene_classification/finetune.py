@@ -2,7 +2,7 @@
 import wandb
 wandb.login()
 import os
-project_name = 'vit_l_final_finetune_2'
+project_name = 'clip-vit-large-patch14'
 # Set a single environment variable
 os.environ["WANDB_PROJECT"] = project_name
 os.environ["WANDB_LOG_MODEL"] = 'true'
