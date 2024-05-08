@@ -10,7 +10,8 @@ os.environ["WANDB_LOG_MODEL"] = 'true'
 from transformers import ViTImageProcessor, ViTFeatureExtractor
 
 cache_dir = '/mnt/cimec-storage6/users/filippo.merlo'
-checkpoint = 'google/vit-large-patch16-224-in21k'
+#checkpoint = 'google/vit-large-patch16-224-in21k'
+checkpoint = 'openai/clip-vit-large-patch14'
 processor = ViTImageProcessor.from_pretrained(checkpoint, cache_dir= cache_dir)
 
 from datasets import load_dataset
