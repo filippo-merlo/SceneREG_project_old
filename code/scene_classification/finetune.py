@@ -11,8 +11,8 @@ os.environ["WANDB_LOG_MODEL"] = 'true'
 #%%
 from transformers import ViTImageProcessor
 
-cache_dir = '/mnt/cimec-storage6/users/filippo.merlo'
-#cache_dir = '/Users/filippomerlo/Documents/GitHub/SceneReg_project/code/scene_classification/cache'
+#cache_dir = '/mnt/cimec-storage6/users/filippo.merlo'
+cache_dir = '/Users/filippomerlo/Documents/GitHub/SceneReg_project/code/scene_classification/cache'
 
 checkpoint = 'google/vit-base-patch16-224-in21k'
 processor = ViTImageProcessor.from_pretrained(checkpoint, cache_dir= cache_dir)
@@ -65,8 +65,10 @@ for name, old_id in names2id_filtered.items():
     new_id = new_names2id[name]
     old_2_new_map[old_id] = new_id
 
-final_dataset['train']['scene_category'] = [old_2_new_map[x] for x in final_dataset['train']['scene_category']]
-final_dataset['validation']['scene_category'] = [old_2_new_map[x] for x in final_dataset['validation']['scene_category']]
+new_train_l= [old_2_new_map[x] for x in final_dataset['train']['scene_category']]
+new_valid_l = [old_2_new_map[x] for x in final_dataset['validation']['scene_category']]
+final_dataset['train'] = final_dataset['train'].remove_columns('scene_category').add_column('scene_category', new_train_l)
+final_dataset['validation'] = final_dataset['validation'].remove_columns('scene_category').add_column('scene_category', new_valid_l)
 
 def transform(example_batch):
     # Take a list of PIL images and turn them to pixel values
@@ -127,7 +129,6 @@ def model_init():
     )
     return vit_model
 
-
 from transformers import TrainingArguments, Trainer
 
 # set training arguments
@@ -166,6 +167,6 @@ trainer.save_metrics("train", train_results.metrics)
 trainer.save_state()
 
 # Eval
-metrics = trainer.evaluate(datasets['validation'])
+metrics = trainer.evaluate(final_dataset['validation'])
 trainer.log_metrics("eval", metrics)
 trainer.save_metrics("eval", metrics)
