@@ -19,7 +19,6 @@ from datasets import load_dataset, concatenate_datasets, DatasetDict
 datasets = load_dataset("scene_parse_150", cache_dir= cache_dir)
 
 # Inspect the dataset
-import matplotlib.pyplot as plt
 from collections import Counter
 import numpy as np
 import re
@@ -57,8 +56,8 @@ for k, v in names2id.items():
 
 filter_dataset = datasets.filter(lambda example: example['scene_category'] in names2id_filtered.values())
 
-d3 =  concatenate_datasets([filter_dataset['train'], filter_dataset['validation']])
-splitted_dataset = d3.train_test_split(test_size=0.1, shuffle=True, seed=42)
+ds =  concatenate_datasets([filter_dataset['train'], filter_dataset['validation']])
+splitted_dataset = ds.train_test_split(test_size=0.1, shuffle=True, seed=42)
 final_dataset = DatasetDict()
 final_dataset['train'] = splitted_dataset['train']
 final_dataset['validation'] = splitted_dataset['test']
@@ -108,13 +107,14 @@ def compute_metrics_fn(eval_preds):
 # INIT MODEL
 from transformers import ViTForImageClassification
 
-id2label = {i: label for i, label in enumerate(labels)}
-label2id = {label: i for i, label in enumerate(labels)}
+
+id2label = {str(v):k for k, v in names2id_filtered.items()}
+label2id = names2id_filtered
 
 def model_init():
     vit_model = ViTForImageClassification.from_pretrained(
         checkpoint,
-        num_labels=len(labels),
+        num_labels=len(names2id_filtered.keys()),
         id2label=id2label,
         label2id=label2id,
         cache_dir= cache_dir
