@@ -136,7 +136,7 @@ training_args = TrainingArguments(
     output_dir=f'/mnt/cimec-storage6/users/filippo.merlo/{project_name}',
     report_to='wandb',  # Turn on Weights & Biases logging
     num_train_epochs=10,
-    learning_rate=float(2e-5),
+    learning_rate=float(2e-4),
     weight_decay=0.4,
     per_device_train_batch_size=16,
     per_device_eval_batch_size=16,
@@ -167,6 +167,6 @@ trainer.save_metrics("train", train_results.metrics)
 trainer.save_state()
 
 # Eval
-metrics = trainer.evaluate(final_dataset['validation'])
+metrics = trainer.evaluate(datasets_processed['validation'])
 trainer.log_metrics("eval", metrics)
 trainer.save_metrics("eval", metrics)
