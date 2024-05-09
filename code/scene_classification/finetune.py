@@ -11,11 +11,11 @@ os.environ["WANDB_LOG_MODEL"] = 'true'
 #%%
 from transformers import ViTImageProcessor
 
-#cache_dir = '/mnt/cimec-storage6/users/filippo.merlo'
-cache_dir = '/Users/filippomerlo/Documents/GitHub/SceneReg_project/code/scene_classification/cache'
+cache_dir = '/mnt/cimec-storage6/users/filippo.merlo'
+#cache_dir = '/Users/filippomerlo/Documents/GitHub/SceneReg_project/code/scene_classification/cache'
 
 checkpoint = 'google/vit-base-patch16-224-in21k'
-#processor = ViTImageProcessor.from_pretrained(checkpoint, cache_dir= cache_dir)
+processor = ViTImageProcessor.from_pretrained(checkpoint, cache_dir= cache_dir)
 
 # Load the dataset
 from datasets import load_dataset, concatenate_datasets, DatasetDict, ClassLabel
