@@ -29,9 +29,10 @@ dataset['validation'] = ds['validation']
 # Inspect the dataset
 from collections import Counter
 import numpy as np
-
+#%%
 names = dataset['train'].features['scene_category'].names
 names2id = dict(zip(names, range(len(names))))
+id2names = dict(zip(range(len(names)), names))
 
 # Count the occurrences of each label
 tot_labs = dataset['train']['scene_category'] + dataset['validation']['scene_category']
@@ -39,17 +40,10 @@ counter = Counter(tot_labs)
 # Get the labels
 labels = list(counter.keys())
 
-category_to_keep = dict()
-
+names2id_filtered = dict()
 for label in labels:
     if counter[label] >= 10:
-        category_to_keep[label] = counter[label]
-
-# Filtering Dataset
-names2id_filtered = dict()
-for k, v in names2id.items():
-    if v in category_to_keep.keys():
-        names2id_filtered[k] = v
+        names2id_filtered[id2names[label]] = label
 
 filter_dataset = dataset.filter(lambda example: example['scene_category'] in names2id_filtered.values())
 ds =  concatenate_datasets([filter_dataset['train'], filter_dataset['validation']])
@@ -110,7 +104,9 @@ from transformers import ViTForImageClassification
 
 id2label = {str(v):k for k, v in names2id_filtered.items()}
 label2id = names2id_filtered
+id2label
 
+#%%
 def model_init():
     vit_model = ViTForImageClassification.from_pretrained(
         checkpoint,
