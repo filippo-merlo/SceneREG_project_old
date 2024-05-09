@@ -2,7 +2,7 @@
 import wandb
 wandb.login()
 import os
-project_name = 'google/vit-base-patch16-224-in21k'
+project_name = 'vit-base-patch16-224-in21k'
 # Set a single environment variable
 os.environ["WANDB_PROJECT"] = project_name
 os.environ["WANDB_LOG_MODEL"] = 'true'
@@ -106,7 +106,6 @@ def compute_metrics_fn(eval_preds):
 
 # INIT MODEL
 from transformers import ViTForImageClassification
-
 
 id2label = {str(v):k for k, v in names2id_filtered.items()}
 label2id = names2id_filtered
