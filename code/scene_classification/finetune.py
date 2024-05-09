@@ -11,8 +11,8 @@ os.environ["WANDB_LOG_MODEL"] = 'true'
 #%%
 from transformers import ViTImageProcessor
 
-cache_dir = '/mnt/cimec-storage6/users/filippo.merlo'
-#cache_dir = '/Users/filippomerlo/Documents/GitHub/SceneReg_project/code/scene_classification/cache'
+#cache_dir = '/mnt/cimec-storage6/users/filippo.merlo'
+cache_dir = '/Users/filippomerlo/Documents/GitHub/SceneReg_project/code/scene_classification/cache'
 
 checkpoint = 'google/vit-base-patch16-224-in21k'
 processor = ViTImageProcessor.from_pretrained(checkpoint, cache_dir= cache_dir)
@@ -29,7 +29,7 @@ dataset['validation'] = ds['validation']
 # Inspect the dataset
 from collections import Counter
 import numpy as np
-#%%
+
 names = dataset['train'].features['scene_category'].names
 names2id = dict(zip(names, range(len(names))))
 id2names = dict(zip(range(len(names)), names))
@@ -56,7 +56,18 @@ cl_lab = ClassLabel(names=list(names2id_filtered.keys()), num_classes=len(names2
 final_dataset['train'] =  final_dataset['train'].cast_column('scene_category', cl_lab)
 final_dataset['validation'] = final_dataset['validation'].cast_column('scene_category', cl_lab)
 
-#%%
+new_names2id = dict()
+for i, name in enumerate(names2id_filtered.keys()):
+    new_names2id[name] = i
+
+old_2_new_map = dict()
+for name, old_id in names2id_filtered.items():
+    new_id = new_names2id[name]
+    old_2_new_map[old_id] = new_id
+
+final_dataset['train']['scene_category'] = [old_2_new_map[x] for x in final_dataset['train']['scene_category']]
+final_dataset['validation']['scene_category'] = [old_2_new_map[x] for x in final_dataset['validation']['scene_category']]
+
 def transform(example_batch):
     # Take a list of PIL images and turn them to pixel values
     inputs = processor([x.convert('RGB') for x in example_batch['image']], return_tensors='pt')
@@ -102,11 +113,10 @@ def compute_metrics_fn(eval_preds):
 # INIT MODEL
 from transformers import ViTForImageClassification
 
-id2label = {str(v):k for k, v in names2id_filtered.items()}
-label2id = names2id_filtered
-id2label
+id2label = {str(v):k for k,v in new_names2id.items()}
+label2id = new_names2id
+label_len = len(new_names2id.keys())
 
-#%%
 def model_init():
     vit_model = ViTForImageClassification.from_pretrained(
         checkpoint,
