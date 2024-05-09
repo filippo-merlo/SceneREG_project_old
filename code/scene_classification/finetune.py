@@ -1,67 +1,68 @@
 # WANDB
 import wandb
-wandb.login()
 import os
-project_name = 'vit-base-patch16-224-in21k'
+
+wandb.login()
+
 # Set a single environment variable
+project_name = 'vit-base-patch16-224-in21k'
 os.environ["WANDB_PROJECT"] = project_name
 os.environ["WANDB_LOG_MODEL"] = 'true'
 #%%
 from transformers import ViTImageProcessor
 
-cache_dir = '/mnt/cimec-storage6/users/filippo.merlo'
-#cache_dir = '/Users/filippomerlo/Documents/GitHub/SceneReg_project/code/scene_classification/cache'
+#cache_dir = '/mnt/cimec-storage6/users/filippo.merlo'
+cache_dir = '/Users/filippomerlo/Documents/GitHub/SceneReg_project/code/scene_classification/cache'
 
 checkpoint = 'google/vit-base-patch16-224-in21k'
-processor = ViTImageProcessor.from_pretrained(checkpoint, cache_dir= cache_dir)
+#processor = ViTImageProcessor.from_pretrained(checkpoint, cache_dir= cache_dir)
 
-from datasets import load_dataset, concatenate_datasets, DatasetDict
-datasets = load_dataset("scene_parse_150", cache_dir= cache_dir)
+# Load the dataset
+from datasets import load_dataset, concatenate_datasets, DatasetDict, ClassLabel
+ds = load_dataset("scene_parse_150", cache_dir= cache_dir)
+
+# Remove test split
+dataset = DatasetDict()
+dataset['train'] = ds['train']
+dataset['validation'] = ds['validation']
 
 # Inspect the dataset
 from collections import Counter
 import numpy as np
-import re
 
-names = datasets['train'].features['scene_category'].names
+names = dataset['train'].features['scene_category'].names
 names2id = dict(zip(names, range(len(names))))
-tr_labs = datasets['train']['scene_category']
-v_labs = datasets['validation']['scene_category']
-tot_labs = tr_labs + v_labs 
 
 # Count the occurrences of each label
+tot_labs = dataset['train']['scene_category'] + dataset['validation']['scene_category']
 counter = Counter(tot_labs)
 # Get the labels
 labels = list(counter.keys())
 
-category_frequency = dict()
+category_to_keep = dict()
 
 for label in labels:
-    if label not in category_frequency.keys():
-        category_frequency[label] = counter[label]
-    else:
-        category_frequency[label] += counter[label]
-
-category_to_keep = []
-treshold = 10
-for k, v in category_frequency.items():
-    if v >= treshold:
-        category_to_keep.append(k)
+    if counter[label] >= 10:
+        category_to_keep[label] = counter[label]
 
 # Filtering Dataset
 names2id_filtered = dict()
 for k, v in names2id.items():
-    if v in category_to_keep:
+    if v in category_to_keep.keys():
         names2id_filtered[k] = v
 
-filter_dataset = datasets.filter(lambda example: example['scene_category'] in names2id_filtered.values())
-
+filter_dataset = dataset.filter(lambda example: example['scene_category'] in names2id_filtered.values())
 ds =  concatenate_datasets([filter_dataset['train'], filter_dataset['validation']])
 splitted_dataset = ds.train_test_split(test_size=0.1, shuffle=True, seed=42)
 final_dataset = DatasetDict()
 final_dataset['train'] = splitted_dataset['train']
 final_dataset['validation'] = splitted_dataset['test']
 
+cl_lab = ClassLabel(names=list(names2id_filtered.keys()), num_classes=len(names2id_filtered.keys()))
+final_dataset['train'] =  final_dataset['train'].cast_column('scene_category', cl_lab)
+final_dataset['validation'] = final_dataset['validation'].cast_column('scene_category', cl_lab)
+
+#%%
 def transform(example_batch):
     # Take a list of PIL images and turn them to pixel values
     inputs = processor([x.convert('RGB') for x in example_batch['image']], return_tensors='pt')
