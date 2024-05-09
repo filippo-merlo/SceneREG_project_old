@@ -12,6 +12,8 @@ from transformers import CLIPProcessor, CLIPModel
 cache_dir = '/mnt/cimec-storage6/users/filippo.merlo'
 checkpoint = 'openai/clip-vit-large-patch14'
 
+clip_model, clip_preprocess = clip.load("ViT-B/32", device=device)
+
 model = CLIPModel.from_pretrained("openai/clip-vit-large-patch14", cache_dir= cache_dir)
 processor = CLIPProcessor.from_pretrained("openai/clip-vit-large-patch14", cache_dir= cache_dir)
 

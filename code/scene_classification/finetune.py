@@ -2,7 +2,7 @@
 import wandb
 wandb.login()
 import os
-project_name = 'vit-large-patch16-224-in21k'
+project_name = 'google/vit-base-patch16-224-in21k'
 # Set a single environment variable
 os.environ["WANDB_PROJECT"] = project_name
 os.environ["WANDB_LOG_MODEL"] = 'true'
@@ -10,13 +10,58 @@ os.environ["WANDB_LOG_MODEL"] = 'true'
 from transformers import ViTImageProcessor
 
 cache_dir = '/mnt/cimec-storage6/users/filippo.merlo'
-checkpoint = 'google/vit-large-patch16-224-in21k'
+#cache_dir = '/Users/filippomerlo/Documents/GitHub/SceneReg_project/code/scene_classification/cache'
+
+checkpoint = 'google/vit-base-patch16-224-in21k'
 processor = ViTImageProcessor.from_pretrained(checkpoint, cache_dir= cache_dir)
 
-from datasets import load_dataset
-
+from datasets import load_dataset, concatenate_datasets, DatasetDict
 datasets = load_dataset("scene_parse_150", cache_dir= cache_dir)
-labels = datasets['train'].features['scene_category'].names
+
+# Inspect the dataset
+import matplotlib.pyplot as plt
+from collections import Counter
+import numpy as np
+import re
+
+names = datasets['train'].features['scene_category'].names
+names2id = dict(zip(names, range(len(names))))
+tr_labs = datasets['train']['scene_category']
+v_labs = datasets['validation']['scene_category']
+tot_labs = tr_labs + v_labs 
+
+# Count the occurrences of each label
+counter = Counter(tot_labs)
+# Get the labels
+labels = list(counter.keys())
+
+category_frequency = dict()
+
+for label in labels:
+    if label not in category_frequency.keys():
+        category_frequency[label] = counter[label]
+    else:
+        category_frequency[label] += counter[label]
+
+category_to_keep = []
+treshold = 10
+for k, v in category_frequency.items():
+    if v >= treshold:
+        category_to_keep.append(k)
+
+# Filtering Dataset
+names2id_filtered = dict()
+for k, v in names2id.items():
+    if v in category_to_keep:
+        names2id_filtered[k] = v
+
+filter_dataset = datasets.filter(lambda example: example['scene_category'] in names2id_filtered.values())
+
+d3 =  concatenate_datasets([filter_dataset['train'], filter_dataset['validation']])
+splitted_dataset = d3.train_test_split(test_size=0.1, shuffle=True, seed=42)
+final_dataset = DatasetDict()
+final_dataset['train'] = splitted_dataset['train']
+final_dataset['validation'] = splitted_dataset['test']
 
 def transform(example_batch):
     # Take a list of PIL images and turn them to pixel values
@@ -26,7 +71,7 @@ def transform(example_batch):
     inputs['labels'] = example_batch['scene_category']
     return inputs
 
-datasets_processed = datasets.with_transform(transform)
+datasets_processed = final_dataset.with_transform(transform)
 
 import torch
 
