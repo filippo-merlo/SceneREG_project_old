@@ -10,9 +10,8 @@ else:
 
 class ClipModelWithClassifier():
     def __init__(self, num_labels):
-        self.clip_model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32", device=device)
-        self.processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
-        self.classifier_head = torch.nn.Linear(self.clip_model.config.hidden_size, num_labels, device=device)
+        self.clip_model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
+        self.classifier_head = torch.nn.Linear(in_features=self.clip_model.config.hidden_size, out_features=num_labels)
 
     def forward(self, image):
         inputs = self.processor(
@@ -20,8 +19,8 @@ class ClipModelWithClassifier():
             return_tensors="pt",
             padding=True
         )
-
         features = self.clip_model(**inputs).last_hidden_state[:, 0]
-        logits = self.classifier_head(features)
+        pooled_output = features.pooler_output
+        logits = self.classifier_head(pooled_output)
         probabilities = torch.softmax(logits, dim=-1)
         return probabilities
