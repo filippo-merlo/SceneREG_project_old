@@ -74,6 +74,8 @@ for epoch in range(num_epochs):
         actual = batch['labels']
         input = {k:v.squeeze().to(device) for k, v in batch['image'].items()}
         outputs = model(input)
+        print(actual)
+        print(outputs)
         loss = F.cross_entropy(outputs.to('cpu'), actual)
         print(loss)
         if batch_idx % log_freq == 0:
