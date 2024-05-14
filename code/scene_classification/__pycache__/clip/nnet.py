@@ -1,11 +1,11 @@
 # Define clip model
 from transformers import CLIPVisionModel
 import torch
-
+from conbfig import * 
 class ClipModelWithClassifier(torch.nn.Module):
     def __init__(self, num_labels):
         super(ClipModelWithClassifier, self).__init__()
-        self.clip_model = CLIPVisionModel.from_pretrained("openai/clip-vit-base-patch32")
+        self.clip_model = CLIPVisionModel.from_pretrained(model_checkpoint, cache_dir=cache_dir)
         self.classifier_head = torch.nn.Linear(in_features=768, out_features=num_labels)
 
     def forward(self, input):
