@@ -75,6 +75,7 @@ for epoch in range(num_epochs):
         input = {k:v.squeeze().to(device) for k, v in batch['image'].items()}
         outputs = model(input)
         loss = F.cross_entropy(outputs, actual)
+        print(loss)
         if batch_idx % log_freq == 0:
             wandb.log({"loss": loss})
         loss.backward()
