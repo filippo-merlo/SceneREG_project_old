@@ -74,7 +74,7 @@ for epoch in range(num_epochs):
         actual = batch['labels'].to(device)
         input = {k:v.squeeze().to(device) for k, v in batch['image'].items()}
         outputs = model(input)
-        loss = F.cross_entropy(outputs, torch.argmax(actual, dim=1))
+        loss = F.cross_entropy(outputs, actual)
         if batch_idx % log_freq == 0:
             wandb.log({"loss": loss})
         loss.backward()
@@ -90,6 +90,7 @@ for epoch in range(num_epochs):
         with torch.no_grad():
             outputs = model(input)
         predictions = torch.argmax(outputs, dim=-1)
+        actual = torch.argmax(actual, dim= -1)
         metric.add_batch(predictions=predictions, references=actual)
     metric = metric.compute()
     wandb.log({'acc' : metric})
