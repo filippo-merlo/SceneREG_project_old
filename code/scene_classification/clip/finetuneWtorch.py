@@ -72,7 +72,7 @@ for epoch in range(num_epochs):
         loss.backward()
         optimizer.step()
         #lr_scheduler.step()
-        #optimizer.zero_grad()
+        optimizer.zero_grad()
         progress_bar.update(1)
         if batch_idx % log_freq == 0:
             wandb.log({"loss": loss})
