@@ -1,7 +1,7 @@
 # Define clip model
 from transformers import CLIPVisionModel
 import torch
-from conbfig import * 
+from config import * 
 class ClipModelWithClassifier(torch.nn.Module):
     def __init__(self, num_labels):
         super(ClipModelWithClassifier, self).__init__()
