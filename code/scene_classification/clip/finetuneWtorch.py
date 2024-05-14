@@ -71,10 +71,10 @@ metric = evaluate.load("accuracy", cache_dir=cache_dir)
 for epoch in range(num_epochs):
     model.train()
     for batch_idx, batch in enumerate(train_dataloader):
-        actual = batch['labels'].to(device)
+        actual = batch['labels']
         input = {k:v.squeeze().to(device) for k, v in batch['image'].items()}
         outputs = model(input)
-        loss = F.cross_entropy(outputs, actual)
+        loss = F.cross_entropy(outputs.to('cpu'), actual)
         print(loss)
         if batch_idx % log_freq == 0:
             wandb.log({"loss": loss})
