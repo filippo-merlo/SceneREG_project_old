@@ -31,10 +31,10 @@ lr_scheduler = get_scheduler(
 # specify device to use a GPU if you have access to one. Otherwise, training on a CPU may take several hours instead of a couple of minutes.
 import torch
 
-if torch.backends.mps.is_available():
-   device = torch.device("mps")
-   print('mps Ok')
-elif torch.cuda.is_available():
+#if torch.backends.mps.is_available():
+#   device = torch.device("mps")
+#   print('mps Ok')
+if torch.cuda.is_available():
     device = torch.device('cuda')
     print('cuda Ok')
 else:
