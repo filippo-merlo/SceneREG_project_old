@@ -1,8 +1,11 @@
-#%%
+#%% wandb
+import wandb
+wandb.login()
+
 from nnet import *
 from dataset import CollectionsDataset
 from dataset import *
-
+from config import *
 from torch.utils.data import DataLoader
 
 # Initialize DataLoader
@@ -40,6 +43,11 @@ else:
 
 model.to(device)
 
+# Magic
+wandb.init(project=model_checkpoint.split('/')[1])
+log_freq = 100
+wandb.watch(model, log_freq=log_freq)
+
 # To keep track of your training progress, use the tqdm library to add a progress bar over the number of training steps:
 from tqdm.auto import tqdm
 import torch.nn.functional as F
@@ -48,11 +56,13 @@ progress_bar = tqdm(range(num_training_steps))
 
 model.train()
 for epoch in range(num_epochs):
-    for batch in train_dataloader:
+    for batch_idx, batch in enumerate(train_dataloader):
         actual = batch['labels'].to(device)
         input = {k:v.squeeze().to(device) for k, v in batch['image'].items()}
         outputs = model(input)
         loss = F.cross_entropy(outputs, torch.argmax(actual, dim=1))
+        if batch_idx % log_freq == 0:
+            wandb.log({"loss": loss})
         loss.backward()
         optimizer.step()
         lr_scheduler.step()
@@ -62,7 +72,7 @@ for epoch in range(num_epochs):
 
 import evaluate
 
-metric = evaluate.load("accuracy")
+metric = evaluate.load("accuracy", cache_dir=cache_dir)
 model.eval()
 for batch in eval_dataloader:
     batch = {k: v.to(device) for k, v in batch.items()}
