@@ -44,13 +44,8 @@ import torch
 #if torch.backends.mps.is_available():
 #   device = torch.device("mps")
 #   print('mps Ok')
-if torch.cuda.is_available():
-    device = torch.device('cuda')
-    print('cuda Ok')
-else:
-   device = torch.device('cpu')
-   print ("cpu OK")
-
+#else:
+device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
 model.to(device)
 
 # Magic
@@ -59,7 +54,6 @@ wandb.watch(model, log_freq=log_freq)
 
 # To keep track of your training progress, use the tqdm library to add a progress bar over the number of training steps:
 from tqdm.auto import tqdm
-import torch.nn.functional as F
 
 progress_bar = tqdm(range(num_training_steps))
 
@@ -71,10 +65,10 @@ criterion = torch.nn.CrossEntropyLoss()
 for epoch in range(num_epochs):
     model.train()
     for batch_idx, batch in enumerate(train_dataloader):
-        labels = batch['labels']
+        labels = batch['labels'].to(device)
         input = {k:v.squeeze().to(device) for k, v in batch['image'].items()}
         outputs = model(input)
-        loss = criterion(outputs.to('cpu'), labels)
+        loss = criterion(outputs, labels)
         if batch_idx % log_freq == 0:
             wandb.log({"loss": loss})
         loss.backward()
