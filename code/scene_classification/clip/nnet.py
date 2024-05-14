@@ -23,4 +23,4 @@ class ClipModelWithClassifier(torch.nn.Module):
         x = F.relu(self.fc2(x))
         logits = self.classifier_head(x)
         probabilities = torch.softmax(logits, dim=-1)
-        return probabilities
+        return logits
