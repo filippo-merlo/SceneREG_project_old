@@ -1,12 +1,11 @@
-#%% wandb
-import wandb
-wandb.login()
-
 from nnet import *
 from dataset import CollectionsDataset
 from dataset import *
 from config import *
 from torch.utils.data import DataLoader
+# wandb
+import wandb
+wandb.login()
 
 # Initialize DataLoader
 train_dataloader = DataLoader(CollectionsDataset(final_dataset['train'], processor), shuffle=True, batch_size=8)
