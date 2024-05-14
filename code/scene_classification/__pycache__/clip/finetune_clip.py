@@ -67,7 +67,6 @@ class CollectionsDataset(Dataset):
         self.data = hf_dataset
         self.transform = transform
         self.num_classes = len(self.data.features['scene_category'].names)
-        print(self.num_classes)
     def __len__(self):
         return len(self.data)
 
@@ -83,7 +82,14 @@ class CollectionsDataset(Dataset):
         return {'image': image,
                 'labels': label_tensor
                 }
-    
+
+if torch.backends.mps.is_available():
+   device = torch.device("mps")
+   print('CUDA mps Ok')
+else:
+   device = torch.device('cpu')
+   print ("MPS device not found.")
+
 # Define Training loop 
 
 def train_model(model, 
@@ -104,8 +110,8 @@ def train_model(model,
         for bi, d in enumerate(data_loader):
             inputs = d["image"]
             labels = d["labels"]
-            inputs = inputs.to(device, dtype=torch.float)
-            labels = labels.to(device, dtype=torch.float)
+            inputs = inputs.to(device)
+            labels = labels.to(device)
 
             optimizer.zero_grad()
 
@@ -130,7 +136,6 @@ from torchvision import transforms
 
 # define some re-usable stuff
 BATCH_SIZE = 32
-device = torch.device("cuda:0")
 
 # use the collections dataset class we created earlier
 # Init dataset
@@ -144,10 +149,9 @@ train_dataset = CollectionsDataset(final_dataset, transform=processor)
 train_dataset_loader = torch.utils.data.DataLoader(train_dataset,
                                                    batch_size=BATCH_SIZE,
                                                    shuffle=True,
-                                                   num_workers=4)
+                                                   num_workers=1)
 # push model to device
 model_ft = model_ft.to(device)
-
 
 import torch.optim as optim
 from torch.optim import lr_scheduler
@@ -158,11 +162,12 @@ plist = [
 optimizer_ft = optim.Adam(plist, lr=0.001)
 lr_sch = lr_scheduler.StepLR(optimizer_ft, step_size=10, gamma=0.1)
 
-model_ft = train_model(model_ft,
+if __name__ == '__main__':
+    model_ft = train_model(model_ft,
                        train_dataset_loader,
                        len(train_dataset),
                        optimizer_ft,
                        lr_sch,
                        num_epochs=4)
-
-torch.save(model_ft.state_dict(), "model.bin")
+    
+    torch.save(model_ft.state_dict(), "model.bin")
