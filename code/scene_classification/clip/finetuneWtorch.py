@@ -69,22 +69,22 @@ for epoch in range(num_epochs):
         input = {k:v.squeeze().to(device) for k, v in batch['image'].items()}
         outputs = model(input)
         loss = criterion(outputs, labels)
-        if batch_idx % log_freq == 0:
-            wandb.log({"loss": loss})
         loss.backward()
         optimizer.step()
         #lr_scheduler.step()
         #optimizer.zero_grad()
         progress_bar.update(1)
+        if batch_idx % log_freq == 0:
+            wandb.log({"loss": loss})
 
-    model.eval()
-    for batch in eval_dataloader:
-        actual = batch['labels'].to(device)
-        input = {k:v.squeeze().to(device) for k, v in batch['image'].items()}
-        with torch.no_grad():
-            outputs = model(input)
-        predictions = torch.argmax(outputs, dim=-1)
-        actual = torch.argmax(actual, dim= -1)
-        metric.add_batch(predictions=predictions, references=actual)
-    metric = metric.compute()
-    wandb.log({'acc' : metric})
+model.eval()
+for batch in eval_dataloader:
+    actual = batch['labels'].to(device)
+    input = {k:v.squeeze().to(device) for k, v in batch['image'].items()}
+    with torch.no_grad():
+        outputs = model(input)
+    predictions = torch.argmax(outputs, dim=-1)
+    actual = torch.argmax(actual, dim= -1)
+    metric.add_batch(predictions=predictions, references=actual)
+metric = metric.compute()
+wandb.log({'acc' : metric})
