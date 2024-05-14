@@ -77,14 +77,14 @@ for epoch in range(num_epochs):
         if batch_idx % log_freq == 0:
             wandb.log({"loss": loss})
 
-model.eval()
-for batch in eval_dataloader:
-    actual = batch['labels'].to(device)
-    input = {k:v.squeeze().to(device) for k, v in batch['image'].items()}
-    with torch.no_grad():
-        outputs = model(input)
-    predictions = torch.argmax(outputs, dim=-1)
-    actual = torch.argmax(actual, dim= -1)
-    metric.add_batch(predictions=predictions, references=actual)
-metric = metric.compute()
-wandb.log({'acc' : metric})
+    model.eval()
+    for batch in eval_dataloader:
+        actual = batch['labels'].to(device)
+        input = {k:v.squeeze().to(device) for k, v in batch['image'].items()}
+        with torch.no_grad():
+            outputs = model(input)
+        predictions = torch.argmax(outputs, dim=-1)
+        actual = torch.argmax(actual, dim= -1)
+        metric.add_batch(predictions=predictions, references=actual)
+    metric = metric.compute()
+    wandb.log({'acc' : metric})
