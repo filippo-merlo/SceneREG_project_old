@@ -5,7 +5,7 @@ from config import *
 import torch.nn.functional as F
 class ClipModelWithClassifier(torch.nn.Module):
     def __init__(self, num_labels):
-        super().__init__()
+        super(ClipModelWithClassifier, self).__init__()
         self.clip_model = CLIPVisionModel.from_pretrained(model_checkpoint, cache_dir=cache_dir)
         #for param in self.clip_model.parameters():
         #    param.requires_grad = False
