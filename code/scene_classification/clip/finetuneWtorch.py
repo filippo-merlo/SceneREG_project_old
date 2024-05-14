@@ -54,6 +54,7 @@ wandb.watch(model, log_freq=log_freq)
 
 # To keep track of your training progress, use the tqdm library to add a progress bar over the number of training steps:
 from tqdm.auto import tqdm
+from tqdm import tqdm
 
 progress_bar = tqdm(range(num_training_steps))
 
@@ -65,7 +66,7 @@ criterion = torch.nn.CrossEntropyLoss()
 for epoch in range(num_epochs):
 
     model.eval()
-    for batch in eval_dataloader:
+    for batch in tqdm(eval_dataloader):
         actual = batch['labels'].to(device)
         input = {k:v.squeeze().to(device) for k, v in batch['image'].items()}
         with torch.no_grad():
