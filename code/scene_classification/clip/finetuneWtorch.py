@@ -34,9 +34,9 @@ optimizer = SGD(model.parameters(), lr=wandb.config['lr'], momentum=wandb.config
 from transformers import get_scheduler
 num_epochs = wandb.config['num_epochs']
 num_training_steps = num_epochs * len(train_dataloader)
-lr_scheduler = get_scheduler(
-    name="linear", optimizer=optimizer, num_warmup_steps=100, num_training_steps=num_training_steps
-)
+#lr_scheduler = get_scheduler(
+#    name="linear", optimizer=optimizer, num_warmup_steps=100, num_training_steps=num_training_steps
+#)
 
 # specify device to use a GPU if you have access to one. Otherwise, training on a CPU may take several hours instead of a couple of minutes.
 import torch
@@ -79,7 +79,7 @@ for epoch in range(num_epochs):
             wandb.log({"loss": loss})
         loss.backward()
         optimizer.step()
-        lr_scheduler.step()
+        #lr_scheduler.step()
         #optimizer.zero_grad()
         progress_bar.update(1)
 
