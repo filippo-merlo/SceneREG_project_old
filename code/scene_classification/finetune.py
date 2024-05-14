@@ -42,7 +42,7 @@ labels = list(counter.keys())
 
 names2id_filtered = dict()
 for label in labels:
-    if counter[label] >= 20:
+    if counter[label] >= 10:
         names2id_filtered[id2names[label]] = label
 
 filter_dataset = dataset.filter(lambda example: example['scene_category'] in names2id_filtered.values())
