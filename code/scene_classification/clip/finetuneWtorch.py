@@ -10,8 +10,8 @@ import wandb
 config = {
     "model_checkpoint": model_checkpoint,
     "batch_size": 16,
-    "num_epochs": 4,
-    "lr": 2e-5,
+    "num_epochs": 10,
+    "lr": 2e-4,
     "momentum": 0.9
 }
 
@@ -63,6 +63,19 @@ metric = evaluate.load("accuracy", cache_dir=cache_dir)
 criterion = torch.nn.CrossEntropyLoss()
 
 for epoch in range(num_epochs):
+
+    model.eval()
+    for batch in eval_dataloader:
+        actual = batch['labels'].to(device)
+        input = {k:v.squeeze().to(device) for k, v in batch['image'].items()}
+        with torch.no_grad():
+            outputs = model(input)
+        predictions = torch.argmax(outputs, dim=-1)
+        actual = torch.argmax(actual, dim= -1)
+        metric.add_batch(predictions=predictions, references=actual)
+    metric.compute()
+    wandb.log({'acc' : metric})
+
     model.train()
     for batch_idx, batch in enumerate(train_dataloader):
         labels = batch['labels'].to(device)
@@ -77,14 +90,4 @@ for epoch in range(num_epochs):
         if batch_idx % log_freq == 0:
             wandb.log({"loss": loss})
 
-    model.eval()
-    for batch in eval_dataloader:
-        actual = batch['labels'].to(device)
-        input = {k:v.squeeze().to(device) for k, v in batch['image'].items()}
-        with torch.no_grad():
-            outputs = model(input)
-        predictions = torch.argmax(outputs, dim=-1)
-        actual = torch.argmax(actual, dim= -1)
-        metric.add_batch(predictions=predictions, references=actual)
-    metric = metric.compute()
-    wandb.log({'acc' : metric})
+   
