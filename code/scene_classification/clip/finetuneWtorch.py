@@ -66,24 +66,21 @@ progress_bar = tqdm(range(num_training_steps))
 import evaluate
 
 metric = evaluate.load("accuracy", cache_dir=cache_dir)
-
+criterion = torch.nn.CrossEntropyLoss()
 
 for epoch in range(num_epochs):
     model.train()
     for batch_idx, batch in enumerate(train_dataloader):
-        actual = batch['labels']
+        labels = batch['labels']
         input = {k:v.squeeze().to(device) for k, v in batch['image'].items()}
         outputs = model(input)
-        print(actual)
-        print(outputs)
-        loss = F.cross_entropy(outputs.to('cpu'), actual)
-        print(loss)
+        loss = criterion(outputs.to('cpu'), labels)
         if batch_idx % log_freq == 0:
             wandb.log({"loss": loss})
         loss.backward()
         optimizer.step()
         lr_scheduler.step()
-        optimizer.zero_grad()
+        #optimizer.zero_grad()
         progress_bar.update(1)
 
     model.eval()
