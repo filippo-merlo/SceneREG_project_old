@@ -5,7 +5,7 @@ import os
 wandb.login()
 
 # Set a single environment variable
-project_name = 'vit-base-patch16-224-in21k'
+project_name = 'vit-huge-patch16-224-in21k'
 os.environ["WANDB_PROJECT"] = project_name
 os.environ["WANDB_LOG_MODEL"] = 'true'
 #%%
@@ -14,7 +14,7 @@ from transformers import ViTImageProcessor
 cache_dir = '/mnt/cimec-storage6/users/filippo.merlo'
 #cache_dir = '/Users/filippomerlo/Documents/GitHub/SceneReg_project/code/scene_classification/cache'
 
-checkpoint = 'google/vit-base-patch16-224-in21k'
+checkpoint = 'google/vit-huge-patch14-224-in21k'
 processor = ViTImageProcessor.from_pretrained(checkpoint, cache_dir= cache_dir)
 
 # Load the dataset
