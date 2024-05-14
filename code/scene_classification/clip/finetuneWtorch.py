@@ -74,8 +74,7 @@ for epoch in range(num_epochs):
         predictions = torch.argmax(outputs, dim=-1)
         actual = torch.argmax(actual, dim= -1)
         metric.add_batch(predictions=predictions, references=actual)
-    metric.compute()
-    wandb.log({'acc' : metric})
+    wandb.log({'acc' : metric.compute()['accuracy']})
 
     model.train()
     for batch_idx, batch in enumerate(train_dataloader):
