@@ -26,9 +26,9 @@ n_labels = len(final_dataset['train'].features['scene_category'].names)
 model = ClipModelWithClassifier(n_labels)
 
 # # Create an optimizer and learning rate scheduler to fine-tune the model. Let's use the AdamW optimizer from PyTorch:
-from torch.optim import sgd
+from torch.optim import SGD
 
-optimizer = sgd(model.parameters(), lr=wandb.config['lr'], momentum=wandb.config['momentum'])
+optimizer = SGD(model.parameters(), lr=wandb.config['lr'], momentum=wandb.config['momentum'])
 
 #Create the default learning rate scheduler from Trainer:
 from transformers import get_scheduler
