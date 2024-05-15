@@ -10,7 +10,8 @@ from dataset_prep import *
 from torch.utils.data import DataLoader
 # wandb
 import wandb
-#wandb.login()
+wandb.login()
+model_checkpoint = "openai/clip-vit-base-patch32"
 config = {
     "model_checkpoint": model_checkpoint,
     "batch_size": 16,
@@ -22,6 +23,10 @@ config = {
 wandb.init(project=model_checkpoint.split('/')[1], config=config)
 
 # Initialize DataLoader
+# define preprocess
+from transformers import AutoProcessor
+processor = AutoProcessor.from_pretrained(model_checkpoint, cache_dir=cache_dir)
+
 train_dataloader = DataLoader(CollectionsDataset(final_dataset['train'], processor), shuffle=True, batch_size=wandb.config['batch_size'])
 eval_dataloader = DataLoader(CollectionsDataset(final_dataset['test'], processor), shuffle=True, batch_size=wandb.config['batch_size'])
 

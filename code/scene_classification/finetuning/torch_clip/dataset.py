@@ -1,8 +1,5 @@
 import torch
 from torch.utils.data import Dataset
-import sys
-sys.path.append('./')
-from config import *
 
 # Split the dataset
 ### Define Collection Dataset
@@ -32,9 +29,6 @@ class CollectionsDataset(Dataset):
                 'labels': label_tensor
                 }
 
-# define preprocess
-from transformers import AutoProcessor
-processor = AutoProcessor.from_pretrained(model_checkpoint, cache_dir=cache_dir)
 
 
 

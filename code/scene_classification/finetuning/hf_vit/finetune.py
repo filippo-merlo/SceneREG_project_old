@@ -5,7 +5,7 @@ import os
 wandb.login()
 
 # Set a single environment variable
-project_name = 'vit-huge-patch16-224-in21k'
+project_name = 'places365-224x224-vit-huge'
 os.environ["WANDB_PROJECT"] = project_name
 os.environ["WANDB_LOG_MODEL"] = 'true'
 #%%
@@ -14,7 +14,7 @@ sys.path.append('./')
 from dataset_prep import *
 from config import *
 
-checkpoint = 'google/vit-huge-patch14-224-in21k'
+checkpoint = 'corenet-community/places365-224x224-vit-huge'
 processor = ViTImageProcessor.from_pretrained(checkpoint, cache_dir= cache_dir)
 
 # Load the dataset
