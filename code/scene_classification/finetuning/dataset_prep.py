@@ -28,19 +28,17 @@ for i in tqdm(range(len(dataset))[0:100]):
     outputs = model(**inputs)
     pooled_output = outputs.pooler_output.to('cpu')
     data_points.append(pooled_output)
-#%%
+
 data_points = torch.stack(data_points)
 print(data_points.size())
 
-'''
-#%%
 from sklearn import cluster
 
 # ---------- K-Mean clustering simplified ----------
-clusters = cluster.KMeans(n_clusters=n_clusters).fit(data_points).cluster_centers_
+clusters = cluster.KMeans(n_clusters=10).fit(data_points).cluster_centers_
 print(clusters)
 #%%
-
+'''
 ### FILTER LABELS
 
 # Inspect the dataset and counting the number of occurrences of each label 'name'
