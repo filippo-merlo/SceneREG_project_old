@@ -10,6 +10,29 @@ ds = load_dataset("scene_parse_150", cache_dir= cache_dir)
 dataset = DatasetDict()
 dataset = concatenate_datasets([ds['train'], ds['validation']])
 
+### CLUSTER LABELS
+from transformers import AutoProcessor, CLIPVisionModel
+import torch 
+if torch.backends.mps.is_available():
+   device = torch.device("mps")
+   
+model = CLIPVisionModel.from_pretrained("openai/clip-vit-base-patch32", cache_dir= cache_dir).to(device)
+processor = AutoProcessor.from_pretrained("openai/clip-vit-base-patch32", cache_dir= cache_dir)
+
+#%%
+inputs = processor(images=dataset['image'], return_tensors="pt").to(device)
+outputs = model(**inputs)
+pooled_output = outputs.pooler_output
+#%%
+print(pooled_output.shape())
+#%%
+from sklearn import cluster
+
+# ---------- K-Mean clustering simplified ----------
+clusters = cluster.KMeans(n_clusters=n_clusters).fit(data_points).cluster_centers_
+print(clusters)
+#%%
+
 ### FILTER LABELS
 
 # Inspect the dataset and counting the number of occurrences of each label 'name'
