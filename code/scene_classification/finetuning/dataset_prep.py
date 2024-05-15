@@ -29,7 +29,7 @@ for i in tqdm(range(len(dataset))[0:100]):
     pooled_output = outputs.pooler_output.to('cpu')
     data_points.append(pooled_output)
 
-data_points = torch.stack(data_points).detach().numpy()
+data_points = torch.stack(data_points).squeeze().detach().numpy()
 print(data_points.shape)
 
 from sklearn import cluster
