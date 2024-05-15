@@ -30,7 +30,7 @@ for i in tqdm(range(len(dataset))[0:10]):
     torch.cat((data_points, pooled_output), dim=0)
 
 #%%
-print(data_points.shape())
+print(data_points.size())
 
 '''
 #%%
