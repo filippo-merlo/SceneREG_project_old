@@ -21,11 +21,15 @@ model = CLIPVisionModel.from_pretrained("openai/clip-vit-base-patch32", cache_di
 processor = AutoProcessor.from_pretrained("openai/clip-vit-base-patch32", cache_dir= cache_dir)
 
 #%%
-inputs = processor(images=dataset['image'], return_tensors="pt").to(device)
-outputs = model(**inputs)
-pooled_output = outputs.pooler_output
+data_points = torch.tensor([])
+for i in len(dataset):
+    inputs = processor(images=dataset[i]['image'], return_tensors="pt").to(device)
+    outputs = model(**inputs)
+    pooled_output = outputs.pooler_output.to('cpu')
+    torch.cat((data_points, pooled_output), dim=0)
+
 #%%
-print(pooled_output.shape())
+print(data_points.shape())
 
 '''
 #%%
