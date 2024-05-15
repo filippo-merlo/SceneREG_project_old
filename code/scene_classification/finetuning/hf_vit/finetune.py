@@ -11,7 +11,7 @@ os.environ["WANDB_LOG_MODEL"] = 'true'
 #%%
 from transformers import ViTImageProcessor
 import sys
-sys.path.append('./')
+sys.path.append('../')
 from dataset_prep import *
 from config import *
 
