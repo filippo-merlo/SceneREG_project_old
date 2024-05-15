@@ -13,8 +13,9 @@ dataset = concatenate_datasets([ds['train'], ds['validation']])
 ### CLUSTER LABELS
 from transformers import AutoProcessor, CLIPVisionModel
 import torch 
-if torch.backends.mps.is_available():
-   device = torch.device("mps")
+
+# cuda 
+device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
    
 model = CLIPVisionModel.from_pretrained("openai/clip-vit-base-patch32", cache_dir= cache_dir).to(device)
 processor = AutoProcessor.from_pretrained("openai/clip-vit-base-patch32", cache_dir= cache_dir)
@@ -25,6 +26,8 @@ outputs = model(**inputs)
 pooled_output = outputs.pooler_output
 #%%
 print(pooled_output.shape())
+
+'''
 #%%
 from sklearn import cluster
 
@@ -81,3 +84,4 @@ final_dataset = filter_dataset.remove_columns('scene_category').add_column('scen
 class_labels = ClassLabel(names=list(names2id_filtered.keys()), num_classes=len(names2id_filtered.keys()))
 final_dataset =  final_dataset.cast_column('scene_category', class_labels)
 final_dataset = final_dataset.train_test_split(test_size=0.1)
+'''
