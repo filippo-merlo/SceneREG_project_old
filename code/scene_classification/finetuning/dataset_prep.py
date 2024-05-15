@@ -23,7 +23,7 @@ processor = AutoProcessor.from_pretrained("openai/clip-vit-base-patch32", cache_
 #%%
 from tqdm import tqdm
 data_points = torch.tensor([])
-for i in tqdm(len(dataset)):
+for i in tqdm(range(len(dataset))):
     inputs = processor(images=dataset[i]['image'], return_tensors="pt").to(device)
     outputs = model(**inputs)
     pooled_output = outputs.pooler_output.to('cpu')
