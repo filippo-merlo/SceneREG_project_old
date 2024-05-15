@@ -10,6 +10,7 @@ os.environ["WANDB_PROJECT"] = project_name
 os.environ["WANDB_LOG_MODEL"] = 'true'
 #%%
 from transformers import ViTImageProcessor
+import sys
 sys.path.append('./')
 from dataset_prep import *
 from config import *
