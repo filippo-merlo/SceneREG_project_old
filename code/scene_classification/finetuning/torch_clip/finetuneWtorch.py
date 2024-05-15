@@ -11,7 +11,7 @@ config = {
     "model_checkpoint": model_checkpoint,
     "batch_size": 16,
     "num_epochs": 10,
-    "lr": 2e-4,
+    "lr": 1e-3,
     "momentum": 0.9
 }
 

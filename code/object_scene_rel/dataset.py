@@ -1,6 +1,6 @@
 #%%
 from config import *
-from utils import *
+from code.object_scene_rel.utils import *
 from pprint import pprint
 import json
 from tqdm import tqdm

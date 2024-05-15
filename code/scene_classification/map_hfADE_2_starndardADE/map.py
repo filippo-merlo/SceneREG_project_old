@@ -1,6 +1,4 @@
 #%%
-from dataset import Dataset
-from pprint import pprint
 # load ade20k
 import pickle as pkl 
 ade_path = '/Users/filippomerlo/Desktop/Datasets/ADE20K_2021_17_01/index_ade20k.pkl'
@@ -138,5 +136,3 @@ with open('category_to_scene.json', 'w') as f:
 
 with open('scene_to_category.json', 'w') as f:
     json.dump(scene_to_category, f, indent=4)
-
-# %%
