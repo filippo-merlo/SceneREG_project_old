@@ -46,7 +46,7 @@ with torch.no_grad():
         captions[c_l] = clip_model.get_text_features(**txt_inputs).to('cpu')
 
     # preprocess and embed imgs and labels
-    for i in tqdm(range(len(filter_dataset))):
+    for i in tqdm(range(len(filter_dataset))[0:10]):
         v_inputs = processor(images=filter_dataset[i]['image'], return_tensors="pt").to(device)
         image_embeds = clip_model.get_image_features(**v_inputs).to('cpu')
         data_points.append(image_embeds)
