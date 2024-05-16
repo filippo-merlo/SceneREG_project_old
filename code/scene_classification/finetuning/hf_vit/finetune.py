@@ -71,11 +71,12 @@ from transformers import ViTForImageClassification
 id2label = {str(v):k for k,v in new_names2id.items()}
 label2id = new_names2id
 label_len = len(new_names2id.keys())
+print(label_len)
 
 def model_init():
     vit_model = ViTForImageClassification.from_pretrained(
         checkpoint,
-        num_labels=len(names2id_filtered.keys()),
+        num_labels=label_len,
         id2label=id2label,
         label2id=label2id,
         cache_dir= cache_dir
