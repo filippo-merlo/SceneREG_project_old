@@ -95,7 +95,7 @@ with open('new_labels.json', 'w') as f:
 '''
 import json
 
-with open('/home/filippo.merlo/SceneREG_project/code/scene_classification/finetuning/new_labels.json', 'r') as f:
+with open('/home/filippo.merlo/SceneREG_project/code/scene_classification/finetuning/hf_vit/new_labels.json', 'r') as f:
     new_labels = json.load(f)
 new_scene_categories = [c for i, c in enumerate(new_labels['scene_labels']) if i in new_labels['scene_ids']]
 new_label_ids = new_labels['img_label_ass']
