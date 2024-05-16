@@ -24,6 +24,7 @@ tokenizer = AutoTokenizer.from_pretrained("openai/clip-vit-base-patch32", cache_
 
 #%%
 from tqdm import tqdm
+import numpy as np 
 data_points = []
 captions = dict()
 
@@ -47,15 +48,15 @@ from sklearn import cluster
 # ---------- K-Mean clustering simplified ----------
 clusters = cluster.KMeans(n_clusters=10).fit(data_points)
 print(clusters.cluster_centers_.shape) # here there are the centroids (k, 768)
-print(clusters.labels_)
 scene_labels = list(captions.keys())
 labels_emb = torch.stack(list(captions.values())).squeeze().detach().numpy()
-print('labels_emb:',labels_emb.shape)
 # find the labels most similar to the centroids
 from sklearn.metrics.pairwise import cosine_similarity
 cosine_sim = cosine_similarity(clusters.cluster_centers_, labels_emb)
 print(cosine_sim.shape)
-
+idxs = np.argmax(cosine_sim, axis=1)
+for idx in idxs:
+    print(scene_labels[idx])
 #%%
 '''
 ### FILTER LABELS
