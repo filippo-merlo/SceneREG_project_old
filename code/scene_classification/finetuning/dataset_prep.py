@@ -10,7 +10,7 @@ ds = load_dataset("scene_parse_150", cache_dir= cache_dir)
 dataset = DatasetDict()
 dataset = concatenate_datasets([ds['train'], ds['validation']])
 
-print(dataset)
+print(dataset.features)
 
 ### CLUSTER LABELS
 from transformers import AutoProcessor, AutoTokenizer, CLIPVisionModel, CLIPTextModel
