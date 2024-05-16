@@ -72,12 +72,8 @@ idxs = np.argmax(cosine_sim, axis=1)
 new_labels = {
     'scene_labels' : list(scene_labels),
     'scene_ids' : [int(i) for i in idxs],
-    'img_label_ass' : list(img_label_ass)
+    'img_label_ass' : [int(i) for i in img_label_ass]
 }
-from pprint import pprint
-print(type(scene_labels))
-print(idxs)
-print(img_label_ass)
 
 # save new_labels dict in json format
 import json 
