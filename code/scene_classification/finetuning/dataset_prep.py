@@ -18,9 +18,9 @@ import torch
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
    
 v_model = CLIPVisionModel.from_pretrained("openai/clip-vit-base-patch32", cache_dir= cache_dir).to(device)
-txt_model = CLIPTextModel.from_pretrained("openai/clip-vit-base-patch32").to(device)
+txt_model = CLIPTextModel.from_pretrained("openai/clip-vit-base-patch32", cache_dir= cache_dir).to(device)
 processor = AutoProcessor.from_pretrained("openai/clip-vit-base-patch32", cache_dir= cache_dir)
-tokenizer = AutoTokenizer.from_pretrained("openai/clip-vit-base-patch32")
+tokenizer = AutoTokenizer.from_pretrained("openai/clip-vit-base-patch32", cache_dir= cache_dir)
 
 #%%
 from tqdm import tqdm
