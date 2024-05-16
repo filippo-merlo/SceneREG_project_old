@@ -58,6 +58,7 @@ from sklearn import cluster
 # ---------- K-Mean clustering simplified ----------
 clusters = cluster.KMeans(n_clusters=100).fit(data_points)
 print(clusters.cluster_centers_.shape) # here there are the centroids (k, 768)
+img_label_ass =  clusters.labels_
 scene_labels = list(captions.keys())
 labels_emb = torch.stack(list(captions.values())).squeeze().detach().numpy()
 # find the labels most similar to the centroids
@@ -72,7 +73,7 @@ for idx in idxs:
 new_labels = {
     'scene_labels' : scene_labels,
     'scene_ids' : idxs,
-    'img_label_ass' : labels_emb
+    'img_label_ass' : img_label_ass
 }
 
 # save new_labels dict in json format
