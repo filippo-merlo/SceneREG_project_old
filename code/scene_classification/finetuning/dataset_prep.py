@@ -107,7 +107,7 @@ final_dataset = filter_dataset.remove_columns('scene_category').add_column('scen
 class_labels = ClassLabel(names=new_scene_categories, num_classes=len(new_scene_categories))
 final_dataset =  final_dataset.cast_column('scene_category', class_labels)
 final_dataset = final_dataset.train_test_split(test_size=0.1)
-
+new_names2id = dict(zip(new_scene_categories,enumerate(new_scene_categories)))
 '''
 ### FILTER LABELS
 
