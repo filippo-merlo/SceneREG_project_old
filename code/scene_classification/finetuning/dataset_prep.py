@@ -75,6 +75,10 @@ new_labels = {
     'scene_ids' : list(idxs),
     'img_label_ass' : list(img_label_ass)
 }
+print(new_labels)
+print(list(scene_labels))
+print(list(idxs))
+print(list(img_label_ass))
 
 # save new_labels dict in json format
 import json 
