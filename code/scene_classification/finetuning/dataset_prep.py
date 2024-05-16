@@ -11,33 +11,50 @@ dataset = DatasetDict()
 dataset = concatenate_datasets([ds['train'], ds['validation']])
 
 ### CLUSTER LABELS
-from transformers import AutoProcessor, CLIPVisionModel
+from transformers import AutoProcessor, AutoTokenizer, CLIPVisionModel, CLIPTextModel
 import torch 
 
 # cuda 
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
    
-model = CLIPVisionModel.from_pretrained("openai/clip-vit-base-patch32", cache_dir= cache_dir).to(device)
+v_model = CLIPVisionModel.from_pretrained("openai/clip-vit-base-patch32", cache_dir= cache_dir).to(device)
+txt_model = CLIPTextModel.from_pretrained("openai/clip-vit-base-patch32").to(device)
 processor = AutoProcessor.from_pretrained("openai/clip-vit-base-patch32", cache_dir= cache_dir)
+tokenizer = AutoTokenizer.from_pretrained("openai/clip-vit-base-patch32")
 
 #%%
 from tqdm import tqdm
 data_points = []
+captions = dict()
+
+# preprocess and embed imgs and labels
 for i in tqdm(range(len(dataset))[0:100]):
-    inputs = processor(images=dataset[i]['image'], return_tensors="pt").to(device)
-    outputs = model(**inputs)
-    pooled_output = outputs.pooler_output.to('cpu')
+    v_inputs = processor(images=dataset[i]['image'], return_tensors="pt").to(device)
+    if dataset[i]['scene_description'] not in captions:
+        txt_inputs = tokenizer(f'the picture of a {dataset[i]['scene_description'].replace('_', ' ')}', return_tensors="pt").to(device)
+        txt_outputs = txt_model(**txt_inputs)
+        captions[dataset[i]['scene_description']] = txt_outputs.pooler_output.to('cpu')
+    v_outputs = v_model(**v_inputs)
+    pooled_output = v_outputs.pooler_output.to('cpu')
+
     data_points.append(pooled_output)
 
 data_points = torch.stack(data_points).squeeze().detach().numpy()
-print(data_points.shape)
+
 
 from sklearn import cluster
-
 # ---------- K-Mean clustering simplified ----------
 clusters = cluster.KMeans(n_clusters=10).fit(data_points)
-print(clusters.cluster_centers_.shape)
+print(clusters.cluster_centers_.shape) # here there are the centroids (k, 768)
 print(clusters.labels_)
+scene_labels = list(captions.keys())
+labels_emb = torch.stack(list(captions.values())).squeeze().detach().numpy()
+print('labels_emb:',labels_emb.shape)
+# find the labels most similar to the centroids
+from sklearn.metrics.pairwise import cosine_similarity
+cosine_sim = cosine_similarity(clusters.cluster_centers_, labels_emb)
+print(cosine_sim.shape)
+
 #%%
 '''
 ### FILTER LABELS
