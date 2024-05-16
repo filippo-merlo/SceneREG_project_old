@@ -46,7 +46,7 @@ with torch.no_grad():
         captions[c_l] = clip_model.get_text_features(**txt_inputs).to('cpu')
 
     # preprocess and embed imgs and labels
-    for i in tqdm(range(len(filter_dataset))[0:10]):
+    for i in tqdm(range(len(filter_dataset))[0:100]):
         v_inputs = processor(images=filter_dataset[i]['image'], return_tensors="pt").to(device)
         image_embeds = clip_model.get_image_features(**v_inputs).to('cpu')
         data_points.append(image_embeds)
@@ -56,7 +56,7 @@ with torch.no_grad():
 
 from sklearn import cluster
 # ---------- K-Mean clustering simplified ----------
-clusters = cluster.KMeans(n_clusters=100).fit(data_points)
+clusters = cluster.KMeans(n_clusters=10).fit(data_points)
 #print(clusters.cluster_centers_.shape) # here there are the centroids (k, 768)
 img_label_ass =  clusters.labels_
 print(img_label_ass)
