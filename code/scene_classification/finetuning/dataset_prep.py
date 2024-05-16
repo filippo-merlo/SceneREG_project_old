@@ -23,19 +23,31 @@ processor = AutoProcessor.from_pretrained("openai/clip-vit-base-patch32", cache_
 tokenizer = AutoTokenizer.from_pretrained("openai/clip-vit-base-patch32", cache_dir= cache_dir)
 
 #%%
+# Remove misc
+scene_names = list(dataset.features['scene_category'].names)
+names2id = dict(zip(scene_names, range(len(scene_names))))
+names2id_filtered = dict()
+for label in scene_names:
+    if label == 'misc':
+        continue
+    else:
+        names2id_filtered[label] = names2id[label]
+filter_dataset = dataset.filter(lambda example: example['scene_category'] in names2id_filtered.values())
+
+
 from tqdm import tqdm
 import numpy as np 
 data_points = []
 captions = dict()
 
-for c_l in list(dataset.features['scene_category'].names):
+for c_l in scene_names:
     txt_inputs = tokenizer(f'the picture of a {c_l.replace('_', ' ')}', return_tensors="pt").to(device)
     txt_outputs = txt_model(**txt_inputs)
     captions[c_l] = txt_outputs.text_embeds.to('cpu')
 
 # preprocess and embed imgs and labels
-for i in tqdm(range(len(dataset))):
-    v_inputs = processor(images=dataset[i]['image'], return_tensors="pt").to(device)
+for i in tqdm(range(len(filter_dataset))):
+    v_inputs = processor(images=filter_dataset[i]['image'], return_tensors="pt").to(device)
     v_outputs = v_model(**v_inputs)
     image_embeds = v_outputs.image_embeds.to('cpu')
 
@@ -57,12 +69,26 @@ print(cosine_sim.shape)
 idxs = np.argmax(cosine_sim, axis=1)
 for idx in idxs:
     print(scene_labels[idx])
+
+# save the labels
+new_labels = {
+    'scene_labels' : scene_labels,
+    'scene_ids' : idxs,
+    'img_label_ass' : labels_emb
+}
+
+# save new_labels dict in json format
+import json 
+with open('new_labels.json', 'w') as f:
+    json.dump(new_labels, f)
+
 #%%
 '''
 ### FILTER LABELS
 
 # Inspect the dataset and counting the number of occurrences of each label 'name'
 from collections import Counter
+import json
 
 names = dataset.features['scene_category'].names
 id2names = dict(zip(range(len(names)), names))
