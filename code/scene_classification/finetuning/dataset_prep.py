@@ -27,13 +27,14 @@ from tqdm import tqdm
 data_points = []
 captions = dict()
 
+for c_l in dataset.features['scene_description'].names:
+    txt_inputs = tokenizer(f'the picture of a {c_l.replace('_', ' ')}', return_tensors="pt").to(device)
+    txt_outputs = txt_model(**txt_inputs)
+    captions[c_l] = txt_outputs.pooler_output.to('cpu')
+
 # preprocess and embed imgs and labels
 for i in tqdm(range(len(dataset))[0:100]):
     v_inputs = processor(images=dataset[i]['image'], return_tensors="pt").to(device)
-    if dataset[i]['scene_description'] not in captions:
-        txt_inputs = tokenizer(f'the picture of a {dataset[i]['scene_description'].replace('_', ' ')}', return_tensors="pt").to(device)
-        txt_outputs = txt_model(**txt_inputs)
-        captions[dataset[i]['scene_description']] = txt_outputs.pooler_output.to('cpu')
     v_outputs = v_model(**v_inputs)
     pooled_output = v_outputs.pooler_output.to('cpu')
 
