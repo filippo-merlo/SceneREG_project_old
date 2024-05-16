@@ -94,8 +94,8 @@ with open('new_labels.json', 'w') as f:
 
 '''
 import json
-
-with open('./new_labels.json', 'r') as f:
+import os 
+with open(os.path.join(os.getcwd(),'new_labels.json'), 'r') as f:
     new_labels = json.load(f)
 print(new_labels['scene_ids'])
 new_scene_categories = [c for i, c in enumerate(new_labels['scene_labels']) if i in new_labels['scene_ids']]
