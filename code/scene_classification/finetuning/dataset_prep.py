@@ -10,7 +10,7 @@ ds = load_dataset("scene_parse_150", cache_dir= cache_dir)
 dataset = DatasetDict()
 dataset = concatenate_datasets([ds['train'], ds['validation']])
 
-print(dataset.features)
+print(dataset.features['scene_category'].names)
 
 ### CLUSTER LABELS
 from transformers import AutoProcessor, AutoTokenizer, CLIPVisionModel, CLIPTextModel
@@ -29,7 +29,7 @@ from tqdm import tqdm
 data_points = []
 captions = dict()
 
-for c_l in set(dataset['scene_category']):
+for c_l in list(dataset.features['scene_category'].names):
     txt_inputs = tokenizer(f'the picture of a {c_l.replace('_', ' ')}', return_tensors="pt").to(device)
     txt_outputs = txt_model(**txt_inputs)
     captions[c_l] = txt_outputs.pooler_output.to('cpu')
