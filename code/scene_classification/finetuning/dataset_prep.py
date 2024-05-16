@@ -11,13 +11,13 @@ dataset = DatasetDict()
 dataset = concatenate_datasets([ds['train'], ds['validation']])
 
 ### CLUSTER LABELS
-from transformers import AutoProcessor, AutoTokenizer, AutoProcessor
+from transformers import AutoProcessor, AutoTokenizer, CLIPModel
 import torch
 
 # cuda 
 device = torch.device('cuda:1') if torch.cuda.is_available() else torch.device('cpu')
    
-clip_model = AutoProcessor.from_pretrained("openai/clip-vit-base-patch32", cache_dir= cache_dir).to(device)
+clip_model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32", cache_dir= cache_dir).to(device)
 #txt_model = CLIPTextModelWithProjection.from_pretrained("openai/clip-vit-base-patch32", cache_dir= cache_dir).to(device)
 processor = AutoProcessor.from_pretrained("openai/clip-vit-base-patch32", cache_dir= cache_dir)
 tokenizer = AutoTokenizer.from_pretrained("openai/clip-vit-base-patch32", cache_dir= cache_dir)
