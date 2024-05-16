@@ -12,7 +12,7 @@ dataset = concatenate_datasets([ds['train'], ds['validation']])
 
 ### CLUSTER LABELS
 from transformers import AutoProcessor, AutoTokenizer, AutoProcessor
-
+import torch
 
 # cuda 
 device = torch.device('cuda:1') if torch.cuda.is_available() else torch.device('cpu')
