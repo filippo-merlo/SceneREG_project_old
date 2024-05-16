@@ -40,17 +40,18 @@ import numpy as np
 data_points = []
 captions = dict()
 
-for c_l in scene_names:
-    txt_inputs = tokenizer(f'the picture of a {c_l.replace('_', ' ')}', return_tensors="pt").to(device)
-    captions[c_l] = clip_model.get_text_features(**txt_inputs).to('cpu')
+with torch.no_grad():
+    for c_l in scene_names:
+        txt_inputs = tokenizer(f'the picture of a {c_l.replace('_', ' ')}', return_tensors="pt").to(device)
+        captions[c_l] = clip_model.get_text_features(**txt_inputs).to('cpu')
 
-# preprocess and embed imgs and labels
-for i in tqdm(range(len(filter_dataset))):
-    v_inputs = processor(images=filter_dataset[i]['image'], return_tensors="pt").to(device)
-    image_embeds = clip_model.get_image_features(**v_inputs).to('cpu')
-    data_points.append(image_embeds)
+    # preprocess and embed imgs and labels
+    for i in tqdm(range(len(filter_dataset))):
+        v_inputs = processor(images=filter_dataset[i]['image'], return_tensors="pt").to(device)
+        image_embeds = clip_model.get_image_features(**v_inputs).to('cpu')
+        data_points.append(image_embeds)
 
-data_points = torch.stack(data_points).squeeze().detach().numpy()
+    data_points = torch.stack(data_points).squeeze().detach().numpy()
 
 
 from sklearn import cluster
