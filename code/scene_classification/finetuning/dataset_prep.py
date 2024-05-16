@@ -72,13 +72,9 @@ for idx in idxs:
 # save the labels
 new_labels = {
     'scene_labels' : list(scene_labels),
-    'scene_ids' : list(idxs),
+    'scene_ids' : [int(i) for i in idxs],
     'img_label_ass' : list(img_label_ass)
 }
-print(new_labels)
-print(list(scene_labels))
-print(list(idxs))
-print(list(img_label_ass))
 
 # save new_labels dict in json format
 import json 
