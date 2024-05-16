@@ -10,6 +10,19 @@ ds = load_dataset("scene_parse_150", cache_dir= cache_dir)
 dataset = DatasetDict()
 dataset = concatenate_datasets([ds['train'], ds['validation']])
 
+# Remove misc
+scene_names = list(dataset.features['scene_category'].names)
+names2id = dict(zip(scene_names, range(len(scene_names))))
+names2id_filtered = dict()
+for label in scene_names:
+    if label == 'misc':
+        continue
+    else:
+        names2id_filtered[label] = names2id[label]
+filter_dataset = dataset.filter(lambda example: example['scene_category'] in names2id_filtered.values())
+
+# ALREADY DONE; JUST IMPORT THE DICT WITH NEW LABLES
+'''
 ### CLUSTER LABELS
 from transformers import AutoProcessor, AutoTokenizer, CLIPModel
 import torch
@@ -22,7 +35,7 @@ clip_model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32", cache_dir
 processor = AutoProcessor.from_pretrained("openai/clip-vit-base-patch32", cache_dir= cache_dir)
 tokenizer = AutoTokenizer.from_pretrained("openai/clip-vit-base-patch32", cache_dir= cache_dir)
 
-#%%
+
 # Remove misc
 scene_names = list(dataset.features['scene_category'].names)
 names2id = dict(zip(scene_names, range(len(scene_names))))
@@ -64,7 +77,6 @@ labels_emb = torch.stack(list(captions.values())).squeeze().detach().numpy()
 # find the labels most similar to the centroids
 from sklearn.metrics.pairwise import cosine_similarity
 cosine_sim = cosine_similarity(clusters.cluster_centers_, labels_emb)
-print(cosine_sim.shape)
 idxs = np.argmax(cosine_sim, axis=1)
 
 
@@ -80,7 +92,21 @@ import json
 with open('new_labels.json', 'w') as f:
     json.dump(new_labels, f)
 
-#%%
+'''
+import json
+with open('new_labels.json', 'r') as f:
+    new_labels = json.load(f)
+
+new_scene_categories = new_labels['scene_labels'][new_labels['scene_ids']]
+new_label_ids = new_labels['img_label_ass']
+
+final_dataset = filter_dataset.remove_columns('scene_category').add_column('scene_category', new_label_ids)
+
+# Redefine class labels
+class_labels = ClassLabel(names=new_scene_categories, num_classes=len(new_scene_categories))
+final_dataset =  final_dataset.cast_column('scene_category', class_labels)
+final_dataset = final_dataset.train_test_split(test_size=0.1)
+final_dataset   
 '''
 ### FILTER LABELS
 
