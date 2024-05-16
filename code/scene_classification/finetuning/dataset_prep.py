@@ -11,14 +11,14 @@ dataset = DatasetDict()
 dataset = concatenate_datasets([ds['train'], ds['validation']])
 
 ### CLUSTER LABELS
-from transformers import AutoProcessor, AutoTokenizer, CLIPVisionModelWithProjection, CLIPTextModelWithProjection
-import torch 
+from transformers import AutoProcessor, AutoTokenizer, AutoProcessor
+
 
 # cuda 
 device = torch.device('cuda:1') if torch.cuda.is_available() else torch.device('cpu')
    
-v_model = CLIPVisionModelWithProjection.from_pretrained("openai/clip-vit-base-patch32", cache_dir= cache_dir).to(device)
-txt_model = CLIPTextModelWithProjection.from_pretrained("openai/clip-vit-base-patch32", cache_dir= cache_dir).to(device)
+clip_model = AutoProcessor.from_pretrained("openai/clip-vit-base-patch32", cache_dir= cache_dir).to(device)
+#txt_model = CLIPTextModelWithProjection.from_pretrained("openai/clip-vit-base-patch32", cache_dir= cache_dir).to(device)
 processor = AutoProcessor.from_pretrained("openai/clip-vit-base-patch32", cache_dir= cache_dir)
 tokenizer = AutoTokenizer.from_pretrained("openai/clip-vit-base-patch32", cache_dir= cache_dir)
 
@@ -42,13 +42,13 @@ captions = dict()
 
 for c_l in scene_names:
     txt_inputs = tokenizer(f'the picture of a {c_l.replace('_', ' ')}', return_tensors="pt").to(device)
-    txt_outputs = txt_model(**txt_inputs)
+    txt_outputs = clip_model.get_text_features(**txt_inputs)
     captions[c_l] = txt_outputs.text_embeds.to('cpu')
 
 # preprocess and embed imgs and labels
 for i in tqdm(range(len(filter_dataset))):
     v_inputs = processor(images=filter_dataset[i]['image'], return_tensors="pt").to(device)
-    v_outputs = v_model(**v_inputs)
+    v_outputs = clip_model.get_image_features(**v_inputs)
     image_embeds = v_outputs.image_embeds.to('cpu')
 
     data_points.append(image_embeds)
