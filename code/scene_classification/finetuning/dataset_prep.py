@@ -34,7 +34,7 @@ for c_l in list(dataset.features['scene_category'].names):
     captions[c_l] = txt_outputs.text_embeds.to('cpu')
 
 # preprocess and embed imgs and labels
-for i in tqdm(range(len(dataset))[0:100]):
+for i in tqdm(range(len(dataset))):
     v_inputs = processor(images=dataset[i]['image'], return_tensors="pt").to(device)
     v_outputs = v_model(**v_inputs)
     image_embeds = v_outputs.image_embeds.to('cpu')
@@ -46,7 +46,7 @@ data_points = torch.stack(data_points).squeeze().detach().numpy()
 
 from sklearn import cluster
 # ---------- K-Mean clustering simplified ----------
-clusters = cluster.KMeans(n_clusters=10).fit(data_points)
+clusters = cluster.KMeans(n_clusters=100).fit(data_points)
 print(clusters.cluster_centers_.shape) # here there are the centroids (k, 768)
 scene_labels = list(captions.keys())
 labels_emb = torch.stack(list(captions.values())).squeeze().detach().numpy()
