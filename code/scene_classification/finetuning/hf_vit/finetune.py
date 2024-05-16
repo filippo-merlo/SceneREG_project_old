@@ -8,7 +8,7 @@ wandb.login()
 project_name = 'vit-huge-patch16-224-in21k'
 os.environ["WANDB_PROJECT"] = project_name
 os.environ["WANDB_LOG_MODEL"] = 'true'
-os.environ['CUDA_VISIBLE_DEVICES'] = 0,2 
+
 #%%
 from transformers import ViTImageProcessor
 import sys
