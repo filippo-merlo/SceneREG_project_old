@@ -29,7 +29,7 @@ from tqdm import tqdm
 data_points = []
 captions = dict()
 
-for c_l in set(dataset['scene_description']):
+for c_l in set(dataset['scene_category']):
     txt_inputs = tokenizer(f'the picture of a {c_l.replace('_', ' ')}', return_tensors="pt").to(device)
     txt_outputs = txt_model(**txt_inputs)
     captions[c_l] = txt_outputs.pooler_output.to('cpu')
