@@ -35,8 +35,9 @@ print(data_points.shape)
 from sklearn import cluster
 
 # ---------- K-Mean clustering simplified ----------
-clusters = cluster.KMeans(n_clusters=10).fit(data_points).cluster_centers_
-print(clusters)
+clusters = cluster.KMeans(n_clusters=10).fit(data_points)
+print(clusters.cluster_centers_.shape)
+print(clusters.labels_)
 #%%
 '''
 ### FILTER LABELS
