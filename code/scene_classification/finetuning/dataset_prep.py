@@ -75,7 +75,9 @@ new_labels = {
     'img_label_ass' : list(img_label_ass)
 }
 from pprint import pprint
-pprint(new_labels)
+print(type(scene_labels))
+print(type(idxs))
+print(type(img_label_ass))
 
 # save new_labels dict in json format
 import json 
