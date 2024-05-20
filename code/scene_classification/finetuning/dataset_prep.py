@@ -77,8 +77,9 @@ labels_emb = torch.stack(list(captions.values())).squeeze().detach().numpy()
 # find the labels most similar to the centroids
 from sklearn.metrics.pairwise import cosine_similarity
 cosine_sim = cosine_similarity(clusters.cluster_centers_, labels_emb)
-#idxs = np.argmax(cosine_sim, axis=1)
-idxs = np.argsort(cosine_sim, axis=1)[:,-5:]
+idxs = np.argmax(cosine_sim, axis=1)
+idxs_t10 = np.argsort(cosine_sim, axis=1)[:,-10:]
+print(idxs_t10)
 # Handle duplicate assignments (replace with actual uniqueness check and refinement logic)
 def remove_dup():
     for i in range(len(idxs)):
