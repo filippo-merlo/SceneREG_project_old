@@ -94,6 +94,7 @@ def remove_dup():
     print(len(set(idxs)))
     if len(set(idxs)) < k:
         remove_dup()
+
 remove_dup()
 
 # save the labels
