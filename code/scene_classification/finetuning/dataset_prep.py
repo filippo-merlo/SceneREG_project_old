@@ -81,6 +81,7 @@ idxs = np.argmax(cosine_sim, axis=1)
 idxs_t100 = np.argsort(cosine_sim, axis=1)[:,-100:]
 print(idxs_t100)
 # Handle duplicate assignments (replace with actual uniqueness check and refinement logic)
+
 def remove_dup():
     id_record = dict()
     for i in range(len(idxs)):
@@ -111,19 +112,10 @@ with open('new_labels.json', 'w') as f:
 import json
 with open('/home/filippo.merlo/SceneREG_project/code/scene_classification/finetuning/hf_vit/new_labels.json', 'r') as f:
     new_labels = json.load(f)
-print('new_labels[scene_labels]')
-print(len(new_labels['scene_labels']))
-print(new_labels['scene_labels'])
-print('new_labels scene_id')
-print(new_labels['scene_ids'])
-print(len(set(new_labels['scene_ids'])))
-print(len(new_labels['img_label_ass']))
 
 new_scene_categories = [new_labels['scene_labels'][i] for i in new_labels['scene_ids']]
-print('new_scene_categories')
-print(len(new_scene_categories))
+
 new_label_ids = new_labels['img_label_ass']
-print(len(new_label_ids))
 
 final_dataset = filter_dataset.remove_columns('scene_category').add_column('scene_category', new_label_ids)
 
