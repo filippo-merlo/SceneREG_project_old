@@ -22,7 +22,7 @@ for label in scene_names:
 filter_dataset = dataset.filter(lambda example: example['scene_category'] in names2id_filtered.values())
 
 # ALREADY DONE; JUST IMPORT THE DICT WITH NEW LABLES
-
+'''
 ### CLUSTER LABELS
 from transformers import AutoProcessor, AutoTokenizer, CLIPModel
 import torch
@@ -92,10 +92,9 @@ new_labels = {
 import json 
 with open('new_labels.json', 'w') as f:
     json.dump(new_labels, f)
-
+'''
 
 import json
-
 with open('/home/filippo.merlo/SceneREG_project/code/scene_classification/finetuning/hf_vit/new_labels.json', 'r') as f:
     new_labels = json.load(f)
 new_scene_categories = [c for i, c in enumerate(new_labels['scene_labels']) if i in new_labels['scene_ids']]
