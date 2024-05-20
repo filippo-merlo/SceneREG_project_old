@@ -43,7 +43,7 @@ id2names = dict(zip(range(len(names)), names))
 
 # Count the occurrences of each label
 from collections import Counter
-tot_labs = dataset['scene_category']
+tot_labs = final_dataset['scene_category']
 counter = Counter(tot_labs)
 print(len(counter.keys()))
 # Get the labels
