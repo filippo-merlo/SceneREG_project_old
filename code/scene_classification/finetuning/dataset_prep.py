@@ -96,7 +96,9 @@ with open('new_labels.json', 'w') as f:
 import json
 with open('/home/filippo.merlo/SceneREG_project/code/scene_classification/finetuning/hf_vit/new_labels.json', 'r') as f:
     new_labels = json.load(f)
+print('new_labels[scene_labels]')
 print(len(new_labels['scene_labels']))
+print(new_labels['scene_labels'])
 print('new_labels scene_id')
 print(new_labels['scene_ids'])
 print(len(new_labels['img_label_ass']))
