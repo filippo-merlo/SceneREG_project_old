@@ -93,6 +93,7 @@ def remove_dup():
                 id_record[str(i)] = 0
     if len(set(idxs)) < 100:
         remove_dup()
+remove_dup()
 
 print(len(set(idxs)))
 
