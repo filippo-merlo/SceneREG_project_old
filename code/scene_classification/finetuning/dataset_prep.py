@@ -86,7 +86,7 @@ def remove_dup():
     for i in range(len(idxs)):
         if np.count_nonzero(idxs == idxs[i]) > 1:  # Check for duplicates
             # (Implement logic to find next highest similarity and update idxs if needed)
-            idxs[i] = idxs_t10[i][id_record[str(i)]+1]
+            idxs[i] = idxs_t100[i][id_record[str(i)]+1]
             if str(i) in id_record.keys():
                 id_record[str(i)] += 1
             else:
