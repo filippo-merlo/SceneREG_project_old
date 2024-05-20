@@ -22,7 +22,7 @@ for label in scene_names:
 filter_dataset = dataset.filter(lambda example: example['scene_category'] in names2id_filtered.values())
 
 # ALREADY DONE; JUST IMPORT THE DICT WITH NEW LABLES
-'''
+
 ### CLUSTER LABELS
 from transformers import AutoProcessor, AutoTokenizer, CLIPModel
 import torch
@@ -68,7 +68,7 @@ with torch.no_grad():
 
 from sklearn import cluster
 # ---------- K-Mean clustering simplified ----------
-k = 50
+k = 200
 clusters = cluster.KMeans(n_clusters=k).fit(data_points)
 #print(clusters.cluster_centers_.shape) # here there are the centroids (k, 768)
 img_label_ass =  clusters.labels_
@@ -107,7 +107,6 @@ new_labels = {
 import json 
 with open('new_labels.json', 'w') as f:
     json.dump(new_labels, f)
-'''
 
 import json
 with open('/home/filippo.merlo/SceneREG_project/code/scene_classification/finetuning/hf_vit/new_labels.json', 'r') as f:
