@@ -33,7 +33,7 @@ def transform(example_batch):
 
 print(final_dataset)
 datasets_processed = final_dataset.with_transform(transform)
-print(datasets_processed['train']['labels'])
+print(datasets_processed['train']['scene_category'])
 
 import torch
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
