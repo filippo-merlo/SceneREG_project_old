@@ -69,7 +69,7 @@ with torch.no_grad():
 from sklearn import cluster
 # ---------- K-Mean clustering simplified ----------
 k = 200
-clusters = cluster.KMeans(n_clusters=k).fit(data_points)
+clusters = cluster.KMeans(n_clusters=k,random_state=42).fit(data_points)
 #print(clusters.cluster_centers_.shape) # here there are the centroids (k, 768)
 img_label_ass =  clusters.labels_
 scene_labels = list(captions.keys())
