@@ -72,6 +72,8 @@ from transformers import ViTForImageClassification
 id2label = {str(v):k for k,v in new_names2id.items()}
 label2id = new_names2id
 label_len = len(new_names2id.keys())
+print(len(id2label.keys()))
+print(len(label2id.keys()))
 print(label_len)
 print(len(datasets_processed['train'].features['scene_category'].names))
 print(len(datasets_processed['test'].features['scene_category'].names))
