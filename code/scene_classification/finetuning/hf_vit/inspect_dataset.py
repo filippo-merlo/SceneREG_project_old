@@ -45,6 +45,8 @@ id2names = dict(zip(range(len(names)), names))
 from collections import Counter
 tot_labs = dataset['scene_category']
 counter = Counter(tot_labs)
+from pprint import pprint
+pprint(counter)
 
 # Get the labels
 labels = list(counter.keys())
