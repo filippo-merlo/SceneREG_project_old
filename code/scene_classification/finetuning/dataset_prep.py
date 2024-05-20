@@ -91,7 +91,7 @@ def remove_dup():
                 id_record[str(i)] = 0
             idxs[i] = idxs_tk[i][id_record[str(i)]+1]
             id_record[str(i)] += 1
-
+    print(len(set(idxs)))
     if len(set(idxs)) < k:
         remove_dup()
 remove_dup()
