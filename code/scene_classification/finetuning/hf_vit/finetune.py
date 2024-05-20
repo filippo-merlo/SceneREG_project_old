@@ -73,7 +73,7 @@ id2label = {str(v):k for k,v in new_names2id.items()}
 label2id = new_names2id
 label_len = len(new_names2id.keys())
 print(id2label.keys())
-print(label2id.values)
+print(label2id.values())
 print(label_len)
 print(len(datasets_processed['train'].features['scene_category'].names))
 print(len(datasets_processed['test'].features['scene_category'].names))
