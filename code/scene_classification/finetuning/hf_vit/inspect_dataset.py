@@ -36,7 +36,23 @@ final_dataset = filter_dataset.remove_columns('scene_category').add_column('scen
 # Redefine class labels
 class_labels = ClassLabel(names=new_scene_categories, num_classes=len(new_scene_categories))
 final_dataset =  final_dataset.cast_column('scene_category', class_labels)
-final_dataset = final_dataset.train_test_split(test_size=0.1)
-print(len(set(final_dataset['train']['scene_category'])))
-print(len(set(final_dataset['test']['scene_category'])))
-new_names2id = dict(zip(new_scene_categories,range(len(new_scene_categories))))
+
+
+names = final_dataset.features['scene_category'].names
+id2names = dict(zip(range(len(names)), names))
+
+# Count the occurrences of each label
+from collections import Counter
+tot_labs = dataset['scene_category']
+counter = Counter(tot_labs)
+
+# Get the labels
+labels = list(counter.keys())
+names2id_filtered = dict()
+
+
+#%%
+#final_dataset = final_dataset.train_test_split(test_size=0.1)
+#print(len(set(final_dataset['train']['scene_category'])))
+#print(len(set(final_dataset['test']['scene_category'])))
+#new_names2id = dict(zip(new_scene_categories,range(len(new_scene_categories))))
