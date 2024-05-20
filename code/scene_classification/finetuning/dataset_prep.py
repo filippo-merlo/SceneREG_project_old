@@ -22,7 +22,7 @@ for label in scene_names:
 filter_dataset = dataset.filter(lambda example: example['scene_category'] in names2id_filtered.values())
 
 # ALREADY DONE; JUST IMPORT THE DICT WITH NEW LABLES
-'''
+
 ### CLUSTER LABELS
 from transformers import AutoProcessor, AutoTokenizer, CLIPModel
 import torch
@@ -66,10 +66,10 @@ with torch.no_grad():
 
     data_points = torch.stack(data_points).squeeze().detach().numpy()
 
-
 from sklearn import cluster
 # ---------- K-Mean clustering simplified ----------
-clusters = cluster.KMeans(n_clusters=100).fit(data_points)
+k = 50
+clusters = cluster.KMeans(n_clusters=k).fit(data_points)
 #print(clusters.cluster_centers_.shape) # here there are the centroids (k, 768)
 img_label_ass =  clusters.labels_
 scene_labels = list(captions.keys())
@@ -78,8 +78,8 @@ labels_emb = torch.stack(list(captions.values())).squeeze().detach().numpy()
 from sklearn.metrics.pairwise import cosine_similarity
 cosine_sim = cosine_similarity(clusters.cluster_centers_, labels_emb)
 idxs = np.argmax(cosine_sim, axis=1)
-idxs_t100 = np.argsort(cosine_sim, axis=1)[:,-100:]
-print(idxs_t100)
+idxs_tk = np.argsort(cosine_sim, axis=1)[:,-k:]
+print(idxs_tk)
 # Handle duplicate assignments (replace with actual uniqueness check and refinement logic)
 
 def remove_dup():
@@ -89,10 +89,10 @@ def remove_dup():
             # (Implement logic to find next highest similarity and update idxs if needed)
             if str(i) not in id_record.keys():
                 id_record[str(i)] = 0
-            idxs[i] = idxs_t100[i][id_record[str(i)]+1]
+            idxs[i] = idxs_tk[i][id_record[str(i)]+1]
             id_record[str(i)] += 1
 
-    if len(set(idxs)) < 100:
+    if len(set(idxs)) < k:
         remove_dup()
 remove_dup()
 
@@ -108,7 +108,7 @@ import json
 with open('new_labels.json', 'w') as f:
     json.dump(new_labels, f)
 
-'''
+
 import json
 with open('/home/filippo.merlo/SceneREG_project/code/scene_classification/finetuning/hf_vit/new_labels.json', 'r') as f:
     new_labels = json.load(f)
@@ -175,5 +175,4 @@ final_dataset = filter_dataset.remove_columns('scene_category').add_column('scen
 class_labels = ClassLabel(names=list(names2id_filtered.keys()), num_classes=len(names2id_filtered.keys()))
 final_dataset =  final_dataset.cast_column('scene_category', class_labels)
 final_dataset = final_dataset.train_test_split(test_size=0.1)
-
 '''
