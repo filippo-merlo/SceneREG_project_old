@@ -22,7 +22,7 @@ for label in scene_names:
 filter_dataset = dataset.filter(lambda example: example['scene_category'] in names2id_filtered.values())
 
 # ALREADY DONE; JUST IMPORT THE DICT WITH NEW LABLES
-'''
+
 ### CLUSTER LABELS
 from transformers import AutoProcessor, AutoTokenizer, CLIPModel
 import torch
@@ -59,7 +59,7 @@ with torch.no_grad():
         captions[c_l] = clip_model.get_text_features(**txt_inputs).to('cpu')
 
     # preprocess and embed imgs and labels
-    for i in tqdm(range(len(filter_dataset))):
+    for i in tqdm(range(len(filter_dataset))[:200]):
         v_inputs = auto_processor(images=filter_dataset[i]['image'], return_tensors="pt").to(device)
         image_embeds = clip_model.get_image_features(**v_inputs).to('cpu')
         data_points.append(image_embeds)
@@ -77,7 +77,14 @@ labels_emb = torch.stack(list(captions.values())).squeeze().detach().numpy()
 # find the labels most similar to the centroids
 from sklearn.metrics.pairwise import cosine_similarity
 cosine_sim = cosine_similarity(clusters.cluster_centers_, labels_emb)
-idxs = np.argmax(cosine_sim, axis=1)
+#idxs = np.argmax(cosine_sim, axis=1)
+idxs = np.argsort(cosine_sim, axis=1)[:,-5:]
+# Handle duplicate assignments (replace with actual uniqueness check and refinement logic)
+def remove_dup():
+    for i in range(len(idxs)):
+        if np.count_nonzero(idxs == idxs[i]) > 1:  # Check for duplicates
+            # (Implement logic to find next highest similarity and update idxs if needed)
+            pass
 
 
 # save the labels
@@ -91,7 +98,7 @@ new_labels = {
 import json 
 with open('new_labels.json', 'w') as f:
     json.dump(new_labels, f)
-'''
+
 
 import json
 with open('/home/filippo.merlo/SceneREG_project/code/scene_classification/finetuning/hf_vit/new_labels.json', 'r') as f:
