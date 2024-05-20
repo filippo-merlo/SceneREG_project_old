@@ -22,7 +22,7 @@ for label in scene_names:
 filter_dataset = dataset.filter(lambda example: example['scene_category'] in names2id_filtered.values())
 
 # ALREADY DONE; JUST IMPORT THE DICT WITH NEW LABLES
-
+'''
 ### CLUSTER LABELS
 from transformers import AutoProcessor, AutoTokenizer, CLIPModel
 import torch
@@ -108,7 +108,7 @@ import json
 with open('new_labels.json', 'w') as f:
     json.dump(new_labels, f)
 
-
+'''
 import json
 with open('/home/filippo.merlo/SceneREG_project/code/scene_classification/finetuning/hf_vit/new_labels.json', 'r') as f:
     new_labels = json.load(f)
@@ -125,6 +125,7 @@ final_dataset =  final_dataset.cast_column('scene_category', class_labels)
 final_dataset = final_dataset.train_test_split(test_size=0.1)
 new_names2id = dict(zip(new_scene_categories,range(len(new_scene_categories))))
 
+'''
 ### FILTER LABELS
 
 # Inspect the dataset and counting the number of occurrences of each label 'name'
@@ -174,3 +175,5 @@ final_dataset = filter_dataset.remove_columns('scene_category').add_column('scen
 class_labels = ClassLabel(names=list(names2id_filtered.keys()), num_classes=len(names2id_filtered.keys()))
 final_dataset =  final_dataset.cast_column('scene_category', class_labels)
 final_dataset = final_dataset.train_test_split(test_size=0.1)
+
+'''
