@@ -101,7 +101,7 @@ print(len(new_labels['scene_ids']))
 print(len(new_labels['img_label_ass']))
 
 new_scene_categories = [c for i, c in enumerate(new_labels['scene_labels']) if i in new_labels['scene_ids']]
-print(len(new_scene_categories))
+print(new_scene_categories)
 new_label_ids = new_labels['img_label_ass']
 print(len(new_label_ids))
 
