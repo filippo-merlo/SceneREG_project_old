@@ -28,7 +28,7 @@ from transformers import AutoProcessor, AutoTokenizer, CLIPModel
 import torch
 
 # cuda 
-device = torch.device('cuda:1') if torch.cuda.is_available() else torch.device('cpu')
+device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
    
 clip_model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32", cache_dir= cache_dir).to(device)
 #txt_model = CLIPTextModelWithProjection.from_pretrained("openai/clip-vit-base-patch32", cache_dir= cache_dir).to(device)
