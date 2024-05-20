@@ -101,7 +101,7 @@ print(len(new_labels['scene_labels']))
 print(new_labels['scene_labels'])
 print('new_labels scene_id')
 print(new_labels['scene_ids'])
-print(len(new_labels['scene_ids']))
+print(len(set(new_labels['scene_ids'])))
 print(len(new_labels['img_label_ass']))
 
 new_scene_categories = [new_labels['scene_labels'][i] for i in new_labels['scene_ids']]
