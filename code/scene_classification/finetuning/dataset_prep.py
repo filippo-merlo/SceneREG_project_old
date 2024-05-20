@@ -78,7 +78,7 @@ labels_emb = torch.stack(list(captions.values())).squeeze().detach().numpy()
 from sklearn.metrics.pairwise import cosine_similarity
 cosine_sim = cosine_similarity(clusters.cluster_centers_, labels_emb)
 idxs = np.argmax(cosine_sim, axis=1)
-idxs_tk = np.argsort(cosine_sim, axis=1)[:,-k:]
+idxs_tk = np.argsort(cosine_sim, axis=1)[:,-1054:]
 print(idxs_tk)
 # Handle duplicate assignments (replace with actual uniqueness check and refinement logic)
 
