@@ -82,20 +82,34 @@ idxs_tk = np.argsort(cosine_sim, axis=1)[:,-1054:]
 print(idxs_tk)
 # Handle duplicate assignments (replace with actual uniqueness check and refinement logic)
 
-def remove_dup():
+def remove_dup(idxs, idxs_tk, k):
     id_record = dict()
-    for i in range(len(idxs)):
-        if np.count_nonzero(idxs == idxs[i]) > 1:  # Check for duplicates
-            # (Implement logic to find next highest similarity and update idxs if needed)
-            if str(i) not in id_record.keys():
-                id_record[str(i)] = 0
-            idxs[i] = idxs_tk[i][id_record[str(i)]+1]
-            id_record[str(i)] += 1
-    print(len(set(idxs)))
-    if len(set(idxs)) < k:
-        remove_dup()
+    while True:
+        unique_idxs = set(idxs)
+        if len(unique_idxs) >= k:
+            break
 
-remove_dup()
+        for i in range(len(idxs)):
+            if np.count_nonzero(idxs == idxs[i]) > 1:  # Check for duplicates
+                if str(i) not in id_record.keys():
+                    id_record[str(i)] = 0
+                else:
+                    id_record[str(i)] += 1
+
+                # Ensure we do not go out of bounds
+                if id_record[str(i)] < len(idxs_tk[i]):
+                    idxs[i] = idxs_tk[i][id_record[str(i)]]
+                else:
+                    raise ValueError(f"No more unique values available for index {i}")
+
+        unique_idxs = set(idxs)
+        print(len(unique_idxs))
+        if len(unique_idxs) >= k:
+            break
+
+    return idxs
+
+idxs = remove_dup(idxs, idxs_tk, k)
 
 # save the labels
 new_labels = {
