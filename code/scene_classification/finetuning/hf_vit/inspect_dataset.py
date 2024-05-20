@@ -45,14 +45,14 @@ id2names = dict(zip(range(len(names)), names))
 from collections import Counter
 tot_labs = dataset['scene_category']
 counter = Counter(tot_labs)
-
+print(len(counter.keys()))
 # Get the labels
 labels = list(counter.keys())
 names2id_filtered = dict()
 
-for l in labels:
-    if counter[l] > 10:
-        print(l,':',counter[l])
+#for l in labels:
+#    if counter[l] > 10:
+#        print(l,':',counter[l])
 
 #%%
 #final_dataset = final_dataset.train_test_split(test_size=0.1)
