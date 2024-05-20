@@ -87,7 +87,7 @@ def remove_dup():
             # (Implement logic to find next highest similarity and update idxs if needed)
             pass
 
-
+'''
 # save the labels
 new_labels = {
     'scene_labels' : list(scene_labels),
@@ -125,7 +125,7 @@ class_labels = ClassLabel(names=new_scene_categories, num_classes=len(new_scene_
 final_dataset =  final_dataset.cast_column('scene_category', class_labels)
 final_dataset = final_dataset.train_test_split(test_size=0.1)
 new_names2id = dict(zip(new_scene_categories,range(len(new_scene_categories))))
-'''
+
 ### FILTER LABELS
 
 # Inspect the dataset and counting the number of occurrences of each label 'name'
