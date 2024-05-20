@@ -1,7 +1,8 @@
 #%%
-### PREPARE THE DATASET   
+### PREPARE THE DATASET  
+import sys
+sys.path.append('../')
 from config import *
-
 # Load the dataset
 from datasets import load_dataset, concatenate_datasets, DatasetDict, ClassLabel
 ds = load_dataset("scene_parse_150", cache_dir= cache_dir)
