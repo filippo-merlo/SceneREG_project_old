@@ -50,9 +50,9 @@ print(len(counter.keys()))
 labels = list(counter.keys())
 names2id_filtered = dict()
 
-#for l in labels:
-#    if counter[l] > 10:
-#        print(l,':',counter[l])
+for l in labels:
+    if counter[l] > 10:
+        print(l,':',counter[l])
 
 #%%
 #final_dataset = final_dataset.train_test_split(test_size=0.1)
