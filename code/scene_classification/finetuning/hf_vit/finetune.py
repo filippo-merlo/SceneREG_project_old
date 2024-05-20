@@ -75,7 +75,6 @@ label_len = len(new_names2id.keys())
 print(label_len)
 print(len(datasets_processed['train'].features['scene_category'].names))
 print(len(datasets_processed['test'].features['scene_category'].names))
-print(len(datasets_processed['scene_category']))
 
 def model_init():
     vit_model = ViTForImageClassification.from_pretrained(
