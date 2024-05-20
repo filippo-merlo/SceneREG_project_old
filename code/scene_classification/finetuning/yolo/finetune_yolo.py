@@ -3,7 +3,7 @@ from ultralytics import YOLO
 import os
 
 # Load a model
-model = YOLO('yolov8n-cls.pt', ) # load a pretrained model (recommended for training)
+model = YOLO('yolov8n-cls.pt') # load a pretrained model (recommended for training)
 
 data_path = '/mnt/cimec-storage6/users/filippo.merlo/ADE20K_2016_07_26'
 n_epochs = 100
