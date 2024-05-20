@@ -31,7 +31,9 @@ def transform(example_batch):
     inputs['labels'] = example_batch['scene_category']
     return inputs
 
+print(final_dataset)
 datasets_processed = final_dataset.with_transform(transform)
+print(datasets_processed)
 
 import torch
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
@@ -75,7 +77,7 @@ label_len = len(new_names2id.keys())
 print(label_len)
 print(len(datasets_processed['train'].features['scene_category'].names))
 print(len(datasets_processed['test'].features['scene_category'].names))
-print(datasets_processed['train']['labels'])
+
 
 def model_init():
     vit_model = ViTForImageClassification.from_pretrained(
