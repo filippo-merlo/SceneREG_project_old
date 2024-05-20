@@ -78,14 +78,20 @@ labels_emb = torch.stack(list(captions.values())).squeeze().detach().numpy()
 from sklearn.metrics.pairwise import cosine_similarity
 cosine_sim = cosine_similarity(clusters.cluster_centers_, labels_emb)
 idxs = np.argmax(cosine_sim, axis=1)
-idxs_t10 = np.argsort(cosine_sim, axis=1)[:,-10:]
-print(idxs_t10)
+idxs_t100 = np.argsort(cosine_sim, axis=1)[:,-100:]
+print(idxs_t100)
 # Handle duplicate assignments (replace with actual uniqueness check and refinement logic)
 def remove_dup():
+    id_record = dict()
     for i in range(len(idxs)):
         if np.count_nonzero(idxs == idxs[i]) > 1:  # Check for duplicates
             # (Implement logic to find next highest similarity and update idxs if needed)
-            pass
+            idxs[i] = idxs_t10[i][id_record[str(i)]+1]
+            if str(i) in id_record.keys():
+                id_record[str(i)] += 1
+            else:
+                id_record[str(i)] = 0
+print(len(set(idxs)))
 
 '''
 # save the labels
