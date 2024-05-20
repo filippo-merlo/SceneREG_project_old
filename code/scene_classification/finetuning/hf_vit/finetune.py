@@ -82,7 +82,7 @@ print(len(datasets_processed['test'].features['scene_category'].names))
 def model_init():
     vit_model = ViTForImageClassification.from_pretrained(
         checkpoint,
-        num_labels=label_len,
+        num_labels=label_len-1,
         id2label=id2label,
         label2id=label2id,
         cache_dir= cache_dir
