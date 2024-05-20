@@ -59,7 +59,7 @@ with torch.no_grad():
         captions[c_l] = clip_model.get_text_features(**txt_inputs).to('cpu')
 
     # preprocess and embed imgs and labels
-    for i in tqdm(range(len(filter_dataset))[:200]):
+    for i in tqdm(range(len(filter_dataset))):
         v_inputs = auto_processor(images=filter_dataset[i]['image'], return_tensors="pt").to(device)
         image_embeds = clip_model.get_image_features(**v_inputs).to('cpu')
         data_points.append(image_embeds)
@@ -90,14 +90,11 @@ def remove_dup():
                 id_record[str(i)] = 0
             idxs[i] = idxs_t100[i][id_record[str(i)]+1]
             id_record[str(i)] += 1
-            
+
     if len(set(idxs)) < 100:
         remove_dup()
 remove_dup()
 
-print(len(set(idxs)))
-
-'''
 # save the labels
 new_labels = {
     'scene_labels' : list(scene_labels),
@@ -185,4 +182,3 @@ final_dataset = filter_dataset.remove_columns('scene_category').add_column('scen
 class_labels = ClassLabel(names=list(names2id_filtered.keys()), num_classes=len(names2id_filtered.keys()))
 final_dataset =  final_dataset.cast_column('scene_category', class_labels)
 final_dataset = final_dataset.train_test_split(test_size=0.1)
-'''
