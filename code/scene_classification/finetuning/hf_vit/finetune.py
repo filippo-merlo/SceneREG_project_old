@@ -34,7 +34,8 @@ def transform(example_batch):
 datasets_processed = final_dataset.with_transform(transform)
 
 import torch
-
+device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+   
 def collate_fn(batch):
     return {
         'pixel_values': torch.stack([x['pixel_values'] for x in batch]),
