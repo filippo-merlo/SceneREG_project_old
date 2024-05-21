@@ -28,28 +28,28 @@ def transform_dataset(source_dir, target_dir):
     os.makedirs(val_labels_dir)
 
     # Transform training data
-    for root, dirs, files in os.walk(os.path.join(source_dir, 'training')):
+    for root, dirs, files in os.walk(os.path.join(source_dir, 'images/training')):
         for directory in dirs:
-            if directory not in ['misc', 'outliers']:
-                class_name = directory
-                for img_root, _, img_files in os.walk(os.path.join(root, directory)):
-                    for img_file in img_files:
-                        img_src_path = os.path.join(img_root, img_file)
-                        img_dst_path = os.path.join(train_images_dir, img_file)
-                        shutil.copyfile(img_src_path, img_dst_path)
-                        create_annotation_file(img_file, class_name, train_labels_dir)
+            class_name = directory
+            class_dir_path = os.path.join(root, directory)
+            for subdir, _, img_files in os.walk(class_dir_path):
+                for img_file in img_files:
+                    img_src_path = os.path.join(subdir, img_file)
+                    img_dst_path = os.path.join(train_images_dir, img_file)
+                    shutil.move(img_src_path, img_dst_path)
+                    create_annotation_file(img_file, class_name, train_labels_dir)
 
     # Transform validation data
-    for root, dirs, files in os.walk(os.path.join(source_dir, 'validation')):
+    for root, dirs, files in os.walk(os.path.join(source_dir, 'images/validation')):
         for directory in dirs:
-            if directory not in ['misc', 'outliers']:
-                class_name = directory
-                for img_root, _, img_files in os.walk(os.path.join(root, directory)):
-                    for img_file in img_files:
-                        img_src_path = os.path.join(img_root, img_file)
-                        img_dst_path = os.path.join(val_images_dir, img_file)
-                        shutil.copyfile(img_src_path, img_dst_path)
-                        create_annotation_file(img_file, class_name, val_labels_dir)
-
+            class_name = directory
+            class_dir_path = os.path.join(root, directory)
+            for subdir, _, img_files in os.walk(class_dir_path):
+                for img_file in img_files:
+                    img_src_path = os.path.join(subdir, img_file)
+                    img_dst_path = os.path.join(val_images_dir, img_file)
+                    shutil.move(img_src_path, img_dst_path)
+                    create_annotation_file(img_file, class_name, val_labels_dir)
+                    
 # Example usage:
 transform_dataset('/mnt/cimec-storage6/users/filippo.merlo/ADE20K_2016_07_26', '/mnt/cimec-storage6/users/filippo.merlo/ade20k_adapted')
