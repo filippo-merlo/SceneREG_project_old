@@ -3,7 +3,7 @@ path: /mnt/cimec-storage6/users/filippo.merlo/ade20k_adapted
 train: train  # path to training data
 val: val  # path to validation data
 
-# nc: 150  # number of classes
+nc: 150  # number of classes
 
 names:
   0: airport
