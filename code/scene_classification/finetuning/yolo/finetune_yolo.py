@@ -5,7 +5,7 @@ import os
 # Load a model
 model = YOLO('yolov8n-cls.pt') # load a pretrained model (recommended for training)
 
-data_path = '/mnt/cimec-storage6/users/filippo.merlo/ADE20K_2016_07_26/index_ade20k.mat'
+data_path = '/mnt/cimec-storage6/users/filippo.merlo/ade20k_adapted'
 n_epochs = 100
 bs = 16
 gpu_id = 0
