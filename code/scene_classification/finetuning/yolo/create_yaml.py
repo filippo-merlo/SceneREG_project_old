@@ -50,6 +50,29 @@ def transform_dataset(source_dir, target_dir):
                     img_dst_path = os.path.join(val_images_dir, img_file)
                     shutil.move(img_src_path, img_dst_path)
                     create_annotation_file(img_file, class_name, val_labels_dir)
-                    
+
 # Example usage:
-transform_dataset('/mnt/cimec-storage6/users/filippo.merlo/ADE20K_2016_07_26', '/mnt/cimec-storage6/users/filippo.merlo/ade20k_adapted')
+#transform_dataset('/mnt/cimec-storage6/users/filippo.merlo/ADE20K_2016_07_26', '/mnt/cimec-storage6/users/filippo.merlo/ade20k_adapted')
+
+import os
+
+def get_class_names(source_dir):
+    class_names = set()
+
+    # Get class names from training data
+    for root, dirs, files in os.walk(os.path.join(source_dir, 'images/training')):
+        for directory in dirs:
+            class_names.add(directory)
+
+    # Get class names from validation data
+    for root, dirs, files in os.walk(os.path.join(source_dir, 'images/validation')):
+        for directory in dirs:
+            class_names.add(directory)
+
+    return class_names
+
+# Example usage:
+source_dir = '/mnt/cimec-storage6/users/filippo.merlo/ADE20K_2016_07_26'
+class_names = get_class_names(source_dir)
+for class_name in sorted(class_names):
+    print(class_name)
