@@ -1,6 +1,7 @@
-# import YOLO model
 from ultralytics import YOLO
 import os
+
+# import YOLO model
 
 # Load a model
 model = YOLO('yolov8n-cls.pt') # load a pretrained model (recommended for training)
@@ -17,7 +18,7 @@ validate = True
 save_dir = '/mnt/cimec-storage6/users/filippo.merlo/yolo'
 os.makedirs(save_dir, exist_ok=True)
 
-    # Train the model
+# Train the model
 model = YOLO('yolov8n.pt')
 results = model.train(
     data=data_path,
@@ -34,3 +35,5 @@ results = model.train(
 metrics = model.val() # no arguments needed, dataset and settings remembered
 metrics.top1 # top1 accuracy
 metrics.top5 # top5 accuracy
+
+
