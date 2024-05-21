@@ -4,12 +4,7 @@ import sys
 
 def generate_yaml_for_dataset(dataset_directory):
     # Find the first folder in the dataset directory
-    first_folder = None
-    for item in os.listdir(dataset_directory):
-        item_path = os.path.join(dataset_directory, item)
-        if os.path.isdir(item_path):
-            first_folder = item_path
-            break
+    first_folder = dataset_directory
 
     if first_folder is None:
         raise Exception("No subdirectories found in the dataset directory")
