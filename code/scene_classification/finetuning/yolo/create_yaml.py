@@ -1,6 +1,11 @@
 import os
 import shutil
 
+def create_annotation_file(image_name, class_name, output_dir):
+    annotation_file_path = os.path.join(output_dir, image_name + '.txt')
+    with open(annotation_file_path, 'w') as annotation_file:
+        annotation_file.write(class_name)
+
 def transform_dataset(source_dir, target_dir):
     # Create target directory if it doesn't exist
     if not os.path.exists(target_dir):
@@ -32,9 +37,7 @@ def transform_dataset(source_dir, target_dir):
                         img_src_path = os.path.join(img_root, img_file)
                         img_dst_path = os.path.join(train_images_dir, img_file)
                         shutil.copyfile(img_src_path, img_dst_path)
-                        label_dst_path = os.path.join(train_labels_dir, img_file.replace('.', '_') + '.txt')
-                        with open(label_dst_path, 'w') as label_file:
-                            label_file.write(class_name)
+                        create_annotation_file(img_file, class_name, train_labels_dir)
 
     # Transform validation data
     for root, dirs, files in os.walk(os.path.join(source_dir, 'validation')):
@@ -46,9 +49,7 @@ def transform_dataset(source_dir, target_dir):
                         img_src_path = os.path.join(img_root, img_file)
                         img_dst_path = os.path.join(val_images_dir, img_file)
                         shutil.copyfile(img_src_path, img_dst_path)
-                        label_dst_path = os.path.join(val_labels_dir, img_file.replace('.', '_') + '.txt')
-                        with open(label_dst_path, 'w') as label_file:
-                            label_file.write(class_name)
+                        create_annotation_file(img_file, class_name, val_labels_dir)
 
 # Example usage:
 transform_dataset('/mnt/cimec-storage6/users/filippo.merlo/ADE20K_2016_07_26', '/mnt/cimec-storage6/users/filippo.merlo/ade20k_adapted')
