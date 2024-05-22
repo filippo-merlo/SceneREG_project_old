@@ -67,7 +67,7 @@ def compute_metrics_fn(eval_preds):
   return metrics
 
 # INIT MODEL
-from transformers import ViTConfig, ViTForImageClassification
+from transformers import ViTForImageClassification
 
 id2label = {str(v):k for k,v in new_names2id.items()}
 label2id = new_names2id
