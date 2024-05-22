@@ -76,6 +76,7 @@ label_len = len(new_names2id.keys())
 def model_init():
     vit_model = ViTForImageClassification.from_pretrained(
         checkpoint,
+        ignore_mismatched_sizes=True,
         num_labels=label_len,
         id2label=id2label,
         label2id=label2id,
