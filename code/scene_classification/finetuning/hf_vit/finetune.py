@@ -5,18 +5,17 @@ import os
 wandb.login()
 
 # Set a single environment variable
-project_name = 'vit-huge-patch16-224-in21k'
+project_name = 'vit-base-patch16-224'
 os.environ["WANDB_PROJECT"] = project_name
 os.environ["WANDB_LOG_MODEL"] = 'true'
 
-#%%
 from transformers import ViTImageProcessor
 import sys
 sys.path.append('../')
 from dataset_prep import *
 from config import *
 
-checkpoint = 'google/vit-huge-patch14-224-in21k'
+checkpoint = 'google/vit-base-patch16-224'
 processor = ViTImageProcessor.from_pretrained(checkpoint, cache_dir= cache_dir)
 
 # Load the dataset
@@ -83,6 +82,10 @@ def model_init():
         label2id=label2id,
         cache_dir= cache_dir
     )
+    for param in vit_model.parameters():
+        param.requires_grad = False
+    vit_model.classifier.weight.requires_grad = True
+    vit_model.classifier.bias.requires_grad = True
     return vit_model
 
 from transformers import TrainingArguments, Trainer
@@ -126,5 +129,3 @@ trainer.save_state()
 metrics = trainer.evaluate(datasets_processed['test'])
 trainer.log_metrics("eval", metrics)
 trainer.save_metrics("eval", metrics)
-
-# %%
