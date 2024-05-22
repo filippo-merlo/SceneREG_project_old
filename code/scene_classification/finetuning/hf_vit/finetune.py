@@ -79,8 +79,7 @@ def model_init():
         num_labels=label_len,
         id2label=id2label,
         label2id=label2id,
-        cache_dir= cache_dir,
-        ignore_mismatched_sizes=True
+        cache_dir= cache_dir
     )
     for param in vit_model.parameters():
         param.requires_grad = False
