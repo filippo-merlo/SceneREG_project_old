@@ -73,11 +73,6 @@ id2label = {str(v):k for k,v in new_names2id.items()}
 label2id = new_names2id
 label_len = len(new_names2id.keys())
 
-config = ViTConfig(
-    hidden_dropout_prob = 0.1,
-    attention_probs_dropout_prob = 0.1
-)
-
 def model_init():
     vit_model = ViTForImageClassification.from_pretrained(
         checkpoint,
