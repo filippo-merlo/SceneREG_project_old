@@ -82,10 +82,10 @@ def model_init():
         label2id=label2id,
         cache_dir= cache_dir
     )
-    #for param in vit_model.parameters():
-    #    param.requires_grad = False
-    #vit_model.classifier.weight.requires_grad = True
-    #vit_model.classifier.bias.requires_grad = True
+    for param in vit_model.parameters():
+        param.requires_grad = False
+    vit_model.classifier.weight.requires_grad = True
+    vit_model.classifier.bias.requires_grad = True
     return vit_model
 
 from transformers import TrainingArguments, Trainer
