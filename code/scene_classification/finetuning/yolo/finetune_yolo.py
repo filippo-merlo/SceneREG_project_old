@@ -10,13 +10,13 @@ bs = 16
 verbose = True
 rng = 0
 validate = True
+model = YOLO('yolov8n-cls.pt')
 
 # Specify the save directory for training runs
 save_dir = '/mnt/cimec-storage6/users/filippo.merlo/yolo'
 os.makedirs(save_dir, exist_ok=True)
 
 # Train the model
-model = YOLO('yolov8n-cls.pt')
 
 results = model.train(
     data=data_path,
