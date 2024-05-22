@@ -67,12 +67,16 @@ def compute_metrics_fn(eval_preds):
   return metrics
 
 # INIT MODEL
-from transformers import ViTForImageClassification
+from transformers import ViTConfig, ViTForImageClassification
 
 id2label = {str(v):k for k,v in new_names2id.items()}
 label2id = new_names2id
 label_len = len(new_names2id.keys())
 
+config = ViTConfig(
+    hidden_dropout_prob = 0.1,
+    attention_probs_dropout_prob = 0.1
+)
 
 def model_init():
     vit_model = ViTForImageClassification.from_pretrained(
@@ -96,7 +100,7 @@ training_args = TrainingArguments(
     report_to='wandb',  # Turn on Weights & Biases logging
     num_train_epochs=10,
     learning_rate=float(2e-4),
-    weight_decay=0.4,
+    weight_decay=0.1,
     per_device_train_batch_size=16,
     per_device_eval_batch_size=16,
     save_strategy='epoch',
