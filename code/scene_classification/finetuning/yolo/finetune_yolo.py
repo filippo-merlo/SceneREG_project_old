@@ -3,9 +3,6 @@ import os
 
 # import YOLO model
 
-# Load a model
-model = YOLO('yolov8n-cls.pt') # load a pretrained model (recommended for training)
-
 data_path = 'data.yaml'
 n_epochs = 100
 bs = 16
@@ -19,7 +16,8 @@ save_dir = '/mnt/cimec-storage6/users/filippo.merlo/yolo'
 os.makedirs(save_dir, exist_ok=True)
 
 # Train the model
-model = YOLO('yolov8n.pt')
+model = YOLO('yolov8n-cls.pt')
+
 results = model.train(
     data=data_path,
     epochs=n_epochs,
