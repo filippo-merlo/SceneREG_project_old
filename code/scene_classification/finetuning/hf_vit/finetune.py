@@ -91,25 +91,41 @@ def model_init():
 from transformers import TrainingArguments, Trainer
 
 # set training arguments
+#training_args = TrainingArguments(
+#    output_dir=f'/mnt/cimec-storage6/users/filippo.merlo/{project_name}',
+#    report_to='wandb',  # Turn on Weights & Biases logging
+#    num_train_epochs=10,
+#    learning_rate=float(2e-4),
+#    weight_decay=0.1,
+#    per_device_train_batch_size=16,
+#    per_device_eval_batch_size=16,
+#    save_strategy='epoch',
+#    evaluation_strategy='epoch',
+#    logging_strategy='epoch',
+#    load_best_model_at_end=True,
+#    remove_unused_columns=False,
+#    fp16=True
+#)
 training_args = TrainingArguments(
     output_dir=f'/mnt/cimec-storage6/users/filippo.merlo/{project_name}',
     report_to='wandb',  # Turn on Weights & Biases logging
-    num_train_epochs=10,
-    learning_rate=float(2e-4),
-    weight_decay=0.1,
-    per_device_train_batch_size=16,
-    per_device_eval_batch_size=16,
+    evaluation_strategy="steps",
+    logging_strategy="steps",
     save_strategy='epoch',
-    evaluation_strategy='epoch',
-    logging_strategy='epoch',
+    logging_steps = 100,
+    learning_rate=2e-5,
+    per_device_train_batch_size=64,
+    per_device_eval_batch_size=64,
+    num_train_epochs=15,
+    weight_decay=0.01,
     load_best_model_at_end=True,
     remove_unused_columns=False,
     fp16=True
 )
 
+
 # define training loop
 trainer = Trainer(
-    # model,
     model_init=model_init,
     args=training_args,
     data_collator=collate_fn,
