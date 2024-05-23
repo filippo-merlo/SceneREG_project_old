@@ -130,60 +130,6 @@ def compute_tf_idf(cooccurencies_df):
 
     return tf_idf_scores_mat.fillna(0)
 
-# ConceptNet API 
-#def get_at_location_relations_for_scenes(object_name):
-#    # Base URL for ConceptNet API
-#    base_url = "http://api.conceptnet.io/"
-#
-#    # Endpoint for querying relations
-#    endpoint = "query"
-#
-#    # Parameters for the query
-#    params = {
-#        "rel": "/r/AtLocation",
-#        "node": f"/c/en/{object_name}",  # Specific object name
-#        "limit": 1000  # Limiting the number of results to 1000, you can adjust as needed
-#    }
-#
-#    # Make the request
-#    response = requests.get(base_url + endpoint, params=params)
-#
-#    # Check if request was successful
-#    if response.status_code == 200:
-#        data = response.json()
-#
-#        # Extracting edges from the response
-#        edges = data['edges']
-#
-#        # Filtering only the edge information
-#        at_location_edges = [edge for edge in edges if edge['rel']['@id'] == '/r/AtLocation']
-#
-#        return at_location_edges
-#    else:
-#        # If the request fails, print the status code
-#        print("Request failed with status code:", response.status_code)
-#        return None
-#
-#%%
-# Get ConceptNet
-#scene_categories = [assign_category_name(scene) for scene in index_ade20k['scene']]
-#scene_categories = list(set(scene_categories))
-#conceptnet_scene_object = dict()
-#for scene in scene_categories:
-#    conceptnet_scene_object[scene] = []
-#    print('***',scene,'***')
-#    at_location_relations = get_at_location_relations_for_scenes(scene)
-#    if at_location_relations:
-#        for relation in at_location_relations:
-#            obj = relation['start']['label']
-#            conceptnet_scene_object[scene].append(obj)
-#
-#pprint(conceptnet_scene_object)
-## Saving the dictionary as a pickle file
-#file_path = "conceptnet_scene_object.pkl"
-#with open(file_path, "wb") as f:
-#    pkl.dump(conceptnet_scene_object, f)
-
 #%% COMPUTE STATISTICS
 os_cooccurrency_df = compute_obj_scene_cooccurrency_matrix(index_ade20k)
 tf_idf_scores_mat = compute_tf_idf(os_cooccurrency_df)
