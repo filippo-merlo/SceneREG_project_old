@@ -109,10 +109,9 @@ from transformers import TrainingArguments, Trainer
 training_args = TrainingArguments(
     output_dir=f'/mnt/cimec-storage6/users/filippo.merlo/{project_name}',
     report_to='wandb',  # Turn on Weights & Biases logging
-    evaluation_strategy="steps",
-    logging_strategy="steps",
-    save_strategy='steps',
-    logging_steps = 100,
+    evaluation_strategy="epoch",
+    logging_strategy="epoch",
+    save_strategy='epoch',
     learning_rate=2e-5,
     per_device_train_batch_size=64,
     per_device_eval_batch_size=64,
