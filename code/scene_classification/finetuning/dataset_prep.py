@@ -14,13 +14,23 @@ dataset = concatenate_datasets([ds['train'], ds['validation']])
 scene_names = list(dataset.features['scene_category'].names)
 names2id = dict(zip(scene_names, range(len(scene_names))))
 names2id_filtered = dict()
+to_keep = ['bathroom', 'bedroom', 'hotel_room', 'game_room', 'living_room', 'office',
+           'restaurant', 'dining_room', 'kitchen', 'attic', 'art_gallery', 'exhibition_hall',
+           'bicycle_racks', 'lagoon', 'acropolis', 'science_laboratory', 'coral_reef', 'vehicle',
+           'poolroom_home', 'conference_room', 'closet', 'dorm_room', 'home_office', 'hospital_room',
+           'art_studio', 'street', 'classroom', 'lobby', 'frontseat', 'elevator_shaft', 'playground',
+           'witness_stand', 'waterscape', 'rice_paddy', 'spillway', 'strip_mine', 
+           'meat_house', 'lumberyard_outdoor',
+           'nuclear_power_plant_outdoor', 'lava_flow', 'ski_slope', 'pier', 'movie_theater_outdoor', 'cataract', 'office_building']
 for label in scene_names:
-    if label == 'misc':
+    #if label == 'misc':
+    #    continue
+    if label not in to_keep:
         continue
     else:
         names2id_filtered[label] = names2id[label]
 filter_dataset = dataset.filter(lambda example: example['scene_category'] in names2id_filtered.values())
-
+#%%
 # ALREADY DONE; JUST IMPORT THE DICT WITH NEW LABLES
 '''
 ### CLUSTER LABELS
@@ -123,14 +133,26 @@ import json
 with open('new_labels.json', 'w') as f:
     json.dump(new_labels, f)
 '''
-import json
-with open('/home/filippo.merlo/SceneREG_project/code/scene_classification/finetuning/hf_vit/new_labels.json', 'r') as f:
-    new_labels = json.load(f)
+#import json
+#with open('/home/filippo.merlo/SceneREG_project/code/scene_classification/finetuning/hf_vit/new_labels.json', 'r') as f:
+#    new_labels = json.load(f)
+#
+#new_scene_categories = [new_labels['scene_labels'][i] for i in new_labels['scene_ids']]
+#
+#new_label_ids = new_labels['img_label_ass']
+#
+#final_dataset = filter_dataset.remove_columns('scene_category').add_column('scene_category', new_label_ids)
 
-new_scene_categories = [new_labels['scene_labels'][i] for i in new_labels['scene_ids']]
 
-new_label_ids = new_labels['img_label_ass']
+filter_dataset['scene_category']
+names2id_filtered
+new_scene_categories = list(names2id_filtered.keys())
 
+mapOldid2Newid = {}
+for i,id in enumerate(names2id_filtered.values()):
+    mapOldid2Newid[id] = i
+
+new_label_ids = [mapOldid2Newid[id] for id in filter_dataset['scene_category']]
 final_dataset = filter_dataset.remove_columns('scene_category').add_column('scene_category', new_label_ids)
 
 # Redefine class labels

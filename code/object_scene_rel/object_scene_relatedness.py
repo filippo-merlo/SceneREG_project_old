@@ -64,7 +64,7 @@ print("The most common object is object {} ({}), which appears {} times".format(
 #%% FUNCTIONS
 # COMPUTE RELATIVE QUANTITY OF OBJECTS IN SCENES
 import json 
-with open('/Users/filippomerlo/Documents/GitHub/SceneReg_project/code/scene_classification/scene_to_category.json', 'r') as f:
+with open('/Users/filippomerlo/Documents/GitHub/SceneREG_project/code/object_scene_rel/map_hfADE_2_starndardADE/scene_to_category.json', 'r') as f:
     scene_to_category = json.load(f)
 
 def assign_category_name(name):
@@ -290,36 +290,3 @@ for metric_name, metric_df in relatedness_metrics.items():
             print('\n\n')
             # Add the pair to printed_pairs set
             printed_pairs.add((metric_name, metric_name2))
-
-#%%
-# CHECK IF OBJECTS IN OBJECTS_LIST ARE PRESENT IN ADE20K
-i = 0
-tot = len(objects_list)
-objects_found = list()
-objects_not_found = list()
-
-for obj in objects_list:
-    for obj_data in list(index_ade20k['objectnames']):
-        obj_data = obj_data.split(', ')
-        if obj in obj_data:
-            objects_found.append((obj,obj_data))
-            i += 1
-            break
-        
-for obj in objects_list:
-    if obj not in [x[0] for x in objects_found]:
-        objects_not_found.append(obj)
-
-print(len(objects_not_found))
-pprint(objects_not_found)
-pprint(list(index_ade20k['objectnames']))
-
-#%% Check the most and least similar objects to a scene
-k = 5
-top_k_indices = tf_idf_scores_mat['art_gallery'].nlargest(k).index
-bottom_k_indices = tf_idf_scores_mat['art_gallery'].nsmallest(k).index
-for i in top_k_indices:
-    print(object_names[i])
-
-for i in bottom_k_indices:
-    print(object_names[i])
