@@ -166,8 +166,9 @@ class Dataset:
         plt.show()
        
         # Classify scene
-        scene_class = classify_scene_vit(image_picture)
-        print(scene_class)
+        print(classify_scene_vit(image_picture))
+        classify_scene_clip_llava(image_picture, scene_labels_context)
+
         # retrieve info from obscene
 
 
