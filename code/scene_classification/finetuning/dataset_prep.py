@@ -15,15 +15,15 @@ scene_names = list(dataset.features['scene_category'].names)
 names2id = dict(zip(scene_names, range(len(scene_names))))
 names2id_filtered = dict()
 
-to_keep = ['bathroom', 'bedroom', 'hotel_room', 'game_room', 'living_room', 'office', 'nursery',
-           'restaurant', 'dining_room', 'kitchen', 'attic', 'galley', 'wet_bar', 'kitchenette',
-           'vehicle', 'dinette_home', 'poolroom_home', 'conference_room', 'closet', 'bar', 
-           'bow_window_indoor', 'basement', 'art_gallery', 'classroom', 'corridor', 'youth_hostel', 
-           'coffee_shop', 'library_indoor', 'kindergarden_classroom', 'recreation_room', 'dorm_room', 
-           'childs_room', 'artists_loft', 'home_office', 'art_studio', 'highway', 'dining_hall', 
-           'street', 'restaurant_patio', 'lobby', 'waiting_room', 'dining_car', 'reception', 'parlor', 
-           'shop', 'airplane_cabin', 'conference_center', 'airport_terminal', 'pantry', 'plaza', 
-           'building_facade']
+to_keep = ['bathroom', 'bedroom', 'game_room', 'living_room', 'office',
+           'restaurant', 'dining_room', 'kitchen', 'attic',
+           'vehicle', 'closet', 'bar', 
+          'basement', 'corridor',
+           'coffee_shop', 'library_indoor',
+           'home_office', 'art_studio', 'highway',
+           'street',
+           'shop']
+
 for label in scene_names:
     #if label == 'misc':
     #    continue

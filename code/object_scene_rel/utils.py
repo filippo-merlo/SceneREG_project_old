@@ -44,15 +44,14 @@ processor = AutoProcessor.from_pretrained("openai/clip-vit-base-patch32")
 # vit model 
 import wandb
 from transformers import ViTForImageClassification, AutoImageProcessor
-scene_labels = ['bathroom', 'bedroom', 'hotel_room', 'game_room', 'living_room', 'office', 'nursery',
-           'restaurant', 'dining_room', 'kitchen', 'attic', 'galley', 'wet_bar', 'kitchenette',
-           'vehicle', 'dinette_home', 'poolroom_home', 'conference_room', 'closet', 'bar', 
-           'bow_window_indoor', 'basement', 'art_gallery', 'classroom', 'corridor', 'youth_hostel', 
-           'coffee_shop', 'library_indoor', 'kindergarden_classroom', 'recreation_room', 'dorm_room', 
-           'childs_room', 'artists_loft', 'home_office', 'art_studio', 'highway', 'dining_hall', 
-           'street', 'restaurant_patio', 'lobby', 'waiting_room', 'dining_car', 'reception', 'parlor', 
-           'shop', 'airplane_cabin', 'conference_center', 'airport_terminal', 'pantry', 'plaza', 
-           'building_facade']
+scene_labels = ['bathroom', 'bedroom', 'game_room', 'living_room', 'office',
+           'restaurant', 'dining_room', 'kitchen', 'attic',
+           'vehicle', 'closet', 'bar', 
+          'basement', 'corridor',
+           'coffee_shop', 'library_indoor',
+           'home_office', 'art_studio', 'highway',
+           'street',
+           'shop']
 # Create the label to ID mapping
 label2id = {label: idx for idx, label in enumerate(scene_labels)}
 
@@ -61,7 +60,7 @@ id2label = {idx: label for label, idx in label2id.items()}
 # Create a new run
 with wandb.init(project="vit-base-patch16-224") as run:
     # Pass the name and version of Artifact
-    my_model_name = "model-ym3ezio5:latest"
+    my_model_name = "model-8uukuxly:latest"
     my_model_artifact = run.use_artifact(my_model_name)
 
     # Download model weights to a folder and return the path
