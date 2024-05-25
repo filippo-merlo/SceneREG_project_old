@@ -14,7 +14,7 @@ dataset = concatenate_datasets([ds['train'], ds['validation']])
 scene_names = list(dataset.features['scene_category'].names)
 names2id = dict(zip(scene_names, range(len(scene_names))))
 names2id_filtered = dict()
-#%%
+
 to_keep = ['bathroom', 'bedroom', 'hotel_room', 'game_room', 'living_room', 'office', 'nursery',
            'restaurant', 'dining_room', 'kitchen', 'attic', 'galley', 'wet_bar', 'kitchenette',
            'vehicle', 'dinette_home', 'poolroom_home', 'conference_room', 'closet', 'bar', 

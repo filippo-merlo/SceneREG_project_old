@@ -177,7 +177,6 @@ to_keep.remove('outlier')
 print(to_keep)
 print(len(to_keep))
 
-
 #%%
 to_keep = ['bathroom', 'bedroom', 'hotel_room', 'game_room', 'living_room', 'office', 'nursery',
            'restaurant', 'dining_room', 'kitchen', 'attic', 'galley', 'wet_bar', 'kitchenette',
