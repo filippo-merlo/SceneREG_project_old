@@ -1,12 +1,10 @@
+#%%
 import os 
 from config import *
 from pprint import pprint
 import torch
 
 # Is MPS even available? macOS 12.3+
-print(torch.backends.mps.is_available())
-# Was the current version of PyTorch built with MPS activated?
-print(torch.backends.mps.is_built())
 device = torch.device("mps")
 
 def get_files(directory):
@@ -43,8 +41,44 @@ model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32").to(device)
 tokenizer = AutoTokenizer.from_pretrained("openai/clip-vit-base-patch32")
 processor = AutoProcessor.from_pretrained("openai/clip-vit-base-patch32")
 
+# vit model 
+import wandb
+from transformers import ViTForImageClassification, AutoImageProcessor
+scene_labels = ['bathroom', 'bedroom', 'hotel_room', 'game_room', 'living_room', 'office',
+           'restaurant', 'dining_room', 'kitchen', 'attic', 'art_gallery', 'exhibition_hall',
+           'bicycle_racks', 'lagoon', 'acropolis', 'science_laboratory', 'coral_reef', 'vehicle',
+           'poolroom_home', 'conference_room', 'closet', 'dorm_room', 'home_office', 'hospital_room',
+           'art_studio', 'street', 'classroom', 'lobby', 'frontseat', 'elevator_shaft', 'playground',
+           'witness_stand', 'waterscape', 'rice_paddy', 'spillway', 'strip_mine', 
+           'meat_house', 'lumberyard_outdoor',
+           'nuclear_power_plant_outdoor', 'lava_flow', 'ski_slope', 'pier', 'movie_theater_outdoor', 'cataract', 'office_building']
+# Create the label to ID mapping
+label2id = {label: idx for idx, label in enumerate(scene_labels)}
+
+# Reverse the mapping to create ID to label mapping
+id2label = {idx: label for label, idx in label2id.items()}
+# Create a new run
+with wandb.init(project="vit-base-patch16-224") as run:
+    # Pass the name and version of Artifact
+    my_model_name = "model-ym3ezio5:latest"
+    my_model_artifact = run.use_artifact(my_model_name)
+
+    # Download model weights to a folder and return the path
+    model_dir = my_model_artifact.download()
+
+    # Load your Hugging Face model from that folder
+    #  using the same model class
+    vit_processor = AutoImageProcessor.from_pretrained("google/vit-base-patch16-224")
+    vit_model = ViTForImageClassification.from_pretrained(
+        model_dir,
+        num_labels=len(scene_labels),
+        id2label=id2label,
+        label2id=label2id
+    ).to(device)
+
+    # Do add
 # Classify scene
-def classify_scene(image_picture, image_captions):
+def classify_scene_clip_llava(image_picture, image_captions):
         # Generate LLaVa caption
         llava_prompt = "Where is the picture taken?"
         llava_output = generate_llava_caption(image_picture, llava_prompt)
@@ -130,6 +164,13 @@ def similarity_score(tensor, tensor_list):
         similarities.append(torch.matmul(tensor, c.T).item())
     return torch.tensor(similarities)
 
+def classify_scene_vit(image_picture):
+    inputs = vit_processor(image_picture, return_tensors="pt").to(device)
+    with torch.no_grad():
+        logits = vit_model(**inputs).logits
+
+    predicted_label = logits.argmax(-1).item()
+    print(vit_model.config.id2label[predicted_label])
 
 from transformers import AutoProcessor, LlavaForConditionalGeneration
 # LLaVa with Ollama 
