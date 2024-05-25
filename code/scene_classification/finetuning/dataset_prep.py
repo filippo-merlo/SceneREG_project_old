@@ -184,8 +184,8 @@ labels = list(counter.keys())
 names2id_filtered = dict()
 
 for label in labels:
-    if counter[label] >= 10:
-        if id2names[label] == 'misc':
+    if counter[label] >= 50:
+        if id2names[label] == 'misc' or id2names[label] == 'outlier':
             continue
         else:
             names2id_filtered[id2names[label]] = label
