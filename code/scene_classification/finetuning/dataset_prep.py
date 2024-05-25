@@ -11,27 +11,27 @@ dataset = DatasetDict()
 dataset = concatenate_datasets([ds['train'], ds['validation']])
 
 # Remove misc
-scene_names = list(dataset.features['scene_category'].names)
-names2id = dict(zip(scene_names, range(len(scene_names))))
-names2id_filtered = dict()
-
-to_keep = ['bathroom', 'bedroom', 'game_room', 'living_room', 'office',
-           'restaurant', 'dining_room', 'kitchen', 'attic',
-           'vehicle', 'closet', 'bar', 
-          'basement', 'corridor',
-           'coffee_shop', 'library_indoor',
-           'home_office', 'art_studio', 'highway',
-           'street',
-           'shop']
-
-for label in scene_names:
-    #if label == 'misc':
-    #    continue
-    if label not in to_keep:
-        continue
-    else:
-        names2id_filtered[label] = names2id[label]
-filter_dataset = dataset.filter(lambda example: example['scene_category'] in names2id_filtered.values())
+#scene_names = list(dataset.features['scene_category'].names)
+#names2id = dict(zip(scene_names, range(len(scene_names))))
+#names2id_filtered = dict()
+#
+#to_keep = ['bathroom', 'bedroom', 'game_room', 'living_room', 'office',
+#           'restaurant', 'dining_room', 'kitchen', 'attic',
+#           'vehicle', 'closet', 'bar', 
+#          'basement', 'corridor',
+#           'coffee_shop', 'library_indoor',
+#           'home_office', 'art_studio', 'highway',
+#           'street',
+#           'shop']
+#
+#for label in scene_names:
+#    #if label == 'misc':
+#    #    continue
+#    if label not in to_keep:
+#        continue
+#    else:
+#        names2id_filtered[label] = names2id[label]
+#filter_dataset = dataset.filter(lambda example: example['scene_category'] in names2id_filtered.values())
 #%%
 # ALREADY DONE; JUST IMPORT THE DICT WITH NEW LABLES
 '''
@@ -145,7 +145,7 @@ with open('new_labels.json', 'w') as f:
 #
 #final_dataset = filter_dataset.remove_columns('scene_category').add_column('scene_category', new_label_ids)
 
-
+'''
 filter_dataset['scene_category']
 names2id_filtered
 new_scene_categories = list(names2id_filtered.keys())
@@ -215,4 +215,3 @@ final_dataset = filter_dataset.remove_columns('scene_category').add_column('scen
 class_labels = ClassLabel(names=list(names2id_filtered.keys()), num_classes=len(names2id_filtered.keys()))
 final_dataset =  final_dataset.cast_column('scene_category', class_labels)
 final_dataset = final_dataset.train_test_split(test_size=0.1)
-'''

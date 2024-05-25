@@ -173,7 +173,8 @@ pprint(counter)
 print(len(set(most_related_scene_cat)))
 
 to_keep = [k for k,v in counter.items() if v > 10]
-to_keep.remove('outlier')
+if 'outlier' in to_keep:
+    to_keep.remove('outlier')
 print(to_keep)
 print(len(to_keep))
 
