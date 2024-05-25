@@ -48,10 +48,7 @@ scene_labels = ['bathroom', 'bedroom', 'hotel_room', 'game_room', 'living_room',
            'restaurant', 'dining_room', 'kitchen', 'attic', 'art_gallery', 'exhibition_hall',
            'bicycle_racks', 'lagoon', 'acropolis', 'science_laboratory', 'coral_reef', 'vehicle',
            'poolroom_home', 'conference_room', 'closet', 'dorm_room', 'home_office', 'hospital_room',
-           'art_studio', 'street', 'classroom', 'lobby', 'frontseat', 'elevator_shaft', 'playground',
-           'witness_stand', 'waterscape', 'rice_paddy', 'spillway', 'strip_mine', 
-           'meat_house', 'lumberyard_outdoor',
-           'nuclear_power_plant_outdoor', 'lava_flow', 'ski_slope', 'pier', 'movie_theater_outdoor', 'cataract', 'office_building']
+           'art_studio', 'street', 'classroom', 'lobby', 'frontseat', 'elevator_shaft', 'playground']
 # Create the label to ID mapping
 label2id = {label: idx for idx, label in enumerate(scene_labels)}
 

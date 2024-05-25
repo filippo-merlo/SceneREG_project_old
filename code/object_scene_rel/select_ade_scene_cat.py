@@ -152,15 +152,20 @@ object_scenes_cooccurrency
 len(objects_found.keys())
 #%%
 # Get the n most related scene category for each object
-k = 30
+k = 100
 most_related_scene_cat = []
 
 for id in objects_found.values():
     #print(id[1])
     id = id[0]
-    cats = object_scenes_cooccurrency.iloc[id].nlargest(k).index
-    #print(cats)
-    most_related_scene_cat += cats.tolist()
+    # Get the nlargest values along with their indices
+    largest_elements = object_scenes_cooccurrency.iloc[id].nlargest(k)
+    # Separate the indices and values
+    cats = largest_elements.index
+    values = largest_elements.values
+    values = [1 if v > 0 else 0 for v in values]
+    cats = [cat for cat, v in zip(cats, values) if v == 1]
+    most_related_scene_cat += cats
 
 from collections import Counter
 counter = Counter(most_related_scene_cat)
@@ -169,13 +174,17 @@ print(len(set(most_related_scene_cat)))
 
 to_keep = [k for k,v in counter.items() if v > 10]
 to_keep.remove('outlier')
-print(len(to_keep))
 print(to_keep)
+print(len(to_keep))
 
-to_keep = ['bathroom', 'bedroom', 'hotel_room', 'game_room', 'living_room', 'office',
-           'restaurant', 'dining_room', 'kitchen', 'attic', 'art_gallery', 'exhibition_hall',
-           'bicycle_racks', 'lagoon', 'acropolis', 'science_laboratory', 'coral_reef', 'vehicle',
-           'poolroom_home', 'conference_room', 'closet', 'dorm_room', 'home_office', 'hospital_room',
-           'art_studio', 'street', 'classroom', 'lobby', 'frontseat', 'elevator_shaft', 'playground',
-           'witness_stand', 'waterscape', 'rice_paddy', 'spillway', 'strip_mine', 'meat_house', 'lumberyard_outdoor',
-           'nuclear_power_plant_outdoor', 'lava_flow', 'ski_slope', 'pier', 'movie_theater_outdoor', 'cataract', 'office_building']
+
+#%%
+to_keep = ['bathroom', 'bedroom', 'hotel_room', 'game_room', 'living_room', 'office', 'nursery',
+           'restaurant', 'dining_room', 'kitchen', 'attic', 'galley', 'wet_bar', 'kitchenette',
+           'vehicle', 'dinette_home', 'poolroom_home', 'conference_room', 'closet', 'bar', 
+           'bow_window_indoor', 'basement', 'art_gallery', 'classroom', 'corridor', 'youth_hostel', 
+           'coffee_shop', 'library_indoor', 'kindergarden_classroom', 'recreation_room', 'dorm_room', 
+           'childs_room', 'artists_loft', 'home_office', 'art_studio', 'highway', 'dining_hall', 
+           'street', 'restaurant_patio', 'lobby', 'waiting_room', 'dining_car', 'reception', 'parlor', 
+           'shop', 'airplane_cabin', 'conference_center', 'airport_terminal', 'pantry', 'plaza', 
+           'building_facade']

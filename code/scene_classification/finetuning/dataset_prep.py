@@ -14,14 +14,16 @@ dataset = concatenate_datasets([ds['train'], ds['validation']])
 scene_names = list(dataset.features['scene_category'].names)
 names2id = dict(zip(scene_names, range(len(scene_names))))
 names2id_filtered = dict()
-to_keep = ['bathroom', 'bedroom', 'hotel_room', 'game_room', 'living_room', 'office',
-           'restaurant', 'dining_room', 'kitchen', 'attic', 'art_gallery', 'exhibition_hall',
-           'bicycle_racks', 'lagoon', 'acropolis', 'science_laboratory', 'coral_reef', 'vehicle',
-           'poolroom_home', 'conference_room', 'closet', 'dorm_room', 'home_office', 'hospital_room',
-           'art_studio', 'street', 'classroom', 'lobby', 'frontseat', 'elevator_shaft', 'playground',
-           'witness_stand', 'waterscape', 'rice_paddy', 'spillway', 'strip_mine', 
-           'meat_house', 'lumberyard_outdoor',
-           'nuclear_power_plant_outdoor', 'lava_flow', 'ski_slope', 'pier', 'movie_theater_outdoor', 'cataract', 'office_building']
+#%%
+to_keep = ['bathroom', 'bedroom', 'hotel_room', 'game_room', 'living_room', 'office', 'nursery',
+           'restaurant', 'dining_room', 'kitchen', 'attic', 'galley', 'wet_bar', 'kitchenette',
+           'vehicle', 'dinette_home', 'poolroom_home', 'conference_room', 'closet', 'bar', 
+           'bow_window_indoor', 'basement', 'art_gallery', 'classroom', 'corridor', 'youth_hostel', 
+           'coffee_shop', 'library_indoor', 'kindergarden_classroom', 'recreation_room', 'dorm_room', 
+           'childs_room', 'artists_loft', 'home_office', 'art_studio', 'highway', 'dining_hall', 
+           'street', 'restaurant_patio', 'lobby', 'waiting_room', 'dining_car', 'reception', 'parlor', 
+           'shop', 'airplane_cabin', 'conference_center', 'airport_terminal', 'pantry', 'plaza', 
+           'building_facade']
 for label in scene_names:
     #if label == 'misc':
     #    continue
