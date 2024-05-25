@@ -6,18 +6,16 @@ coco_categories =  [{"supercategory": "person","id": 1,"name": "person"},{"super
 # GET SCENE LABELS
 import pandas as pd
 
-obscene_path = '/Users/filippomerlo/Desktop/Datasets/ObScene/ObSceneDatabase_SupplementalTables.xlsx'
-obscene_dataset = pd.read_excel(obscene_path, sheet_name='Table S2 - SCENES (245)', engine='openpyxl')
 
-scene_labels = list(set(list(obscene_dataset['Scene Modal Name [EN translation]'])))
+scene_labels = ['bathroom', 'bedroom', 'hotel_room', 'game_room', 'living_room', 'office', 'nursery', 'restaurant', 'dining_room', 'kitchen', 'attic', 'galley', 'wet_bar', 'kitchenette', 'vehicle', 'dinette_home', 'poolroom_home', 'conference_room', 'closet', 'bar', 'bow_window_indoor', 'basement', 'art_gallery', 'classroom', 'corridor', 'youth_hostel', 'coffee_shop', 'library_indoor', 'kindergarden_classroom', 'recreation_room', 'dorm_room', 'childs_room', 'artists_loft', 'home_office', 'art_studio', 'highway', 'dining_hall', 'street', 'restaurant_patio', 'lobby', 'waiting_room', 'dining_car', 'reception', 'parlor', 'shop', 'airplane_cabin', 'conference_center', 'airport_terminal', 'pantry', 'plaza', 'building_facade']
 
 scene_labels_context = []
 vowels = ['a', 'e', 'i', 'o', 'u']
 for label in scene_labels:
     if label[0].lower() in vowels:
-        scene_labels_context.append(f"a picture of an {label}")
+        scene_labels_context.append(f"a picture of an {label.replace('_', ' ')}")
     else:
-        scene_labels_context.append(f"a picture of a {label}")
+        scene_labels_context.append(f"a picture of a {label.replace('_', ' ')}")
 
 #%%
 #tp_object_property_path = '/Users/filippomerlo/Desktop/Datasets/THINGSplus/Metadata/Concept-specific/objectProperties_meanRatings.tsv'

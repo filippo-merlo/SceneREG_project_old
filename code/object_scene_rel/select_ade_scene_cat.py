@@ -178,11 +178,4 @@ print(to_keep)
 print(len(to_keep))
 
 #%%
-to_keep = ['bathroom', 'bedroom', 'game_room', 'living_room', 'office',
-           'restaurant', 'dining_room', 'kitchen', 'attic',
-           'vehicle','conference_room', 'closet', 'bar', 
-          'basement', 'art_gallery', 'classroom', 'corridor',
-           'coffee_shop', 'library_indoor', 'recreation_room', 'dorm_room', 
-           'childs_room', 'home_office', 'art_studio', 'highway',
-           'street','waiting_room',
-           'shop', 'airport_terminal','plaza']
+to_keep = ['bathroom', 'bedroom', 'hotel_room', 'game_room', 'living_room', 'office', 'nursery', 'restaurant', 'dining_room', 'kitchen', 'attic', 'galley', 'wet_bar', 'kitchenette', 'vehicle', 'dinette_home', 'poolroom_home', 'conference_room', 'closet', 'bar', 'bow_window_indoor', 'basement', 'art_gallery', 'classroom', 'corridor', 'youth_hostel', 'coffee_shop', 'library_indoor', 'kindergarden_classroom', 'recreation_room', 'dorm_room', 'childs_room', 'artists_loft', 'home_office', 'art_studio', 'highway', 'dining_hall', 'street', 'restaurant_patio', 'lobby', 'waiting_room', 'dining_car', 'reception', 'parlor', 'shop', 'airplane_cabin', 'conference_center', 'airport_terminal', 'pantry', 'plaza', 'building_facade']
