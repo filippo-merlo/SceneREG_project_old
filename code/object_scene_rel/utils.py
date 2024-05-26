@@ -39,7 +39,7 @@ def print_dict_structure(dictionary, ind = ''):
 # vit model 
 import wandb
 from transformers import ViTForImageClassification, AutoImageProcessor
-scene_labels_vit = ['natural', 'street', 'river', 'bathroom', 'highway', 'staircase', 'building_facade', 'home_office', 'house', 'skyscraper', 'kitchen', 'attic', 'living_room', 'reception', 'bedroom', 'corridor', 'exterior', 'art_gallery', 'garage_indoor', 'alley', 'apartment_building_outdoor', 'hotel_room', 'game_room', 'mountain', 'office', 'beach', 'conference_room', 'broadleaf', 'dining_room', 'waiting_room', 'pasture', 'warehouse_indoor', 'cultivated', 'childs_room', 'airport_terminal', 'castle', 'coast', 'nursery', 'shop', 'parlor', 'bridge', 'art_studio', 'lobby', 'classroom', 'mountain_snowy', 'poolroom_home', 'dorm_room', 'closet', 'bar', 'needleleaf', 'roundabout', 'casino_indoor', 'park']
+scene_labels_vit = ['natural', 'street', 'river', 'bathroom', 'highway', 'staircase', 'museum_indoor', 'building_facade', 'home_office', 'creek', 'house', 'skyscraper', 'kitchen', 'attic', 'living_room', 'reception', 'bedroom', 'dinette_home', 'shoe_shop', 'corridor', 'exterior', 'art_gallery', 'garage_indoor', 'alley', 'apartment_building_outdoor', 'parking_lot', 'hotel_room', 'wild', 'game_room', 'mountain', 'office', 'vehicle', 'beach', 'conference_room', 'broadleaf', 'jacuzzi_indoor', 'dining_room', 'waiting_room', 'pasture', 'warehouse_indoor', 'cultivated', 'childs_room', 'airport_terminal', 'castle', 'coast', 'lighthouse', 'nursery', 'window_seat', 'shop', 'parlor', 'bridge', 'art_studio', 'lobby', 'classroom', 'mountain_snowy', 'poolroom_home', 'dorm_room', 'cockpit', 'youth_hostel', 'closet', 'bar', 'needleleaf', 'roundabout', 'playroom', 'casino_indoor', 'valley', 'park', 'amusement_park']
 # Create the label to ID mapping
 label2id = {label: idx for idx, label in enumerate(scene_labels_vit)}
 
@@ -69,8 +69,18 @@ def classify_scene_vit(image_picture):
     with torch.no_grad():
         logits = vit_model(**inputs).logits
 
-    predicted_label = logits.argmax(-1).item()
-    print(vit_model.config.id2label[predicted_label])
+    # Get the top 5 predictions
+    top5_prob, top5_indices = torch.topk(logits, 5)
+
+    # Convert logits to probabilities
+    probabilities = torch.nn.functional.softmax(top5_prob, dim=-1)
+
+    # Get the labels for the top 5 indices
+    top5_labels = [vit_model.config.id2label[idx.item()] for idx in top5_indices[0]]
+
+    # Print the top 5 labels and their corresponding probabilities
+    for label, prob in zip(top5_labels, probabilities[0]):
+        print(f"{label}: {prob:.4f}")
 
 
 # clip model
