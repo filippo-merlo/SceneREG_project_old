@@ -36,49 +36,51 @@ def print_dict_structure(dictionary, ind = ''):
                 print_dict_structure(value[0], ind2)
 
 
-## vit model 
-#import wandb
-#from transformers import ViTForImageClassification, AutoImageProcessor
-#scene_labels_vit = ['bathroom', 'bedroom', 'game_room', 'living_room', 'office',
-#           'restaurant', 'dining_room', 'kitchen', 'attic',
-#           'vehicle', 'closet', 'bar', 
-#          'basement', 'corridor',
-#           'coffee_shop', 'library_indoor',
-#           'home_office', 'art_studio', 'highway',
-#           'street',
-#           'shop']
-## Create the label to ID mapping
-#label2id = {label: idx for idx, label in enumerate(scene_labels_vit)}
-#
-## Reverse the mapping to create ID to label mapping
-#id2label = {idx: label for label, idx in label2id.items()}
-## Create a new run
-#with wandb.init(project="vit-base-patch16-224") as run:
-#    # Pass the name and version of Artifact
-#    my_model_name = "model-nc8cnj5f:v0"
-#    my_model_artifact = run.use_artifact(my_model_name)
-#
-#    # Download model weights to a folder and return the path
-#    model_dir = my_model_artifact.download()
-#
-#    # Load your Hugging Face model from that folder
-#    #  using the same model class
-#    vit_processor = AutoImageProcessor.from_pretrained("google/vit-base-patch16-224")
-#    vit_model = ViTForImageClassification.from_pretrained(
-#        model_dir,
-#        num_labels=len(scene_labels_vit),
-#        id2label=id2label,
-#        label2id=label2id
-#    ).to(device)
-#
-#def classify_scene_vit(image_picture):
-#    inputs = vit_processor(image_picture, return_tensors="pt").to(device)
-#    with torch.no_grad():
-#        logits = vit_model(**inputs).logits
-#
-#    predicted_label = logits.argmax(-1).item()
-#    print(vit_model.config.id2label[predicted_label])
+# vit model 
+import wandb
+from transformers import ViTForImageClassification, AutoImageProcessor
+scene_labels_vit = ['bathroom', 'bedroom', 'game_room', 'living_room', 'office',
+           'restaurant', 'dining_room', 'kitchen', 'attic',
+           'vehicle', 'closet', 'bar', 
+          'basement', 'corridor',
+           'coffee_shop', 'library_indoor',
+           'home_office', 'art_studio', 'highway',
+           'street',
+           'shop']
+# Create the label to ID mapping
+label2id = {label: idx for idx, label in enumerate(scene_labels_vit)}
 
+# Reverse the mapping to create ID to label mapping
+id2label = {idx: label for label, idx in label2id.items()}
+# Create a new run
+with wandb.init(project="vit-base-patch16-224") as run:
+    # Pass the name and version of Artifact
+    my_model_name = "model-u9yxgyhs:v0"
+    my_model_artifact = run.use_artifact(my_model_name)
+
+    # Download model weights to a folder and return the path
+    model_dir = my_model_artifact.download()
+
+    # Load your Hugging Face model from that folder
+    #  using the same model class
+    vit_processor = AutoImageProcessor.from_pretrained("google/vit-base-patch16-224")
+    vit_model = ViTForImageClassification.from_pretrained(
+        model_dir,
+        num_labels=len(scene_labels_vit),
+        id2label=id2label,
+        label2id=label2id
+    ).to(device)
+
+def classify_scene_vit(image_picture):
+    inputs = vit_processor(image_picture, return_tensors="pt").to(device)
+    with torch.no_grad():
+        logits = vit_model(**inputs).logits
+
+    predicted_label = logits.argmax(-1).item()
+    print(vit_model.config.id2label[predicted_label])
+
+
+# clip model
 from transformers import AutoTokenizer, AutoProcessor, CLIPModel
 
 model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32").to(device)

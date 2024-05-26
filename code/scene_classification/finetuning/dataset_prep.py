@@ -4,7 +4,7 @@ from config import *
 
 # Load the dataset
 from datasets import load_dataset, concatenate_datasets, DatasetDict, ClassLabel
-ds = load_dataset("scene_parse_150", cache_dir= cache_dir)
+ds = load_dataset("scene_parse_150", cache_dir=cache_dir)
 
 # Remove test split
 dataset = DatasetDict()
@@ -189,6 +189,10 @@ for label in labels:
             continue
         else:
             names2id_filtered[id2names[label]] = label
+from pprint import pprint
+
+pprint(names2id_filtered.values())
+
 filter_dataset = dataset.filter(lambda example: example['scene_category'] in names2id_filtered.values())
 
 # make dicts
