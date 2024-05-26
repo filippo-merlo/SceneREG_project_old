@@ -179,6 +179,7 @@ id2names = dict(zip(range(len(names)), names))
 tot_labs = dataset['scene_category']
 counter = Counter(tot_labs)
 
+from pprint import pprint
 pprint({names[k]:v for k, v in counter.items() if v >= 40})
 
 # Get the labels
