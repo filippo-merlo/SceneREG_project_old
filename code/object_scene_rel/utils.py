@@ -39,14 +39,7 @@ def print_dict_structure(dictionary, ind = ''):
 # vit model 
 import wandb
 from transformers import ViTForImageClassification, AutoImageProcessor
-scene_labels_vit = ['bathroom', 'bedroom', 'game_room', 'living_room', 'office',
-           'restaurant', 'dining_room', 'kitchen', 'attic',
-           'vehicle', 'closet', 'bar', 
-          'basement', 'corridor',
-           'coffee_shop', 'library_indoor',
-           'home_office', 'art_studio', 'highway',
-           'street',
-           'shop']
+scene_labels_vit = ['natural', 'street', 'river', 'bathroom', 'highway', 'staircase', 'building_facade', 'home_office', 'house', 'skyscraper', 'kitchen', 'attic', 'living_room', 'reception', 'bedroom', 'corridor', 'exterior', 'art_gallery', 'garage_indoor', 'alley', 'apartment_building_outdoor', 'hotel_room', 'game_room', 'mountain', 'office', 'beach', 'conference_room', 'broadleaf', 'dining_room', 'waiting_room', 'pasture', 'warehouse_indoor', 'cultivated', 'childs_room', 'airport_terminal', 'castle', 'coast', 'nursery', 'shop', 'parlor', 'bridge', 'art_studio', 'lobby', 'classroom', 'mountain_snowy', 'poolroom_home', 'dorm_room', 'closet', 'bar', 'needleleaf', 'roundabout', 'casino_indoor', 'park']
 # Create the label to ID mapping
 label2id = {label: idx for idx, label in enumerate(scene_labels_vit)}
 
