@@ -190,7 +190,7 @@ for label in labels:
         else:
             names2id_filtered[id2names[label]] = label
 from pprint import pprint
-
+pprint(names2id_filtered.keys())
 filter_dataset = dataset.filter(lambda example: example['scene_category'] in names2id_filtered.values())
 
 # make dicts
