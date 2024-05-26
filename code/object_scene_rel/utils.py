@@ -48,7 +48,7 @@ id2label = {idx: label for label, idx in label2id.items()}
 # Create a new run
 with wandb.init(project="vit-base-patch16-224") as run:
     # Pass the name and version of Artifact
-    my_model_name = "model-u9yxgyhs:v0"
+    my_model_name = "model-6evzp0q6:v0"
     my_model_artifact = run.use_artifact(my_model_name)
 
     # Download model weights to a folder and return the path
