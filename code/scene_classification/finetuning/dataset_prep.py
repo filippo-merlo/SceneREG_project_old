@@ -188,9 +188,9 @@ names2id_filtered = dict()
 
 for label in labels:
     if counter[label] >= 40:
-        if id2names[label] == 'misc' or id2names[label] == 'outlier':
-            continue
-        else:
+        #if id2names[label] == 'misc' or id2names[label] == 'outlier':
+        #    continue
+        #else:
             names2id_filtered[id2names[label]] = label
 from pprint import pprint
 pprint(names2id_filtered.keys())
