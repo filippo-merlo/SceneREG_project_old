@@ -167,7 +167,7 @@ class Dataset:
        
         # Classify scene
         #classify_scene_clip_llava(image_picture, scene_labels_context)
-        classify_scene_vit(image_picture, scene_labels_context)
+        classify_scene_vit(image_picture)
         # retrieve info from obscene
 
 
