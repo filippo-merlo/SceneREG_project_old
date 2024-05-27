@@ -32,7 +32,7 @@ class CollectionsDataset(Dataset):
             outputs = self.clip(**inputs)
             txt_features = outputs.text_model_output.last_hidden_state
             img_features = outputs.vision_model_output.last_hidden_state
-            reppresentation = torch.cat([txt_features, img_features], dim=1)
+            reppresentation = torch.cat([txt_features, img_features])
 
 
         return {'reppresentation': reppresentation,
