@@ -114,7 +114,7 @@ for epoch in range(num_epochs):
         print(batch['reppresentation'].size())
         # Move data to device
         labels = batch['labels'].to(device0)
-        input = {v.to(device0) for v in batch['reppresentation']}
+        input = batch['reppresentation'].to(device0)
         # Forward pass
         outputs = model(input)
         loss = criterion(outputs, labels)
