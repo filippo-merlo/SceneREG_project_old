@@ -38,7 +38,7 @@ from transformers import AutoProcessor, CLIPModel, pipeline
 processor = {
     'clip_processor': AutoProcessor.from_pretrained("openai/clip-vit-base-patch32"),
     'clip_model': CLIPModel.from_pretrained("openai/clip-vit-base-patch32").to(device),
-    'llava_pipeline': pipeline("image-to-text", model="llava-hf/llava-1.5-7b-hf")
+    'llava_pipeline': pipeline("image-to-text", model="llava-hf/llava-1.5-7b-hf", device=device)
 }
 train_dataloader = DataLoader(CollectionsDataset(final_dataset['train'], processor), shuffle=True, batch_size=wandb.config['batch_size'])
 eval_dataloader = DataLoader(CollectionsDataset(final_dataset['test'], processor), shuffle=True, batch_size=wandb.config['batch_size'])
