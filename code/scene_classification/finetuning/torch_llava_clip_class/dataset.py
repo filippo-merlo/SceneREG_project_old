@@ -3,6 +3,8 @@
 import torch
 from torch.utils.data import Dataset
 
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+
 class CollectionsDataset(Dataset):
     def __init__(self, 
                  hf_dataset, 
@@ -25,7 +27,7 @@ class CollectionsDataset(Dataset):
 
         if self.transform:
             llava_caption = self.pipe(image, prompt="Where is the picture taken?", generate_kwargs={"max_new_tokens": 200})
-            inputs = self.processor(text=llava_caption, images=image, return_tensors="pt", padding=True)
+            inputs = self.processor(text=llava_caption, images=image, return_tensors="pt", padding=True).to(device)
             outputs = self.clip(**inputs)
             txt_features = outputs.text_model_output
             img_features = outputs.vision_model_output

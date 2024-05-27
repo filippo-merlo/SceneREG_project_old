@@ -1,5 +1,4 @@
 # Define clip model
-from transformers import CLIPVisionModel
 import torch
 import torch.nn.functional as F
 

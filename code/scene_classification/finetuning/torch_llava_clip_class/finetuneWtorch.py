@@ -34,7 +34,7 @@ device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 from transformers import AutoProcessor, CLIPModel, pipeline
 
 processor = {
-    'clip_processor': AutoProcessor.from_pretrained("openai/clip-vit-base-patch32", cache_dir=cache_dir).to(device),
+    'clip_processor': AutoProcessor.from_pretrained("openai/clip-vit-base-patch32", cache_dir=cache_dir),
     'clip_model': CLIPModel.from_pretrained("openai/clip-vit-base-patch32",  cache_dir=cache_dir).to(device),
     'llava_pipeline': pipeline("image-to-text", model="llava-hf/llava-1.5-7b-hf", cache_dir=cache_dir).to(device)
 }
