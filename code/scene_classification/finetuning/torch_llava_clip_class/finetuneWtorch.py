@@ -38,13 +38,13 @@ from transformers import AutoProcessor, CLIPModel, LlavaForConditionalGeneration
 
 processor = {
     'clip_processor': AutoProcessor.from_pretrained("openai/clip-vit-base-patch32"),
-    'clip_model': CLIPModel.from_pretrained("openai/clip-vit-base-patch32").to(device0),
+    'clip_model': CLIPModel.from_pretrained("openai/clip-vit-base-patch32").to(device1),
     'llava_processor': AutoProcessor.from_pretrained("llava-hf/llava-1.5-13b-hf"),
     'llava_model': LlavaForConditionalGeneration.from_pretrained(
                 "llava-hf/llava-1.5-13b-hf", 
                 torch_dtype=torch.float16, 
                 low_cpu_mem_usage=True, 
-            ).to(device1)
+            ).to(0)
 
 }
 train_dataloader = DataLoader(CollectionsDataset(final_dataset['train'], processor), shuffle=True, batch_size=wandb.config['batch_size'])
