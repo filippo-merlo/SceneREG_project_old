@@ -5,7 +5,7 @@ from dataset import CollectionsDataset
 from dataset import *
 from torch.utils.data import DataLoader
 import sys
-sys.path.append('./')
+sys.path.append('../')
 from dataset_prep import final_dataset
 
 # Initialize Weights and Biases (wandb)
