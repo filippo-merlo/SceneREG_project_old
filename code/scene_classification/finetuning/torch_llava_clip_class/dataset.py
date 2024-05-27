@@ -21,6 +21,7 @@ class CollectionsDataset(Dataset):
 
     def __getitem__(self, idx):
         image = self.data[idx]['image']
+        print(image)
         label = self.data[idx]['scene_category']
         label_tensor = torch.zeros(self.num_classes)
         label_tensor[label] = 1
