@@ -28,14 +28,14 @@ class CollectionsDataset(Dataset):
         label_tensor = torch.zeros(self.num_classes)
         label_tensor[label] = 1
 
-        if self.processor:
-            llava_inputs = self.llava_processor(self.prompt, image, return_tensors='pt').to(0, torch.float16)
-            llava_caption = self.llava.generate(**llava_inputs, max_new_tokens=200, do_sample=False)
-            inputs = self.clip_processor(text=str(llava_caption), images=image, return_tensors="pt", padding=True).to(device0)
-            outputs = self.clip(**inputs)
-            txt_features = outputs.text_model_output.last_hidden_state.mean(dim=1) 
-            img_features = outputs.vision_model_output.last_hidden_state.mean(dim=1) 
-            reppresentation = torch.cat([txt_features, img_features], dim=1)
+       # process image and text
+        llava_inputs = self.llava_processor(self.prompt, image, return_tensors='pt').to(0, torch.float16)
+        llava_caption = self.llava.generate(**llava_inputs, max_new_tokens=200, do_sample=False)
+        inputs = self.clip_processor(text=str(llava_caption), images=image, return_tensors="pt", padding=True).to(device0)
+        outputs = self.clip(**inputs)
+        txt_features = outputs.text_model_output.last_hidden_state.mean(dim=1) 
+        img_features = outputs.vision_model_output.last_hidden_state.mean(dim=1) 
+        reppresentation = torch.cat([txt_features, img_features], dim=1)
 
 
         return {'reppresentation': reppresentation,
