@@ -39,8 +39,7 @@ class CollectionsDataset(Dataset):
 
 
         return {'reppresentation': reppresentation,
-                'labels': label_tensor
-                }
+                'labels': label_tensor}
 
 
 

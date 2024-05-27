@@ -111,9 +111,10 @@ for epoch in range(num_epochs):
     # Training Phase
     model.train()
     for batch_idx, batch in enumerate(train_dataloader):
+        print(batch)
         # Move data to device
         labels = batch['labels'].to(device0)
-        input = {k:v.squeeze().to(device0) for k, v in batch['reppresentation'].items()}
+        input = {k:v.to(device0) for k, v in batch['reppresentation'].items()}
         # Forward pass
         outputs = model(input)
         loss = criterion(outputs, labels)
