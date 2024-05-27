@@ -14,14 +14,14 @@ cache_dir = '/mnt/cimec-storage6/users/filippo.merlo'
 
 import wandb
 wandb.login()
-model_checkpoint = "openai/clip-vit-base-patch32"
+project_name = "clip_llava_attention_scene_classifier"
 config = {
     "batch_size": 16,
     "num_epochs": 10,
     "lr": 2e-4,
     "momentum": 0.9
 }
-wandb.init(project=model_checkpoint.split('/')[1], config=config)
+wandb.init(project=project_name.split('/')[1], config=config)
 
 
 #%%
