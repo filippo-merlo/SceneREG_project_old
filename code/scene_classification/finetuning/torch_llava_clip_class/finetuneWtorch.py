@@ -11,7 +11,7 @@ from dataset_prep import final_dataset
 # Initialize Weights and Biases (wandb)
 cache_dir = '/mnt/cimec-storage6/users/filippo.merlo'
 import os
-os.environ['TRANSFORMERS_CACHE'] = cache_dir
+os.environ['HF_HOME'] = cache_dir
 
 import wandb
 wandb.login()
