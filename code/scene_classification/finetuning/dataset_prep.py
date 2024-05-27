@@ -179,19 +179,17 @@ id2names = dict(zip(range(len(names)), names))
 tot_labs = dataset['scene_category']
 counter = Counter(tot_labs)
 
+THRESHOLD_CLASSES = 30
 from pprint import pprint
-pprint({names[k]:v for k, v in counter.items() if v >= 40})
+pprint({names[k]:v for k, v in counter.items() if v >= THRESHOLD_CLASSES})
 
 # Get the labels
 labels = list(counter.keys())
 names2id_filtered = dict()
 
 for label in labels:
-    if counter[label] >= 40:
-        #if id2names[label] == 'misc' or id2names[label] == 'outlier':
-        #    continue
-        #else:
-            names2id_filtered[id2names[label]] = label
+    if counter[label] >= THRESHOLD_CLASSES:
+        names2id_filtered[id2names[label]] = label
 from pprint import pprint
 pprint(names2id_filtered.keys())
 len(names2id_filtered.keys())
@@ -220,4 +218,4 @@ final_dataset = filter_dataset.remove_columns('scene_category').add_column('scen
 # Redefine class labels
 class_labels = ClassLabel(names=list(names2id_filtered.keys()), num_classes=len(names2id_filtered.keys()))
 final_dataset =  final_dataset.cast_column('scene_category', class_labels)
-final_dataset = final_dataset.train_test_split(test_size=0.1)
+final_dataset = final_dataset.train_test_split(test_size=0.2)

@@ -9,6 +9,7 @@ import cv2
 import matplotlib.pyplot as plt
 from PIL import Image
 import numpy as np
+from collections import Counter
 
 class Dataset:
 
@@ -103,8 +104,6 @@ class Dataset:
         image_cv2 = cv2.cvtColor(np.array(image_picture), cv2.COLOR_RGB2BGR)
 
         # Draw the box on the image
-        
-        
         ann_key = 'instances_train2017_annotations'
         try:
             image[ann_key]
@@ -167,9 +166,50 @@ class Dataset:
        
         # Classify scene
         #classify_scene_clip_llava(image_picture, scene_labels_context)
-        classify_scene_vit(image_picture)
+        print(classify_scene_vit(image_picture))
         # retrieve info from obscene
 
+    # check predictions
+
+    def get_scene_predictions(self):
+        all_predictions = []
+        all_img_paths = []
+        c = 0
+        
+        for img_name in tqdm(list(self.data.keys())):
+            try:
+                image = self.data[img_name]
+                for fix in image['fixations']:
+                    if fix['condition'] == 'absent':
+                        target = None
+                        break
+                    if 'task' in fix.keys():
+                        target = fix['task']
+                        break
+                    else:
+                        target = None
+                    
+                images_paths = get_files(images_path)
+                image_picture = None
+
+                for image_path in images_paths:
+                    if img_name in image_path:
+                        image_picture = Image.open(image_path)
+                        all_img_paths.append(image_path)
+                        break
+                label = classify_scene_vit(image_picture)
+                all_predictions.append(label)
+            except:
+                c += 1
+                continue
+        count = Counter(all_predictions)
+        print(c)
+        label_with_paths = dict()
+        for i, lab in enumerate(all_predictions):
+            if lab not in label_with_paths.keys():
+                label_with_paths[lab] = list()
+            label_with_paths[lab].append(all_img_paths[i])
+        return count, label_with_paths
 
     def edit_image(self, img_name = None):
         # Select Image
@@ -224,6 +264,35 @@ class Dataset:
         # Classify scene
         
 dataset = Dataset(dataset_path = '/Users/filippomerlo/Desktop/Datasets/data/coco_search18_annotated.json')
+
+#%%
+count, label_with_paths = dataset.get_scene_predictions()
+pprint(count)
+pprint(label_with_paths)
+
+#%%
+lista = ['house', 'exterior', 'lobby', 'bridge', 'cultivated', 'garage_indoor', 
+         'airport_terminal', 'playroom', 'closet', 'beach', 'game_room', 'building_facade', 
+         'parlor', 'alley', 'nursery', 'pasture', 'staircase', 'park', 'museum_indoor', 
+         'mountain_snowy', 'parking_lot', 'window_seat', 'cockpit', 'reception', 'shoe_shop', 
+         'broadleaf', 'youth_hostel', 'coast', 'jacuzzi_indoor', 'castle', 'wild', 'classroom', 
+         'amusement_park']
+for l, c in count.items():
+    if c < 10:
+        lista.append(l)
+print(lista)
+
+
+for l in lista:
+    for path in label_with_paths[l]:
+        print(l)
+        img = Image.open(path)
+
+        # Show the image
+        img.show()
+        input("Press Enter to continue...")
+        
+#%%
 
 #%%
 dataset.visualize_img()

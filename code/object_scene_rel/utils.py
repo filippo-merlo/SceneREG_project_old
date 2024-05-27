@@ -39,7 +39,7 @@ def print_dict_structure(dictionary, ind = ''):
 # vit model 
 import wandb
 from transformers import ViTForImageClassification, AutoImageProcessor
-scene_labels_vit = ['natural', 'street', 'river', 'bathroom', 'highway', 'staircase', 'museum_indoor', 'building_facade', 'home_office', 'creek', 'house', 'skyscraper', 'kitchen', 'attic', 'living_room', 'reception', 'bedroom', 'dinette_home', 'shoe_shop', 'corridor', 'exterior', 'art_gallery', 'garage_indoor', 'alley', 'apartment_building_outdoor', 'parking_lot', 'hotel_room', 'wild', 'game_room', 'mountain', 'office', 'vehicle', 'beach', 'conference_room', 'broadleaf', 'jacuzzi_indoor', 'dining_room', 'waiting_room', 'pasture', 'warehouse_indoor', 'cultivated', 'childs_room', 'airport_terminal', 'castle', 'coast', 'lighthouse', 'nursery', 'window_seat', 'shop', 'parlor', 'bridge', 'art_studio', 'lobby', 'classroom', 'mountain_snowy', 'poolroom_home', 'dorm_room', 'cockpit', 'youth_hostel', 'closet', 'bar', 'needleleaf', 'roundabout', 'playroom', 'casino_indoor', 'valley', 'park', 'amusement_park']
+scene_labels_vit = ['natural', 'street', 'river', 'bathroom', 'highway', 'misc', 'staircase', 'museum_indoor', 'building_facade', 'home_office', 'creek', 'house', 'skyscraper', 'kitchen', 'attic', 'living_room', 'reception', 'bedroom', 'dinette_home', 'shoe_shop', 'corridor', 'exterior', 'art_gallery', 'garage_indoor', 'alley', 'apartment_building_outdoor', 'parking_lot', 'hotel_room', 'wild', 'game_room', 'mountain', 'office', 'vehicle', 'beach', 'conference_room', 'broadleaf', 'jacuzzi_indoor', 'dining_room', 'waiting_room', 'pasture', 'warehouse_indoor', 'cultivated', 'childs_room', 'airport_terminal', 'castle', 'coast', 'lighthouse', 'nursery', 'window_seat', 'shop', 'parlor', 'bridge', 'art_studio', 'lobby', 'classroom', 'mountain_snowy', 'poolroom_home', 'dorm_room', 'cockpit', 'youth_hostel', 'closet', 'bar', 'needleleaf', 'roundabout', 'playroom', 'casino_indoor', 'valley', 'park', 'amusement_park']
 # Create the label to ID mapping
 label2id = {label: idx for idx, label in enumerate(scene_labels_vit)}
 
@@ -79,8 +79,14 @@ def classify_scene_vit(image_picture):
     top5_labels = [vit_model.config.id2label[idx.item()] for idx in top5_indices[0]]
 
     # Print the top 5 labels and their corresponding probabilities
-    for label, prob in zip(top5_labels, probabilities[0]):
-        print(f"{label}: {prob:.4f}")
+    #for label, prob in zip(top5_labels, probabilities[0]):
+    #    print(f"{label}: {prob:.4f}")
+    probabilities = probabilities[0].to('cpu').numpy()
+    if top5_labels[0] == 'misc' and probabilities[0] - probabilities[1] < 0.2:
+        #print(probabilities[0])
+        #print(probabilities[1])
+        return top5_labels[1]
+    return top5_labels[0]
 
 
 # clip model

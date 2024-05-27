@@ -1,6 +1,3 @@
-import torch
-from torch.utils.data import Dataset
-
 # Split the dataset
 ### Define Collection Dataset
 import torch

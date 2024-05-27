@@ -1,12 +1,12 @@
 #%%
 # Import necessary modules and packages
 from nnet import *
-from dataset import CollectionsDataset, final_dataset, processor
+from dataset import CollectionsDataset
 from dataset import *
 from config import *
 import sys
 sys.path.append('./')
-from dataset_prep import *
+from dataset_prep import final_dataset
 from torch.utils.data import DataLoader
 
 # Initialize Weights and Biases (wandb)
@@ -29,7 +29,7 @@ import torch
 device = torch.device('cuda:2' if torch.cuda.is_available() else 'cpu')
 
 # Initialize DataLoader and Preprocessor
-from transformers import AutoProcessor, CLIPTextModel, CLIPModel, pipeline
+from transformers import AutoProcessor, CLIPModel, pipeline
 
 processor = {
     'clip_processor': AutoProcessor.from_pretrained("openai/clip-vit-base-patch32", cache_dir=cache_dir).to(device),
@@ -42,7 +42,7 @@ eval_dataloader = DataLoader(CollectionsDataset(final_dataset['test'], processor
 #%%
 # Initialize Model
 n_labels = len(final_dataset['train'].features['scene_category'].names)
-model = AttentionClassifier(n_labels)
+model = AttentionClassifier(num_labels=n_labels,feature_size=512+768)
 
 #%%
 # Create Optimizer and Learning Rate Scheduler
