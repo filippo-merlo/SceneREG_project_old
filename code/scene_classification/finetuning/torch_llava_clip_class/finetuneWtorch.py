@@ -49,7 +49,7 @@ processor = {
                 torch_dtype=torch.float16, 
                 low_cpu_mem_usage=True, 
                 quantization_config=quantization_config,
-                use_flash_attention_2=True
+                attn_implementation="flash_attention_2"
             )
 }
 train_dataloader = DataLoader(CollectionsDataset(final_dataset['train'], processor), shuffle=True, batch_size=wandb.config['batch_size'])
