@@ -25,7 +25,7 @@ class CollectionsDataset(Dataset):
         label_tensor = torch.zeros(self.num_classes)
         label_tensor[label] = 1
 
-        if self.transform:
+        if self.processor:
             llava_caption = self.pipe(image, prompt="Where is the picture taken?", generate_kwargs={"max_new_tokens": 200})
             inputs = self.processor(text=llava_caption, images=image, return_tensors="pt", padding=True).to(device)
             outputs = self.clip(**inputs)
