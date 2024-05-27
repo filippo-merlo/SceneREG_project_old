@@ -111,7 +111,7 @@ for epoch in range(num_epochs):
     # Training Phase
     model.train()
     for batch_idx, batch in enumerate(train_dataloader):
-        print(batch['reppresentation'].shape())
+        print(batch['reppresentation'].size())
         # Move data to device
         labels = batch['labels'].to(device0)
         input = {v.to(device0) for v in batch['reppresentation']}
