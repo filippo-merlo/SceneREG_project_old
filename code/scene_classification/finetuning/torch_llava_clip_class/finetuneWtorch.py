@@ -10,10 +10,10 @@ from dataset_prep import final_dataset
 
 # Initialize Weights and Biases (wandb)
 cache_dir = '/mnt/cimec-storage6/users/filippo.merlo'
-#cache_dir = '/Users/filippomerlo/Documents/GitHub/SceneReg_project/code/scene_classification/cache'
 
 import wandb
 wandb.login()
+
 project_name = "clip_llava_attention_scene_classifier"
 config = {
     "batch_size": 16,
@@ -114,3 +114,4 @@ for epoch in range(num_epochs):
         if batch_idx % log_freq == 0:
             wandb.log({"loss": loss})
             wandb.log({'train_acc' : metric_train.compute()['accuracy']})
+
