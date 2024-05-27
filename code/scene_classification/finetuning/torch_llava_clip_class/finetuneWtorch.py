@@ -29,7 +29,7 @@ wandb.init(project=project_name, config=config, dir=cache_dir)
 #%%
 # Specify Device (GPU/CPU)
 import torch
-
+torch.set_default_dtype(torch.float16)
 device0 = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 device1 = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
 
