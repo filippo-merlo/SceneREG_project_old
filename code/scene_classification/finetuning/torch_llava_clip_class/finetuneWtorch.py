@@ -3,11 +3,11 @@
 from nnet import *
 from dataset import CollectionsDataset
 from dataset import *
-from config import *
+from torch.utils.data import DataLoader
 import sys
 sys.path.append('./')
+from config import *
 from dataset_prep import final_dataset
-from torch.utils.data import DataLoader
 
 # Initialize Weights and Biases (wandb)
 import wandb
