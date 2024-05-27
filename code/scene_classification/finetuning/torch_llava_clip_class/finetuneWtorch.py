@@ -98,8 +98,8 @@ for epoch in range(num_epochs):
     model.eval()
     for batch in tqdm(eval_dataloader):
         # Move data to device
-        labels = batch['labels'].to(device)
-        input = {k:v.squeeze().to(device) for k, v in batch['image'].items()}
+        labels = batch['labels'].to(device0)
+        input = {k:v.squeeze().to(device0) for k, v in batch['image'].items()}
         with torch.no_grad():
             outputs = model(input)
         # Evaluate
@@ -112,8 +112,8 @@ for epoch in range(num_epochs):
     model.train()
     for batch_idx, batch in enumerate(train_dataloader):
         # Move data to device
-        labels = batch['labels'].to(device)
-        input = {k:v.squeeze().to(device) for k, v in batch['image'].items()}
+        labels = batch['labels'].to(device0)
+        input = {k:v.squeeze().to(device0) for k, v in batch['image'].items()}
         # Forward pass
         outputs = model(input)
         loss = criterion(outputs, labels)
