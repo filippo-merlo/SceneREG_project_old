@@ -58,7 +58,7 @@ eval_dataloader = DataLoader(CollectionsDataset(final_dataset['test'], processor
 #%%
 # Initialize Model
 n_labels = len(final_dataset['train'].features['scene_category'].names)
-model = AttentionClassifier(num_labels=n_labels,feature_size=512+768)
+model = AttentionClassifier(num_labels=n_labels,feature_size=512+768).to(device0)
 
 #%%
 # Create Optimizer and Learning Rate Scheduler
