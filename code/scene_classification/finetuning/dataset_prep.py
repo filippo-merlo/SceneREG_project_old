@@ -181,7 +181,7 @@ counter = Counter(tot_labs)
 
 THRESHOLD_CLASSES = 30
 from pprint import pprint
-pprint({names[k]:v for k, v in counter.items() if v >= THRESHOLD_CLASSES})
+#pprint({names[k]:v for k, v in counter.items() if v >= THRESHOLD_CLASSES})
 
 # Get the labels
 labels = list(counter.keys())
@@ -190,9 +190,9 @@ names2id_filtered = dict()
 for label in labels:
     if counter[label] >= THRESHOLD_CLASSES:
         names2id_filtered[id2names[label]] = label
-from pprint import pprint
-pprint(names2id_filtered.keys())
-len(names2id_filtered.keys())
+
+#pprint(names2id_filtered.keys())
+#len(names2id_filtered.keys())
 filter_dataset = dataset.filter(lambda example: example['scene_category'] in names2id_filtered.values())
 
 # make dicts
