@@ -21,7 +21,7 @@ config = {
     "lr": 2e-4,
     "momentum": 0.9
 }
-wandb.init(project=project_name, config=config)
+wandb.init(project=project_name, config=config, dir=cache_dir)
 
 
 #%%
