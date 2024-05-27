@@ -30,7 +30,7 @@ class CollectionsDataset(Dataset):
         label_tensor[label] = 1
 
         if self.processor:
-            llava_caption = self.pipe(image.to('cpu'), prompt="USER: <image>\nWhere is the picture taken?\nASSISTANT:", generate_kwargs={"max_new_tokens": 200})
+            llava_caption = self.pipe(image, prompt="USER: <image>\nWhere is the picture taken?\nASSISTANT:", generate_kwargs={"max_new_tokens": 200})
             inputs = self.processor(text=llava_caption, images=image, return_tensors="pt", padding=True).to(device)
             outputs = self.clip(**inputs)
             txt_features = outputs.text_model_output
