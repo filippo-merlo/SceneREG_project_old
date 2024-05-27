@@ -44,6 +44,7 @@ processor = {
                 "llava-hf/llava-1.5-13b-hf", 
                 torch_dtype=torch.float16, 
                 low_cpu_mem_usage=True, 
+                load_in_4bit=True
             ).to(device1)
 
 }
