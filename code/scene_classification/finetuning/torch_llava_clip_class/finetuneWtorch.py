@@ -94,27 +94,27 @@ criterion = torch.nn.CrossEntropyLoss()
 # Training and Evaluation Loop
 for epoch in range(num_epochs):
 
-    # Evaluation Phase
-    model.eval()
-    for batch in tqdm(eval_dataloader):
-        # Move data to device
-        labels = batch['labels'].to(device0)
-        input = {k:v.squeeze().to(device0) for k, v in batch['reppresentation'].items()}
-        with torch.no_grad():
-            outputs = model(input)
-        # Evaluate
-        predictions = torch.argmax(outputs, dim=-1)
-        labels = torch.argmax(labels, dim=-1)
-        metric_test.add_batch(predictions=predictions, references=labels)
-    wandb.log({'eval_acc' : metric_test.compute()['accuracy']})
+    ## Evaluation Phase
+    #model.eval()
+    #for batch in tqdm(eval_dataloader):
+    #    # Move data to device
+    #    labels = batch['labels'].to(device0)
+    #    input = {k:v.squeeze().to(device0) for k, v in batch['reppresentation'].items()}
+    #    with torch.no_grad():
+    #        outputs = model(input)
+    #    # Evaluate
+    #    predictions = torch.argmax(outputs, dim=-1)
+    #    labels = torch.argmax(labels, dim=-1)
+    #    metric_test.add_batch(predictions=predictions, references=labels)
+    #wandb.log({'eval_acc' : metric_test.compute()['accuracy']})
 
     # Training Phase
     model.train()
     for batch_idx, batch in enumerate(train_dataloader):
-        print(batch)
+        print(batch['reppresentation'])
         # Move data to device
         labels = batch['labels'].to(device0)
-        input = {k:v.to(device0) for k, v in batch['reppresentation'].items()}
+        input = {v.to(device0) for v in batch['reppresentation']}
         # Forward pass
         outputs = model(input)
         loss = criterion(outputs, labels)
