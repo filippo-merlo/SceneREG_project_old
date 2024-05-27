@@ -26,7 +26,7 @@ wandb.init(project=model_checkpoint.split('/')[1], config=config)
 # Specify Device (GPU/CPU)
 import torch
 
-device = torch.device('cuda:2' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
 # Initialize DataLoader and Preprocessor
 from transformers import AutoProcessor, CLIPModel, pipeline
