@@ -1,7 +1,6 @@
 # Define clip model
 from transformers import CLIPVisionModel
 import torch
-from config import * 
 import torch.nn.functional as F
 
 class AttentionClassifier(torch.nn.Module):
