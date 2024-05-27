@@ -35,7 +35,6 @@ device1 = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
 
 # Initialize DataLoader and Preprocessor
 from transformers import AutoProcessor, CLIPModel, LlavaForConditionalGeneration, BitsAndBytesConfig
-from flash_attn import flash_attn_qkvpacked_func, flash_attn_func
 
 quantization_config = BitsAndBytesConfig(
     load_in_4bit=True,  # or load_in_8bit=True for 8-bit quantization
