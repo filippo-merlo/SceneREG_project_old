@@ -18,7 +18,6 @@ class CollectionsDataset(Dataset):
         self.prompt = "USER: <image>\nWhere is the picture taken?\nASSISTANT:"
         self.num_classes = len(self.data.features['scene_category'].names)
 
-
     def __len__(self):
         return len(self.data)
 
@@ -32,6 +31,7 @@ class CollectionsDataset(Dataset):
         llava_inputs = self.llava_processor(self.prompt, image, return_tensors='pt').to(0, torch.float16)
         llava_caption = self.llava.generate(**llava_inputs, max_new_tokens=10, do_sample=False)
         inputs = self.clip_processor(text=[str(llava_caption)], images=image, return_tensors="pt", padding=True).to(device0)
+        print(inputs)
         outputs = self.clip(**inputs)
         txt_features = outputs.text_model_output.last_hidden_state.mean(dim=1) 
         img_features = outputs.vision_model_output.last_hidden_state.mean(dim=1) 
