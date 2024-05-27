@@ -21,7 +21,7 @@ config = {
     "lr": 2e-4,
     "momentum": 0.9
 }
-wandb.init(project=project_name.split('/')[1], config=config)
+wandb.init(project=project_name, config=config)
 
 
 #%%
