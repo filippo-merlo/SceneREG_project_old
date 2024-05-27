@@ -30,8 +30,8 @@ class CollectionsDataset(Dataset):
             llava_caption = self.pipe(image, prompt="USER: <image>\nWhere is the picture taken?\nASSISTANT:", generate_kwargs={"max_new_tokens": 200})
             inputs = self.processor(text=str(llava_caption), images=image, return_tensors="pt", padding=True).to(device)
             outputs = self.clip(**inputs)
-            txt_features = outputs.text_model_output.last_hidden_state
-            img_features = outputs.vision_model_output.last_hidden_state
+            txt_features = outputs.text_model_output.last_hidden_state.mean(dim=1) 
+            img_features = outputs.vision_model_output.last_hidden_state.mean(dim=1) 
             print(txt_features.size())
             print(img_features.size())
             reppresentation = torch.cat([txt_features, img_features])
