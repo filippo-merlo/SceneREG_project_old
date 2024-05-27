@@ -34,7 +34,7 @@ class CollectionsDataset(Dataset):
             img_features = outputs.vision_model_output.last_hidden_state.mean(dim=1) 
             print(txt_features.size())
             print(img_features.size())
-            reppresentation = torch.cat([txt_features, img_features])
+            reppresentation = torch.cat([txt_features, img_features], dim=1)
 
 
         return {'reppresentation': reppresentation,
