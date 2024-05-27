@@ -30,15 +30,16 @@ wandb.init(project=project_name, config=config, dir=cache_dir)
 # Specify Device (GPU/CPU)
 import torch
 
-device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+device0 = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+device1 = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
 
 # Initialize DataLoader and Preprocessor
 from transformers import AutoProcessor, CLIPModel, pipeline
 
 processor = {
     'clip_processor': AutoProcessor.from_pretrained("openai/clip-vit-base-patch32"),
-    'clip_model': CLIPModel.from_pretrained("openai/clip-vit-base-patch32").to(device),
-    'llava_pipeline': pipeline("image-to-text", model="llava-hf/llava-1.5-7b-hf", device=device)
+    'clip_model': CLIPModel.from_pretrained("openai/clip-vit-base-patch32").to(device0),
+    'llava_pipeline': pipeline("image-to-text", model="llava-hf/llava-1.5-7b-hf", device=device1)
 }
 train_dataloader = DataLoader(CollectionsDataset(final_dataset['train'], processor), shuffle=True, batch_size=wandb.config['batch_size'])
 eval_dataloader = DataLoader(CollectionsDataset(final_dataset['test'], processor), shuffle=True, batch_size=wandb.config['batch_size'])
