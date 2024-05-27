@@ -10,6 +10,8 @@ from dataset_prep import final_dataset
 
 # Initialize Weights and Biases (wandb)
 cache_dir = '/mnt/cimec-storage6/users/filippo.merlo'
+import os
+os.environ['TRANSFORMERS_CACHE'] = cache_dir
 
 import wandb
 wandb.login()
@@ -34,9 +36,9 @@ device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 from transformers import AutoProcessor, CLIPModel, pipeline
 
 processor = {
-    'clip_processor': AutoProcessor.from_pretrained("openai/clip-vit-base-patch32", cache_dir=cache_dir),
-    'clip_model': CLIPModel.from_pretrained("openai/clip-vit-base-patch32",  cache_dir=cache_dir).to(device),
-    'llava_pipeline': pipeline("image-to-text", model="llava-hf/llava-1.5-7b-hf", cache_dir=cache_dir).to(device)
+    'clip_processor': AutoProcessor.from_pretrained("openai/clip-vit-base-patch32"),
+    'clip_model': CLIPModel.from_pretrained("openai/clip-vit-base-patch32").to(device),
+    'llava_pipeline': pipeline("image-to-text", model="llava-hf/llava-1.5-7b-hf").to(device)
 }
 train_dataloader = DataLoader(CollectionsDataset(final_dataset['train'], processor), shuffle=True, batch_size=wandb.config['batch_size'])
 eval_dataloader = DataLoader(CollectionsDataset(final_dataset['test'], processor), shuffle=True, batch_size=wandb.config['batch_size'])
