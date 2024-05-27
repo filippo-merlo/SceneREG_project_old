@@ -6,10 +6,12 @@ from dataset import *
 from torch.utils.data import DataLoader
 import sys
 sys.path.append('./')
-from config import *
 from dataset_prep import final_dataset
 
 # Initialize Weights and Biases (wandb)
+cache_dir = '/mnt/cimec-storage6/users/filippo.merlo'
+#cache_dir = '/Users/filippomerlo/Documents/GitHub/SceneReg_project/code/scene_classification/cache'
+
 import wandb
 wandb.login()
 model_checkpoint = "openai/clip-vit-base-patch32"
