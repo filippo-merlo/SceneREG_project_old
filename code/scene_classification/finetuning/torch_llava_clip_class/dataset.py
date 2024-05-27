@@ -12,8 +12,10 @@ class CollectionsDataset(Dataset):
         
         self.data = hf_dataset
         self.clip = processor['clip_model']
-        self.processor = processor['clip_processor']
-        self.pipe = processor['llava_pipeline']
+        self.clip_processor = processor['clip_processor']
+        self.llava_processor = processor['llava_processor']
+        self.llava = processor['llava_model']
+        self.prompt = "USER: <image>\nWhere is the picture taken?\nASSISTANT:"
         self.num_classes = len(self.data.features['scene_category'].names)
 
 
@@ -27,7 +29,8 @@ class CollectionsDataset(Dataset):
         label_tensor[label] = 1
 
         if self.processor:
-            llava_caption = self.pipe(image, prompt="USER: <image>\nWhere is the picture taken?\nASSISTANT:", generate_kwargs={"max_new_tokens": 200})
+            llava_inputs = self.llava_processor(self.prompt, image, return_tensors='pt').to(0, torch.float16)
+            llava_caption = self.llava.generate(**llava_inputs, max_new_tokens=200, do_sample=False)
             inputs = self.processor(text=str(llava_caption), images=image, return_tensors="pt", padding=True).to(device0)
             outputs = self.clip(**inputs)
             txt_features = outputs.text_model_output.last_hidden_state.mean(dim=1) 

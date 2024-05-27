@@ -34,12 +34,18 @@ device0 = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 device1 = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
 
 # Initialize DataLoader and Preprocessor
-from transformers import AutoProcessor, CLIPModel, pipeline
+from transformers import AutoProcessor, CLIPModel, LlavaForConditionalGeneration
 
 processor = {
     'clip_processor': AutoProcessor.from_pretrained("openai/clip-vit-base-patch32"),
     'clip_model': CLIPModel.from_pretrained("openai/clip-vit-base-patch32").to(device0),
-    'llava_pipeline': pipeline("image-to-text", model="llava-hf/llava-1.5-7b-hf", device=device1)
+    'llava_processor': AutoProcessor.from_pretrained("llava-hf/llava-1.5-13b-hf"),
+    'llava_model': LlavaForConditionalGeneration.from_pretrained(
+                "llava-hf/llava-1.5-13b-hf", 
+                torch_dtype=torch.float16, 
+                low_cpu_mem_usage=True, 
+            ).to(device1)
+
 }
 train_dataloader = DataLoader(CollectionsDataset(final_dataset['train'], processor), shuffle=True, batch_size=wandb.config['batch_size'])
 eval_dataloader = DataLoader(CollectionsDataset(final_dataset['test'], processor), shuffle=True, batch_size=wandb.config['batch_size'])
