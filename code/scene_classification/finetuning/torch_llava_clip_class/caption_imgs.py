@@ -34,7 +34,7 @@ llava = LlavaForConditionalGeneration.from_pretrained(
                 low_cpu_mem_usage=True, 
                 quantization_config=quantization_config,
                 attn_implementation="flash_attention_2",
-                cache_dir=cache_dir
+                cache_dir=cache_dir+'/hub/'
             )
 
 prompt = "USER: <image>\nWhere is the picture taken?\nASSISTANT:"
