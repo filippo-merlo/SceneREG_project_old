@@ -42,14 +42,15 @@ prompt = "USER: <image>\nWhere is the picture taken?\nASSISTANT:"
 def getitem(idx, data):
     image = data[idx]['image']
     # process image and text
-    llava_inputs = llava_processor(prompt, image, return_tensors='pt').to(device1, torch.float16)
-    llava_encode = llava.generate(**llava_inputs, max_new_tokens=75, do_sample=False)
-    llava_caption = llava_processor.decode(llava_encode[0][2:], skip_special_tokens=True)
-    inputs = clip_processor(text=str(llava_caption), images=image, return_tensors="pt", padding=True).to(device0)
-    outputs = clip(**inputs)
-    txt_features = outputs.text_model_output.last_hidden_state.mean(dim=1) 
-    img_features = outputs.vision_model_output.last_hidden_state.mean(dim=1) 
-    reppresentation = torch.cat([txt_features, img_features], dim=1).squeeze()
+    with torch.no_grad():
+        llava_inputs = llava_processor(prompt, image, return_tensors='pt').to(device1, torch.float16)
+        llava_encode = llava.generate(**llava_inputs, max_new_tokens=75, do_sample=False)
+        llava_caption = llava_processor.decode(llava_encode[0][2:], skip_special_tokens=True)
+        inputs = clip_processor(text=str(llava_caption), images=image, return_tensors="pt", padding=True).to(device0)
+        outputs = clip(**inputs)
+        txt_features = outputs.text_model_output.last_hidden_state.mean(dim=1) 
+        img_features = outputs.vision_model_output.last_hidden_state.mean(dim=1) 
+        reppresentation = torch.cat([txt_features, img_features], dim=1).squeeze()
 
     return reppresentation
 
