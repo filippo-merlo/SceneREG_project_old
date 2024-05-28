@@ -33,7 +33,8 @@ llava = LlavaForConditionalGeneration.from_pretrained(
                 torch_dtype=torch.float16, 
                 low_cpu_mem_usage=True, 
                 quantization_config=quantization_config,
-                attn_implementation="flash_attention_2"
+                attn_implementation="flash_attention_2",
+                cache_dir=cache_dir
             )
 
 prompt = "USER: <image>\nWhere is the picture taken?\nASSISTANT:"
