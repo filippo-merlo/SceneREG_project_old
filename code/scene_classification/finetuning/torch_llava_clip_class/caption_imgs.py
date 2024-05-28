@@ -56,7 +56,7 @@ def getitem(idx, data):
 
 import pickle 
 def save_append_list(path, list):
-    with open(path, 'r') as f:
+    with open(path, 'rb') as f:
         data = pickle.load(f)
     data.append(list)
     with open(path, 'wb') as f:
