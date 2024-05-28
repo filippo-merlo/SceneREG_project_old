@@ -27,7 +27,7 @@ quantization_config = BitsAndBytesConfig(
 
 clip =CLIPModel.from_pretrained("openai/clip-vit-base-patch32").to(device0)
 clip_processor = AutoProcessor.from_pretrained("openai/clip-vit-base-patch32")
-llava_processor = AutoProcessor.from_pretrained("llava-hf/llava-1.5-13b-hf"),
+llava_processor = AutoProcessor.from_pretrained("llava-hf/llava-1.5-13b-hf")
 llava = LlavaForConditionalGeneration.from_pretrained(
                 "llava-hf/llava-1.5-13b-hf", 
                 torch_dtype=torch.float16, 
@@ -42,6 +42,7 @@ prompt = "USER: <image>\nWhere is the picture taken?\nASSISTANT:"
 def getitem(idx, data):
     image = data[idx]['image']
     print(image)
+    print(prompt)
     # process image and text
     llava_inputs = llava_processor(prompt, image, return_tensors='pt').to(device1, torch.float16)
     llava_encode = llava.generate(**llava_inputs, max_new_tokens=75, do_sample=False)
