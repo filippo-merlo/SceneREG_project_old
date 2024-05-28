@@ -34,24 +34,28 @@ device0 = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 device1 = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
 
 # Initialize DataLoader and Preprocessor
-from transformers import AutoProcessor, CLIPModel, LlavaForConditionalGeneration, BitsAndBytesConfig
+#from transformers import AutoProcessor, CLIPModel, LlavaForConditionalGeneration, BitsAndBytesConfig
 
-quantization_config = BitsAndBytesConfig(
-    load_in_4bit=True,  # or load_in_8bit=True for 8-bit quantization
-    bnb_4bit_compute_dtype=torch.float16  # specify compute dtype
-)
-processor = {
-    'clip_processor': AutoProcessor.from_pretrained("openai/clip-vit-base-patch32"),
-    'clip_model': CLIPModel.from_pretrained("openai/clip-vit-base-patch32").to(device0),
-    'llava_processor': AutoProcessor.from_pretrained("llava-hf/llava-1.5-13b-hf"),
-    'llava_model': LlavaForConditionalGeneration.from_pretrained(
-                "llava-hf/llava-1.5-13b-hf", 
-                torch_dtype=torch.float16, 
-                low_cpu_mem_usage=True, 
-                quantization_config=quantization_config,
-                attn_implementation="flash_attention_2"
-            )
-}
+#quantization_config = BitsAndBytesConfig(
+#    load_in_4bit=True,  # or load_in_8bit=True for 8-bit quantization
+#    bnb_4bit_compute_dtype=torch.float16  # specify compute dtype
+#)
+#processor = {
+#    'clip_processor': AutoProcessor.from_pretrained("openai/clip-vit-base-patch32"),
+#    'clip_model': CLIPModel.from_pretrained("openai/clip-vit-base-patch32").to(device0),
+#    'llava_processor': AutoProcessor.from_pretrained("llava-hf/llava-1.5-13b-hf"),
+#    'llava_model': LlavaForConditionalGeneration.from_pretrained(
+#                "llava-hf/llava-1.5-13b-hf", 
+#                torch_dtype=torch.float16, 
+#                low_cpu_mem_usage=True, 
+#                quantization_config=quantization_config,
+#                attn_implementation="flash_attention_2"
+#            )
+#}
+import pickle 
+
+
+processor = {}
 
 train_dataloader = DataLoader(CollectionsDataset(final_dataset['train'], processor), shuffle=True, batch_size=wandb.config['batch_size'])
 eval_dataloader = DataLoader(CollectionsDataset(final_dataset['test'], processor), shuffle=True, batch_size=wandb.config['batch_size'])
