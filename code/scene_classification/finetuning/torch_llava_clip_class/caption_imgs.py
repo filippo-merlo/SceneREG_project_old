@@ -14,8 +14,8 @@ os.environ['HF_HOME'] = cache_dir
 # Specify Device (GPU/CPU)
 import torch
 
-device0 = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-device1 = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
+device0 = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
+device1 = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
 # Initialize DataLoader and Preprocessor
 from transformers import AutoProcessor, CLIPModel, LlavaForConditionalGeneration, BitsAndBytesConfig
