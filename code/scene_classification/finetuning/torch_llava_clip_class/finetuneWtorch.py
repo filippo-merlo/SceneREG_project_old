@@ -52,13 +52,17 @@ device1 = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
 #                attn_implementation="flash_attention_2"
 #            )
 #}
+
 import pickle 
+with open(cache_dir+'/'+'train_rep.pkl','rb') as f:
+    train_rep_list = pickle.load(f)
+processor_train = train_rep_list
+with open(cache_dir+'/'+'test_rep.pkl','rb') as f:
+    test_rep_list = pickle.load(f)
+processor_test = test_rep_list
 
-
-processor = {}
-
-train_dataloader = DataLoader(CollectionsDataset(final_dataset['train'], processor), shuffle=True, batch_size=wandb.config['batch_size'])
-eval_dataloader = DataLoader(CollectionsDataset(final_dataset['test'], processor), shuffle=True, batch_size=wandb.config['batch_size'])
+train_dataloader = DataLoader(CollectionsDataset(final_dataset['train'], processor_train), shuffle=True, batch_size=wandb.config['batch_size'])
+eval_dataloader = DataLoader(CollectionsDataset(final_dataset['test'], processor_test), shuffle=True, batch_size=wandb.config['batch_size'])
 
 #%%
 # Initialize Model
