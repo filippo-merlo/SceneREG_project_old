@@ -14,8 +14,8 @@ os.environ['HF_HUB_CACHE'] = cache_dir
 # Specify Device (GPU/CPU)
 import torch
 
-device0 = torch.device('cuda:2' if torch.cuda.is_available() else 'cpu')
-device1 = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+device0 = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+device1 = torch.device('cuda:2' if torch.cuda.is_available() else 'cpu')
 
 # Initialize DataLoader and Preprocessor
 from transformers import AutoProcessor, CLIPModel, LlavaForConditionalGeneration, BitsAndBytesConfig
@@ -59,14 +59,14 @@ def save_append_list(path, list):
     with open(path, 'r') as f:
         data = pickle.load(f)
     data.append(list)
-    with open(path, 'w') as f:
+    with open(path, 'wb') as f:
         pickle.dump(data, f)
 
 from tqdm import tqdm
 def embed_data(data,path):
     len_data = len(data)
     r_list = []
-    with open(path, 'w') as f:
+    with open(path, 'wb') as f:
         pickle.dump(r_list, f)
 
     for i in tqdm(range(len_data)):
