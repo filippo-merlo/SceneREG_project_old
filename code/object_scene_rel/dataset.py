@@ -283,15 +283,6 @@ for l, c in count.items():
 print(lista)
 
 
-for l in lista:
-    for path in label_with_paths[l]:
-        print(l)
-        img = Image.open(path)
-
-        # Show the image
-        img.show()
-        input("Press Enter to continue...")
-        
 #%%
 
 #%%

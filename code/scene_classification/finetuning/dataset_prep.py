@@ -1,6 +1,8 @@
 #%%
 ### PREPARE THE DATASET   
 from config import *
+import random
+random.seed(42)
 
 # Load the dataset
 from datasets import load_dataset, concatenate_datasets, DatasetDict, ClassLabel
@@ -181,6 +183,7 @@ counter = Counter(tot_labs)
 
 THRESHOLD_CLASSES = 30
 from pprint import pprint
+
 #pprint({names[k]:v for k, v in counter.items() if v >= THRESHOLD_CLASSES})
 
 # Get the labels
@@ -218,4 +221,5 @@ final_dataset = filter_dataset.remove_columns('scene_category').add_column('scen
 # Redefine class labels
 class_labels = ClassLabel(names=list(names2id_filtered.keys()), num_classes=len(names2id_filtered.keys()))
 final_dataset =  final_dataset.cast_column('scene_category', class_labels)
-final_dataset = final_dataset.train_test_split(test_size=0.2)
+
+final_dataset = final_dataset.train_test_split(test_size=0.1)

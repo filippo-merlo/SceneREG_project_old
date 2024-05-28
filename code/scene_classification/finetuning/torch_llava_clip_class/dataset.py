@@ -31,6 +31,7 @@ class CollectionsDataset(Dataset):
         llava_inputs = self.llava_processor(self.prompt, image, return_tensors='pt').to(0, torch.float16)
         llava_encode = self.llava.generate(**llava_inputs, max_new_tokens=200, do_sample=False)
         llava_caption = self.llava_processor.decode(llava_encode[0][2:], skip_special_tokens=True)
+        print(llava_caption)
         inputs = self.clip_processor(text=str(llava_caption), images=image, return_tensors="pt", padding=True).to(device0)
         outputs = self.clip(**inputs)
         txt_features = outputs.text_model_output.last_hidden_state.mean(dim=1) 

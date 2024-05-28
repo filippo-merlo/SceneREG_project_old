@@ -52,6 +52,7 @@ processor = {
                 attn_implementation="flash_attention_2"
             )
 }
+final_dataset = final_dataset.train_test_split(test_size=0.1)
 train_dataloader = DataLoader(CollectionsDataset(final_dataset['train'], processor), shuffle=True, batch_size=wandb.config['batch_size'])
 eval_dataloader = DataLoader(CollectionsDataset(final_dataset['test'], processor), shuffle=True, batch_size=wandb.config['batch_size'])
 
