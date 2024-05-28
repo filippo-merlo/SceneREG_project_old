@@ -54,26 +54,35 @@ def getitem(idx, data):
 
     return reppresentation
 
-from tqdm import tqdm
+import pickle 
+def save_append_list(path, list):
+    with open(path, 'r') as f:
+        data = pickle.load(f)
+    data.append(list)
+    with open(path, 'w') as f:
+        pickle.dump(data, f)
 
-def embed_data(data):
+from tqdm import tqdm
+def embed_data(data,path):
     len_data = len(data)
     r_list = []
+    with open(path, 'w') as f:
+        pickle.dump(r_list, f)
+
     for i in tqdm(range(len_data)):
         r_list.append(getitem(i, data))
-    return r_list
+        if i % 100 == 0:
+            save_append_list(path, r_list)
+            r_list = []
+    save_append_list(path, r_list)
+
 
 data_tr = final_dataset['train']
 data_te = final_dataset['test']
 
-import pickle 
-train_rep = embed_data(data_tr)
+train_rep = embed_data(data_tr, cache_dir+'/'+'train_rep.pkl')
 
-with open(cache_dir+'/'+'train_rep.pkl', 'wb') as f:
-    pickle.dump(train_rep, f)
+test_rep = embed_data(data_te, cache_dir+'/'+'test_rep.pkl')
 
-test_rep = embed_data(data_te)
 
-with open(cache_dir+'/'+'test_rep.pkl', 'wb') as f:
-    pickle.dump(test_rep, f)
 
