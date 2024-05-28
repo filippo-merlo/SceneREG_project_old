@@ -58,7 +58,7 @@ import pickle
 def save_append_list(path, list):
     with open(path, 'rb') as f:
         data = pickle.load(f)
-    data.append(list)
+    data += list
     print(len(data))
     with open(path, 'wb') as f:
         pickle.dump(data, f)
