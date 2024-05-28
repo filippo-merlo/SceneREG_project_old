@@ -14,7 +14,7 @@ os.environ['HF_HUB_CACHE'] = cache_dir
 # Specify Device (GPU/CPU)
 import torch
 
-device0 = torch.device('cuda:2' if torch.cuda.is_available() else 'cpu')
+device0 = torch.device('cuda:3' if torch.cuda.is_available() else 'cpu')
 device1 = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
 # Initialize DataLoader and Preprocessor
