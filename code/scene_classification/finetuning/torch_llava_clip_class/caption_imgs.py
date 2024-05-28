@@ -59,6 +59,7 @@ def save_append_list(path, list):
     with open(path, 'rb') as f:
         data = pickle.load(f)
     data.append(list)
+    print(len(data))
     with open(path, 'wb') as f:
         pickle.dump(data, f)
 
@@ -80,9 +81,9 @@ def embed_data(data,path):
 data_tr = final_dataset['train']
 data_te = final_dataset['test']
 
-train_rep = embed_data(data_tr, cache_dir+'/'+'train_rep.pkl')
+embed_data(data_tr, cache_dir+'/'+'train_rep.pkl')
 
-test_rep = embed_data(data_te, cache_dir+'/'+'test_rep.pkl')
+embed_data(data_te, cache_dir+'/'+'test_rep.pkl')
 
 
 
