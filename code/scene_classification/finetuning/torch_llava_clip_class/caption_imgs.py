@@ -39,14 +39,11 @@ llava = LlavaForConditionalGeneration.from_pretrained(
 
 prompt = "USER: <image>\nWhere is the picture taken?\nASSISTANT:"
 
-
-data_tr = final_dataset['train']
-data_te = final_dataset['test']
-
 def getitem(idx, data):
     image = data[idx]['image']
+    print(image)
     # process image and text
-    llava_inputs = llava_processor(prompt, image, return_tensors='pt').to(0, torch.float16)
+    llava_inputs = llava_processor(prompt, image, return_tensors='pt').to(device1, torch.float16)
     llava_encode = llava.generate(**llava_inputs, max_new_tokens=75, do_sample=False)
     llava_caption = llava_processor.decode(llava_encode[0][2:], skip_special_tokens=True)
     print(llava_caption)
@@ -67,12 +64,17 @@ def embed_data(data):
         r_list.append(getitem(i, data))
     return r_list
 
+data_tr = final_dataset['train']
+data_te = final_dataset['test']
+
 import pickle 
 train_rep = embed_data(data_tr)
+
 with open(cache_dir+'/'+'train_rep.pkl', 'wb') as f:
     pickle.dump(train_rep, f)
 
 test_rep = embed_data(data_te)
+
 with open(cache_dir+'/'+'test_rep.pkl', 'wb') as f:
     pickle.dump(test_rep, f)
 

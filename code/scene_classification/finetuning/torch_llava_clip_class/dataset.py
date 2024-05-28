@@ -28,7 +28,7 @@ class CollectionsDataset(Dataset):
         label_tensor[label] = 1
 
        # process image and text
-        llava_inputs = self.llava_processor(self.prompt, image, return_tensors='pt').to(0, torch.float16)
+        llava_inputs = self.llava_processor(self.prompt, image, return_tensors='pt').to(device0, torch.float16)
         llava_encode = self.llava.generate(**llava_inputs, max_new_tokens=200, do_sample=False)
         llava_caption = self.llava_processor.decode(llava_encode[0][2:], skip_special_tokens=True)
         print(llava_caption)
