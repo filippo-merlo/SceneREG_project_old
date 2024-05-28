@@ -5,6 +5,8 @@ import sys
 sys.path.append('../')
 from dataset_prep import final_dataset
 
+# works with final dataset with tresh 30 and train-test split at 0.1
+
 # Initialize Weights and Biases (wandb)
 cache_dir = '/mnt/cimec-storage6/users/filippo.merlo'
 import os
