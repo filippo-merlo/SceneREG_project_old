@@ -108,7 +108,6 @@ for epoch in range(num_epochs):
     model.train()
     for batch_idx, batch in enumerate(train_dataloader):
         # Move data to device
-        print(batch_idx)
         labels = batch['labels'].to(device)
         input = batch['reppresentation'].to(device)
         # Forward pass
