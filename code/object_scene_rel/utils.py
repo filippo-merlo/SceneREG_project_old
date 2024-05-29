@@ -195,13 +195,11 @@ def similarity_score(tensor, tensor_list):
         similarities.append(torch.matmul(tensor, c.T).item())
     return torch.tensor(similarities)
 
-from transformers import AutoProcessor, LlavaForConditionalGeneration
-# LLaVa with Ollama 
-from langchain_community.llms import Ollama
-llava = Ollama(model="llava_short")
-llava_prompt = "Where is the picture taken?"
-
 def generate_llava_caption(image_picture, prompt):
+    # LLaVa with Ollama 
+    from langchain_community.llms import Ollama
+    llava = Ollama(model="llava_short")
+    llava_prompt = "Where is the picture taken?"
     image_b64 = convert_to_base64(image_picture)
     llm_with_image_context = llava.bind(images=[image_b64])
     return llm_with_image_context.invoke(prompt)
@@ -222,7 +220,7 @@ def convert_to_base64(pil_image):
     img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
     return img_str
 
-    
+   
 def subtract_in_bounds(x, y):
     if x - y > 0:
         return int(x - y) 

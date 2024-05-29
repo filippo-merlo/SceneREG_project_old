@@ -30,8 +30,8 @@ wandb.init(project=project_name, config=config, dir=cache_dir)
 # Specify Device (GPU/CPU)
 import torch
 
-device0 = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-device1 = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
+#device0 = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
 
 # Initialize DataLoader and Preprocessor
 #from transformers import AutoProcessor, CLIPModel, LlavaForConditionalGeneration, BitsAndBytesConfig
@@ -68,7 +68,7 @@ eval_dataloader = DataLoader(CollectionsDataset(final_dataset['test'], processor
 #%%
 # Initialize Model
 n_labels = len(final_dataset['train'].features['scene_category'].names)
-model = AttentionClassifier(num_labels=n_labels,feature_size=512+768).to(device0)
+model = AttentionClassifier(num_labels=n_labels,feature_size=512+768).to(device)
 
 #%%
 # Create Optimizer and Learning Rate Scheduler
@@ -108,8 +108,8 @@ for epoch in range(num_epochs):
     model.train()
     for batch_idx, batch in enumerate(train_dataloader):
         # Move data to device
-        labels = batch['labels'].to(device0)
-        input = batch['reppresentation'].to(device0)
+        labels = batch['labels'].to(device)
+        input = batch['reppresentation'].to(device)
         # Forward pass
         outputs = model(input)
         loss = criterion(outputs, labels)

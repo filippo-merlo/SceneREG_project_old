@@ -139,7 +139,7 @@ pprint(objects_found)
 #%%
 #import json 
 #with open('object_map_coco2ade.json', 'w') as f:
-#    json.dump(objects_found, f)
+#    json.dump(objects_found, f, indent=4)
 #
 #%%
 
