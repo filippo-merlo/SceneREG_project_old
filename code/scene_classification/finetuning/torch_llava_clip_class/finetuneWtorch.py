@@ -20,7 +20,8 @@ project_name = "clip_llava_attention_scene_classifier"
 config = {
     "batch_size": 16,
     "num_epochs": 10,
-    "lr": 2e-4
+    "lr": 2e-3,
+    "momentum": 0.9
 }
 wandb.init(project=project_name, config=config, dir=cache_dir)
 
@@ -73,7 +74,7 @@ model = AttentionClassifier(num_labels=n_labels,feature_size=512+768).to(device)
 # Create Optimizer and Learning Rate Scheduler
 from torch.optim import SGD
 
-optimizer = SGD(model.parameters(), lr=wandb.config['lr'])
+optimizer = SGD(model.parameters(), lr=wandb.config['lr'], momentum=wandb.config['momentum'])
 
 
 #%%
