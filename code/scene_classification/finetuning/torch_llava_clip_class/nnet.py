@@ -15,12 +15,11 @@ class AttentionClassifier(torch.nn.Module):
         self.classifier_head = torch.nn.Linear(in_features=feature_size, out_features=num_labels)
 
     def forward(self, x, mask=None):
-        txt, vis = torch.split(x, [512, 768], dim=1)
-  
+        
         # Apply linear transformations
-        keys = self.key(vis)
-        queries = self.query(txt)
-        values = self.value(vis)
+        keys = self.key(x)
+        queries = self.query(x)
+        values = self.value(x)
 
         # Scaled dot-product attention
         scores = torch.matmul(queries, keys.transpose(-2, -1)) / torch.sqrt(torch.tensor(self.feature_size, dtype=torch.float32))
@@ -31,11 +30,11 @@ class AttentionClassifier(torch.nn.Module):
 
         # Apply softmax
         attention_weights = F.softmax(scores, dim=-1)
-        print(attention_weights.shape)
+
         # Multiply weights with values
         output = torch.matmul(attention_weights, values)
-        print(output.shape)
-        logits = self.classifier_head(x)
+
+        logits = self.classifier_head(output)
 
         # compute probabilities
         probabilities = torch.softmax(logits, dim=-1)
