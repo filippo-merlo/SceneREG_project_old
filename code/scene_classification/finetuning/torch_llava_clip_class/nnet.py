@@ -12,7 +12,10 @@ class AttentionClassifier(torch.nn.Module):
         self.query = torch.nn.Linear(feature_size, feature_size)
         self.value = torch.nn.Linear(feature_size, feature_size)
 
-        self.multihead_attn = torch.nn.MultiheadAttention(feature_size, 4)
+        self.multihead_attn_1 = torch.nn.MultiheadAttention(feature_size, 4)
+        self.multihead_attn_2 = torch.nn.MultiheadAttention(feature_size, 4)
+        self.multihead_attn_3 = torch.nn.MultiheadAttention(feature_size, 4)
+        self.multihead_attn_4 = torch.nn.MultiheadAttention(feature_size, 4)
 
         self.classifier_head = torch.nn.Linear(in_features=feature_size, out_features=num_labels)
 
@@ -32,7 +35,11 @@ class AttentionClassifier(torch.nn.Module):
         ## Multiply weights with values
         #output = torch.matmul(attention_weights, values)
 
-        attn_output, attn_output_weights = self.multihead_attn(queries, keys, values)
+        attn_output1, attn_output_weights1 = self.multihead_attn_1(queries, keys, values)
+        attn_output2, attn_output_weights2 = self.multihead_attn_2(attn_output1, keys, values)
+        attn_output3, attn_output_weights3 = self.multihead_attn_3(attn_output2, keys, values)
+        attn_output, attn_output_weights = self.multihead_attn_4(attn_output3, keys, values)
+        
         logits = self.classifier_head(attn_output)
 
         # compute probabilities
