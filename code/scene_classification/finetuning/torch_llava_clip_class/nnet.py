@@ -17,7 +17,7 @@ class AttentionClassifier(torch.nn.Module):
         #self.multihead_attn_3 = torch.nn.MultiheadAttention(feature_size, 4)
         #self.multihead_attn_4 = torch.nn.MultiheadAttention(feature_size, 4)
 
-        self.classifier_head = torch.nn.Linear(in_features=768, out_features=num_labels)
+        self.classifier_head = torch.nn.Linear(in_features=768, out_features=num_labels, bias=True)
 
     def forward(self, x, mask=None):
         x1, x2 = torch.split(x, [512, 768], dim=1)
