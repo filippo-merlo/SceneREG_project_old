@@ -20,7 +20,7 @@ project_name = "clip_llava_attention_scene_classifier"
 config = {
     "batch_size": 16,
     "num_epochs": 10,
-    "lr": 2e-3,
+    "lr": 2e-4,
     "momentum": 0.9
 }
 wandb.init(project=project_name, config=config, dir=cache_dir)
