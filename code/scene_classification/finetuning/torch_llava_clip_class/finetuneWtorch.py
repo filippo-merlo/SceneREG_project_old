@@ -129,8 +129,8 @@ for epoch in range(num_epochs):
     model.eval()
     for batch in tqdm(eval_dataloader):
         # Move data to device
-        labels = batch['labels'].to(device0)
-        input = {k:v.squeeze().to(device0) for k, v in batch['reppresentation'].items()}
+        labels = batch['labels'].to(device)
+        input = batch['reppresentation'].to(device)
         with torch.no_grad():
             outputs = model(input)
         # Evaluate
