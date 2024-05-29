@@ -16,27 +16,27 @@ class AttentionClassifier(torch.nn.Module):
 
     def forward(self, x, mask=None):
           
-        # Apply linear transformations
-        keys = self.key(x)
-        queries = self.query(x)
-        values = self.value(x)
-
-        # Scaled dot-product attention
-        scores = torch.matmul(queries, keys.transpose(-2, -1)) / torch.sqrt(torch.tensor(self.feature_size, dtype=torch.float32))
-
-        # Apply mask (if provided)
-        if mask is not None:
-            scores = scores.masked_fill(mask == 0, -1e9)
-
-        # Apply softmax
-        attention_weights = F.softmax(scores, dim=-1)
-
-        # Multiply weights with values
-        output = torch.matmul(attention_weights, values)
+        ## Apply linear transformations
+        #keys = self.key(x)
+        #queries = self.query(x)
+        #values = self.value(x)
+#
+        ## Scaled dot-product attention
+        #scores = torch.matmul(queries, keys.transpose(-2, -1)) / torch.sqrt(torch.tensor(self.feature_size, dtype=torch.float32))
+#
+        ## Apply mask (if provided)
+        #if mask is not None:
+        #    scores = scores.masked_fill(mask == 0, -1e9)
+#
+        ## Apply softmax
+        #attention_weights = F.softmax(scores, dim=-1)
+#
+        ## Multiply weights with values
+        #output = torch.matmul(attention_weights, values)
 
         # classifier head
-        logits = self.classifier_head(output)
-
+        #logits = self.classifier_head(output)
+        logits = self.classifier_head(x)
         # compute probabilities
         probabilities = torch.softmax(logits, dim=-1)
 
