@@ -19,8 +19,8 @@ class AttentionClassifier(torch.nn.Module):
         print(txt.shape)
         print(vis.shape)
         # Apply linear transformations
-        keys = self.key(vis)
-        queries = self.query(txt)
+        keys = self.key(txt)
+        queries = self.query(vis)
         values = self.value(vis)
 
         # Scaled dot-product attention
