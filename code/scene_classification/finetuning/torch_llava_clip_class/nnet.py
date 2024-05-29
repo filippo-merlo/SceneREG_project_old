@@ -16,7 +16,8 @@ class AttentionClassifier(torch.nn.Module):
 
     def forward(self, x, mask=None):
         txt, vis = torch.split(x, [512, 768], dim=1)
-        
+        print(txt.shape)
+        print(vis.shape)
         # Apply linear transformations
         keys = self.key(vis)
         queries = self.query(txt)
