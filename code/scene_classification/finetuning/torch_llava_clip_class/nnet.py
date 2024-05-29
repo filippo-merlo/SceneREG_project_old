@@ -12,7 +12,7 @@ class AttentionClassifier(torch.nn.Module):
         self.query = torch.nn.Linear(feature_size, feature_size)
         self.value = torch.nn.Linear(feature_size, feature_size)
 
-        self.multihead_attn = torch.nn.MultiheadAttention(feature_size, 3)
+        self.multihead_attn = torch.nn.MultiheadAttention(feature_size, 4)
 
         self.classifier_head = torch.nn.Linear(in_features=feature_size, out_features=num_labels)
 
