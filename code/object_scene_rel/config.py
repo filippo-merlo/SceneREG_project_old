@@ -16,23 +16,3 @@ for label in scene_labels:
         scene_labels_context.append(f"a picture of an {label.replace('_', ' ')}")
     else:
         scene_labels_context.append(f"a picture of a {label.replace('_', ' ')}")
-
-#%%
-#tp_object_property_path = '/Users/filippomerlo/Desktop/Datasets/THINGSplus/Metadata/Concept-specific/objectProperties_meanRatings.tsv'
-#tp_size_mean_path = '/Users/filippomerlo/Desktop/Datasets/THINGSplus/Metadata/Concept-specific/size_meanRatings.tsv'
-#tp_category_path = '/Users/filippomerlo/Desktop/Datasets/THINGSplus/Metadata/Concept-specific/category53_wideFormat.tsv'
-#tp_tipicality_path = '/Users/filippomerlo/Desktop/Datasets/THINGSplus/Metadata/Concept-specific/typicality_meanRatings.tsv'
-#
-#df_tp_object_property = pd.read_csv(tp_object_property_path, sep='\t')
-#df_tp_size_mean = pd.read_csv(tp_size_mean_path, sep='\t')
-#df_tp_category = pd.read_csv(tp_category_path, sep='\t')
-#df_tp_tipicality = pd.read_csv(tp_tipicality_path, sep='\t')
-
-# similar: manmade_mean! + precious_mean + lives_mean! + heavy_mean + natural_mean! 
-#          moves_mean + grasp_mean + hold_mean + be.moved_mean + pleasant_mean + deprecatedArousing_mean
-
-#          + Size_mean !!!
-
-#          category?
-#          typicality?
-

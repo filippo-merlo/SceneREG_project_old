@@ -120,7 +120,7 @@ def compute_tf_idf(cooccurencies_df):
         return tf
     tf_scores_mat = tf_idf_scores_mat.apply(compute_tf, axis=1)
 
-    # compute idf
+    # compute idf # THIS MAY NOT BE USEFULL
     N = len(cooccurencies_df.columns)
     n = cooccurencies_df.astype(bool).sum(axis=1)
     idf_values = np.log(N / n)

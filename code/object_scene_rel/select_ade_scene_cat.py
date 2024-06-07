@@ -27,7 +27,7 @@ for img in coco_data.values():
 
 print(f'Target Objects, N: {len(objects_list)}')
 pprint(objects_list)
-
+print(len(objects_list))
 #%% LOAD ADE20K OBJECT NAMES AND IDS
 dataset_path = '/Users/filippomerlo/Desktop/Datasets/ADE20K_2021_17_01'
 index_file = 'index_ade20k.pkl'
@@ -137,10 +137,13 @@ for i, ade20k_object in enumerate(ade20k_object_names):
             objects_found[cocon] = [i,ade20k_object]
 pprint(objects_found)
 #%%
+pprint(objects_found)
+print(len(objects_found.keys()))
+#%%
 #import json 
 #with open('object_map_coco2ade.json', 'w') as f:
 #    json.dump(objects_found, f, indent=4)
-#
+
 #%%
 
 # Labels and occurrencies

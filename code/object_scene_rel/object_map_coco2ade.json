@@ -202,5 +202,57 @@
     "snowboard": [
         2454,
         "snowboard"
+    ],
+    "sports ball": [
+        106,
+        "ball, globe, orb"
+    ],
+    "banana": [
+        114,
+        "bananas"
+    ],
+    "pizza": [
+        285,
+        "bread, breadstuff, staff of life"
+    ],
+    "dining table": [
+        570,
+        "coffee table, cocktail table"
+    ],
+    "wine glass": [
+        1097,
+        "glass, drinking glass"
+    ],
+    "hair drier": [
+        1160,
+        "hair dryer"
+    ],
+    "motorcycle": [
+        1562,
+        "minibike, motorbike"
+    ],
+    "potted plant": [
+        1983,
+        "potted fern"
+    ],
+    "hot dog": [
+        2221,
+        "sandwich"
+    ],
+    "broccoli": [
+        2497,
+        "spinach"
+    ],
+    "stop sign": [
+        2612,
+        "street sign"
+    ],
+    "carrot": [
+        2935,
+        "vegetables"
+    ],
+    "donut": [
+        3560,
+        "muffin"
     ]
 }

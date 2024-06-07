@@ -120,7 +120,6 @@ class Dataset:
                     cat_name = cat['name']
                     object_names.append(cat_name)
             if target in object_names:
-                print('correct')
                 color = (0, 0, 255)
                 target_bbox = ann['bbox']
             x, y, width, height = ann['bbox']
@@ -128,7 +127,6 @@ class Dataset:
             cv2.rectangle(image_cv2, (int(x), int(y)), (int(x + width), int(y + height)), color, thickness)
 
         # retrieve captions
-
         image_captions = []
         cap_key = 'captions_train2017_annotations'
         try:
@@ -150,15 +148,12 @@ class Dataset:
         plt.show()
 
         x,y,w,h = target_bbox
-        print(x,y,w,h)
         max_w, max_h = image_picture.size
         x_c = subtract_in_bounds(x,20)
         y_c = subtract_in_bounds(y,20)
         w_c = add_in_bounds(x,w+20,max_w)
         h_c = add_in_bounds(y,h+20,max_h)
-        print(x,y,w,h)
         cropped_image = image_picture.crop((x_c,y_c,w_c,h_c))
-
         # Display the cropped image
         plt.imshow(cropped_image)
         plt.axis('off')  # Turn off axis
@@ -166,9 +161,14 @@ class Dataset:
        
         # Classify scene
         #classify_scene_clip_llava(image_picture, scene_labels_context)
-        print(classify_scene_vit(image_picture))
+        scene_category = classify_scene_vit(image_picture)
+        print(scene_category)
         # retrieve info from obscene
+        objects_to_replace = find_object_to_replace(target, scene_category)
+        print(objects_to_replace)
+        images_paths = compare_imgs(cropped_image, objects_to_replace)
 
+        visualize_images(images_paths)
     # check predictions
 
     def get_scene_predictions(self):
@@ -211,12 +211,13 @@ class Dataset:
             label_with_paths[lab].append(all_img_paths[i])
         return count, label_with_paths
 
-    def edit_image(self, img_name = None):
+    def get_second_object(self, img_name = None):
         # Select Image
         if img_name != None:
             image = self.data[img_name]
         else:
             while img_name == None:
+                # keys are image names
                 img_name = rn.choice(list(self.data.keys()))
                 image = self.data[img_name]
                 # check it has a target
@@ -235,20 +236,21 @@ class Dataset:
         print('*',target)
         # Get Image
         images_paths = get_files(images_path)
-        image_picture = None
         for image_path in images_paths:
             if img_name in image_path:
                 image_picture = Image.open(image_path)
                 break
-        # Convert PIL image to OpenCV format
-        #image_cv2 = cv2.cvtColor(np.array(image_picture), cv2.COLOR_RGB2BGR)
-        
+         # Convert PIL image to OpenCV format
+        image_cv2 = cv2.cvtColor(np.array(image_picture), cv2.COLOR_RGB2BGR)
+
+        # Draw the box on the image
         ann_key = 'instances_train2017_annotations'
         try:
             image[ann_key]
         except:
             ann_key = 'instances_val2017_annotations'
 
+        target_bbox = None
         for ann in image[ann_key]:
             id = ann['category_id']
             object_names = list()
@@ -257,12 +259,27 @@ class Dataset:
                     cat_name = cat['name']
                     object_names.append(cat_name)
             if target in object_names:
-                print('correct')
+                target_bbox = ann['bbox']
 
-            bbox = ann['bbox'] # x, y, width, height
-        
+        x,y,w,h = target_bbox
+        max_w, max_h = image_picture.size
+        x_c = subtract_in_bounds(x,20)
+        y_c = subtract_in_bounds(y,20)
+        w_c = add_in_bounds(x,w+20,max_w)
+        h_c = add_in_bounds(y,h+20,max_h)
+        cropped_image = image_picture.crop((x_c,y_c,w_c,h_c))
+
+        # Display the cropped image
+        plt.imshow(cropped_image)
+        plt.axis('off')  # Turn off axis
+        plt.show()
+       
         # Classify scene
-        
+        #classify_scene_clip_llava(image_picture, scene_labels_context)
+        scene_category = classify_scene_vit(image_picture)
+        print(scene_category)
+    
+
 dataset = Dataset(dataset_path = '/Users/filippomerlo/Desktop/Datasets/data/coco_search18_annotated.json')
 
 #%%
@@ -271,26 +288,14 @@ pprint(count)
 pprint(label_with_paths)
 
 #%%
-lista = ['house', 'exterior', 'lobby', 'bridge', 'cultivated', 'garage_indoor', 
-         'airport_terminal', 'playroom', 'closet', 'beach', 'game_room', 'building_facade', 
-         'parlor', 'alley', 'nursery', 'pasture', 'staircase', 'park', 'museum_indoor', 
-         'mountain_snowy', 'parking_lot', 'window_seat', 'cockpit', 'reception', 'shoe_shop', 
-         'broadleaf', 'youth_hostel', 'coast', 'jacuzzi_indoor', 'castle', 'wild', 'classroom', 
-         'amusement_park']
-for l, c in count.items():
-    if c < 10:
-        lista.append(l)
-print(lista)
-
-
-#%%
-
-#%%
 dataset.visualize_img()
 
 #%%
 dataset.edit_image()
 
 #%%
-
 print_dict_structure(dataset.data)
+
+#%%
+print(dataset.get_second_object())
+
