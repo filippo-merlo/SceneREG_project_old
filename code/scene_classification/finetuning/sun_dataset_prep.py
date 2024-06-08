@@ -19,7 +19,7 @@ def transform(image):
 
 
 sun_data = torchvision.datasets.SUN397(root = cache_dir, transform=transform,  download = True)
-dt = DataLoader(sun_data, batch_size = 2)
+dt = DataLoader(sun_data, batch_size = 16)
 for batch in dt:
     print(batch[1])        
 '''
