@@ -38,9 +38,11 @@ from tqdm import tqdm
 # Convert to Hugging Face Dataset format
 def convert_to_hf_dataset(torch_dataset):
     # Extract data and labels
-    data = [torch_dataset[i][0] for i in tqdm(range(len(torch_dataset)))]
-    labels = [torch_dataset[i][1] for i in tqdm(range(len(torch_dataset)))]
-    
+    data = []
+    labels = []
+    for i in tqdm(range(len(torch_dataset))):
+        data.append(torch_dataset[i][0])
+        labels.append(torch_dataset[i][1])
     # Create a dictionary
     data_dict = {"pixel_values": data, "labels": labels}
     del data
@@ -50,18 +52,18 @@ def convert_to_hf_dataset(torch_dataset):
     hf_dataset = Dataset.from_dict(data_dict)
     return hf_dataset
 
-train_hf_dataset = convert_to_hf_dataset(train_set)
-print('Converted_train')
 test_hf_dataset = convert_to_hf_dataset(val_set)
 print('Converted_test')
-del train_set
 del val_set
-# Manually run garbage collection
+gc.collect()
+
+train_hf_dataset = convert_to_hf_dataset(train_set)
+print('Converted_train')
+del train_set
 gc.collect()
 
 # Combine into a DatasetDict
 dataset = DatasetDict({"train": train_hf_dataset, "test": test_hf_dataset})
-
 # Remove individual datasets to free memory
 del train_hf_dataset
 del test_hf_dataset
