@@ -8,8 +8,9 @@ from datasets import load_dataset, concatenate_datasets, DatasetDict, ClassLabel
 sun_ds = load_dataset('tanganke/sun397', cache_dir=cache_dir)
 #ade_ds = load_dataset("scene_parse_150", cache_dir=cache_dir)
 ### FILTER LABELS
+from tqdm import tqdm
 i = 0
-for t in list(sun_ds['test']['image']):
+for t in tqdm(list(sun_ds['test']['image'])):
     if t in list(sun_ds['train']['image']):
         i+=1
 print(i)
