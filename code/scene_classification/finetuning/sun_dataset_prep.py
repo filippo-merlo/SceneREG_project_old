@@ -29,6 +29,7 @@ def collate_fn(batch):
         'labels': batch[1]
     }
 
+'''
 #%%
 # Inspect the dataset and counting the number of occurrences of each label 'name'
 names = dataset.features['scene_category'].names
