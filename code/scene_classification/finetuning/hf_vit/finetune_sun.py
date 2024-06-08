@@ -115,8 +115,8 @@ trainer = Trainer(
     model_init=model_init,
     args=training_args,
     data_collator=collate_fn,
-    train_dataset=train_dl,
-    eval_dataset=test_dl,
+    train_dataset=train_set,
+    eval_dataset=val_set,
     compute_metrics=compute_metrics_fn
 )
 
@@ -128,6 +128,6 @@ trainer.save_metrics("train", train_results.metrics)
 trainer.save_state()
 
 # Eval
-metrics = trainer.evaluate(test_dl)
+metrics = trainer.evaluate(val_set)
 trainer.log_metrics("eval", metrics)
 trainer.save_metrics("eval", metrics)
