@@ -129,6 +129,7 @@ def compute_tf_idf(cooccurencies_df):
     tf_idf_scores_mat = tf_scores_mat.mul(idf_values, axis=0)
     tf_idf_scores_mat = tf_idf_scores_mat.fillna(0)
 
+    # return only tf scores
     return tf_scores_mat.fillna(0)
 
 #%% COMPUTE STATISTICS
@@ -138,7 +139,7 @@ object_occurrence_ratio_mat = compute_obj_scene_cooccurrency(os_cooccurrency_df,
 scene_specific_object_presence_mat = compute_obj_scene_cooccurrency(os_cooccurrency_df, 1)
 # Save matrices
 #os_cooccurrency_df.to_pickle("object_scenes_cooccurrency.pkl")
-tf_idf_scores_mat.to_pickle("tf_scores.pkl")
+#tf_idf_scores_mat.to_pickle("tf_scores.pkl")
 
 #%% INITIALIZE CUDA DEVICE
 import torch
