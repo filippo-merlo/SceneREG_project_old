@@ -2,17 +2,11 @@
 ### PREPARE THE DATASET   
 from config import *
 import random
+import torchvision
+import torch
 
-# Load the dataset
-from datasets import load_dataset, concatenate_datasets, DatasetDict, ClassLabel
-sun_ds = load_dataset('tanganke/sun397', cache_dir=cache_dir)
-#ade_ds = load_dataset("scene_parse_150", cache_dir=cache_dir)
-### FILTER LABELS
-from tqdm import tqdm
-
-data = concatenate_datasets([sun_ds['train'], sun_ds['train']])
-print(len(list(set(data['image']))))
-
+imagenet_data = torchvision.datasets.SUN397(root = cache_dir, download = True)
+imagenet_data
 '''
 #%%
 # Inspect the dataset and counting the number of occurrences of each label 'name'
