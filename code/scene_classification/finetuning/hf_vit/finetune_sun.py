@@ -35,7 +35,7 @@ import numpy as np
 # Convert to Hugging Face Dataset format
 def convert_to_hf_dataset(torch_dataset):
     # Extract data and labels
-    data = [torch_dataset[i][0].numpy() for i in range(len(torch_dataset))]
+    data = [torch_dataset[i][0] for i in range(len(torch_dataset))]
     labels = [torch_dataset[i][1] for i in range(len(torch_dataset))]
     
     # Create a dictionary
