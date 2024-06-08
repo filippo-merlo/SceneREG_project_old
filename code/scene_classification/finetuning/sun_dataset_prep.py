@@ -9,8 +9,8 @@ sun_ds = load_dataset('tanganke/sun397', cache_dir=cache_dir)
 #ade_ds = load_dataset("scene_parse_150", cache_dir=cache_dir)
 ### FILTER LABELS
 
-print(sun_ds['train'].features)
-names = sun_ds.features['scene_category'].names
+print(sun_ds['train'])
+
 '''
 #%%
 # Inspect the dataset and counting the number of occurrences of each label 'name'
