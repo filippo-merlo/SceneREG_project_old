@@ -19,24 +19,33 @@ from transformers import ViTImageProcessor
 checkpoint = 'google/vit-base-patch16-224'
 processor = ViTImageProcessor.from_pretrained(checkpoint, cache_dir= cache_dir)
 
+# Define the transform function
 def transform(image):
     # Take a list of PIL images and turn them to pixel values
     image = processor(image.convert('RGB'), return_tensors='pt')
     # Don't forget to include the labels!
     return image
 
+# Load the dataset
 sun_data = torchvision.datasets.SUN397(root = cache_dir, transform=transform,  download = True)
+id2label = {v:k for k,v in sun_data.class_to_idx.items()}
+label2id = sun_data.class_to_idx
+label_len = len(label2id)
+
+# Split the dataset
 generator = torch.Generator().manual_seed(42)
 train_set, val_set = torch.utils.data.random_split(sun_data, [0.8, 0.2], generator=generator)
 train_dl = DataLoader(train_set, batch_size = 16)
 test_dl = DataLoader(val_set, batch_size = 16)
 
+# Define the collate function
 def collate_fn(batch):
     return {
         'pixel_values': batch[0],
         'labels': batch[1]
     }
 
+# Define the compute metrics function
 import torch
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
@@ -66,10 +75,6 @@ def compute_metrics_fn(eval_preds):
 
 # INIT MODEL
 from transformers import ViTForImageClassification
-
-id2label = {str(v):k for k,v in new_names2id.items()}
-label2id = new_names2id
-label_len = len(new_names2id.keys())
 
 def model_init():
     vit_model = ViTForImageClassification.from_pretrained(
