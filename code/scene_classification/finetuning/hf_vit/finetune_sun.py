@@ -62,6 +62,8 @@ dataset = dataset.map(preprocess_data, batched=True)
 # Define the compute metrics function
 import torch
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+if torch.cuda.is_available(): 
+    print('Using GPU')
 
 # define function to compute metrics
 import numpy as np
@@ -74,7 +76,6 @@ def compute_metrics_fn(eval_preds):
   precision_metric = evaluate.load('precision', cache_dir= cache_dir)
   recall_metric = evaluate.load('recall', cache_dir= cache_dir)
   f1_metric = evaluate.load('f1', cache_dir= cache_dir)
-
 
   logits = eval_preds.predictions
   labels = eval_preds.label_ids
