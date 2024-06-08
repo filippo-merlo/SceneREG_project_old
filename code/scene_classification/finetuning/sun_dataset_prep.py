@@ -9,7 +9,7 @@ sun_ds = load_dataset('tanganke/sun397', cache_dir=cache_dir)
 #ade_ds = load_dataset("scene_parse_150", cache_dir=cache_dir)
 ### FILTER LABELS
 
-print(sun_ds['train'])
+print(len(list(sun_ds['train']['label'])))
 
 '''
 #%%
