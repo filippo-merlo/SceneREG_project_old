@@ -1,7 +1,7 @@
 ### WANDB
 import wandb
 import os
-
+import gc
 wandb.login()
 
 ### Set a single environment variable
@@ -47,9 +47,19 @@ def convert_to_hf_dataset(torch_dataset):
 
 train_hf_dataset = convert_to_hf_dataset(train_set)
 test_hf_dataset = convert_to_hf_dataset(val_set)
+print('Converted')
+del train_set
+del val_set
+# Manually run garbage collection
+gc.collect()
 
 # Combine into a DatasetDict
 dataset = DatasetDict({"train": train_hf_dataset, "test": test_hf_dataset})
+
+# Remove individual datasets to free memory
+del train_hf_dataset
+del test_hf_dataset
+gc.collect()
 
 # Define the transform function
 def preprocess_data(examples):
