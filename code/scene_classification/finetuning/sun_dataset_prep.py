@@ -4,9 +4,12 @@ from config import *
 import random
 import torchvision
 import torch
+from torch.utils.data import DataLoader
 
 sun_data = torchvision.datasets.SUN397(root = cache_dir, download = True)
-print(sun_data[0:1])
+dt = DataLoader(sun_data, batch_size = 1)
+for batch in dt:
+    print(batch)        
 '''
 #%%
 # Inspect the dataset and counting the number of occurrences of each label 'name'
