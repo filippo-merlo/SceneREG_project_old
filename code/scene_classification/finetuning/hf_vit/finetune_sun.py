@@ -28,6 +28,7 @@ def transform(image):
 
 # Load the dataset
 sun_data = torchvision.datasets.SUN397(root = cache_dir, transform=transform,  download = True)
+print(sun_data.format['type'])
 id2label = {v:k for k,v in sun_data.class_to_idx.items()}
 label2id = sun_data.class_to_idx
 label_len = len(label2id)
@@ -37,7 +38,7 @@ generator = torch.Generator().manual_seed(42)
 train_set, val_set = torch.utils.data.random_split(sun_data, [0.8, 0.2], generator=generator)
 train_dl = DataLoader(train_set, batch_size = 16)
 test_dl = DataLoader(val_set, batch_size = 16)
-print(train_set.format['type'])
+
 # Define the collate function
 def collate_fn(batch):
     return {
