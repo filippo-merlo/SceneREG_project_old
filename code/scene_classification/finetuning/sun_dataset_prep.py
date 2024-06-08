@@ -19,7 +19,7 @@ def transform(example_batch):
     return inputs
 
 
-sun_data = torchvision.datasets.SUN397(root = cache_dir, transform=transform,  download = True)
+sun_data = torchvision.datasets.SUN397(root = cache_dir, target_transform=transform,  download = True)
 dt = DataLoader(sun_data, batch_size = 2)
 for batch in dt:
     print(batch)        
