@@ -9,11 +9,9 @@ sun_ds = load_dataset('tanganke/sun397', cache_dir=cache_dir)
 #ade_ds = load_dataset("scene_parse_150", cache_dir=cache_dir)
 ### FILTER LABELS
 from tqdm import tqdm
-i = 0
-for t in tqdm(sun_ds['test']['image'][:100]):
-    if t in sun_ds['train']['image'][:100]:
-        i+=1
-print(i)
+
+data = concatenate_datasets([sun_ds['train'], sun_ds['train']])
+print(len(list(set(data['image']))))
 
 '''
 #%%
