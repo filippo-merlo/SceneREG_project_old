@@ -6,7 +6,7 @@ import torchvision
 import torch
 
 sun_data = torchvision.datasets.SUN397(root = cache_dir, download = True)
-print(sun_data.__getitem__(0))
+print(sun_data[0:1])
 '''
 #%%
 # Inspect the dataset and counting the number of occurrences of each label 'name'

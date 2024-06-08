@@ -30,7 +30,11 @@ def transform(example_batch):
     # Don't forget to include the labels!
     inputs['labels'] = example_batch['scene_category']
     return inputs
-imagenet_data = torchvision.datasets.SUN397(root = cache_dir, transform = transform, download = True)
+imagenet_data = torchvision.datasets.SUN397(root = cache_dir, download = True)
+
+
+print(len(set(final_dataset['train']['scene_category'])))
+datasets_processed = final_dataset.with_transform(transform)
 
 import torch
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
