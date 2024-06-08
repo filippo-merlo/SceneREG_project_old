@@ -5,8 +5,20 @@ import random
 import torchvision
 import torch
 from torch.utils.data import DataLoader
+from transformers import ViTImageProcessor
 
-sun_data = torchvision.datasets.SUN397(root = cache_dir, download = True)
+checkpoint = 'google/vit-base-patch16-224'
+processor = ViTImageProcessor.from_pretrained(checkpoint, cache_dir= cache_dir)
+
+def transform(example_batch):
+    # Take a list of PIL images and turn them to pixel values
+    inputs = processor([x.convert('RGB') for x in example_batch['image']], return_tensors='pt')
+    # Don't forget to include the labels!
+    inputs['labels'] = example_batch['label']
+    return inputs
+
+
+sun_data = torchvision.datasets.SUN397(root = cache_dir, transform=transform,  download = True)
 dt = DataLoader(sun_data, batch_size = 1)
 for batch in dt:
     print(batch)        
