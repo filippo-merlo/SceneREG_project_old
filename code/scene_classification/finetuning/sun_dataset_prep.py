@@ -16,10 +16,10 @@ def transform(image):
     # Don't forget to include the labels!
     return image
 
-
-
 sun_data = torchvision.datasets.SUN397(root = cache_dir, transform=transform,  download = True)
-dt = DataLoader(sun_data, batch_size = 16)
+generator = torch.Generator().manual_seed(42)
+train_set, val_set = torch.utils.data.random_split(sun_data, [0.8, 0.2], generator=generator)
+dt = DataLoader(train_set, batch_size = 16)
 for batch in dt:
     print(batch[1])        
 '''

@@ -41,8 +41,8 @@ device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cp
    
 def collate_fn(batch):
     return {
-        'pixel_values': torch.stack([x['pixel_values'] for x in batch]),
-        'labels': torch.tensor([x['labels'] for x in batch])
+        'pixel_values': batch[0],
+        'labels': batch[1]
     }
 
 # define function to compute metrics
