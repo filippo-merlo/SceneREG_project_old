@@ -10,13 +10,13 @@ os.environ["WANDB_PROJECT"] = project_name
 os.environ["WANDB_LOG_MODEL"] = 'true'
 
 ### PREPARE THE DATASET   
-from config import *
 import torchvision
 import torch
 from torch.utils.data import DataLoader
 from transformers import ViTImageProcessor
 
 checkpoint = 'google/vit-base-patch16-224'
+cache_dir = '/mnt/cimec-storage6/users/filippo.merlo/cache_dir'
 processor = ViTImageProcessor.from_pretrained(checkpoint, cache_dir= cache_dir)
 
 # Define the transform function
