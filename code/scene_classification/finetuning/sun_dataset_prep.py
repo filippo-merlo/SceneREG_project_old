@@ -5,7 +5,23 @@ import random
 import torchvision
 import torch
 
-imagenet_data = torchvision.datasets.SUN397(root = cache_dir, download = True)
+from transformers import ViTImageProcessor
+checkpoint = 'google/vit-base-patch16-224'
+processor = ViTImageProcessor.from_pretrained(checkpoint, cache_dir= cache_dir)
+
+
+### PREPARE THE DATASET   
+from config import *
+import torchvision
+import torch
+
+def transform(example_batch):
+    # Take a list of PIL images and turn them to pixel values
+    inputs = processor([x.convert('RGB') for x in example_batch['image']], return_tensors='pt')
+    # Don't forget to include the labels!
+    inputs['labels'] = example_batch['scene_category']
+    return inputs
+imagenet_data = torchvision.datasets.SUN397(root = cache_dir, transform = transform, download = True)
 print(imagenet_data)
 '''
 #%%
