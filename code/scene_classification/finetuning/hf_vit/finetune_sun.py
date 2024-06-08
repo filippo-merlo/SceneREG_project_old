@@ -1,49 +1,44 @@
-# WANDB
+### WANDB
 import wandb
 import os
 
 wandb.login()
 
-# Set a single environment variable
+### Set a single environment variable
 project_name = 'vit-base-patch16-224'
 os.environ["WANDB_PROJECT"] = project_name
 os.environ["WANDB_LOG_MODEL"] = 'true'
-
-from transformers import ViTImageProcessor
-import sys
-sys.path.append('../')
-from dataset_prep import *
-from config import *
-
-checkpoint = 'google/vit-base-patch16-224'
-processor = ViTImageProcessor.from_pretrained(checkpoint, cache_dir= cache_dir)
-
 
 ### PREPARE THE DATASET   
 from config import *
 import torchvision
 import torch
+from torch.utils.data import DataLoader
+from transformers import ViTImageProcessor
 
-def transform(example_batch):
+checkpoint = 'google/vit-base-patch16-224'
+processor = ViTImageProcessor.from_pretrained(checkpoint, cache_dir= cache_dir)
+
+def transform(image):
     # Take a list of PIL images and turn them to pixel values
-    inputs = processor([x.convert('RGB') for x in example_batch['image']], return_tensors='pt')
+    image = processor(image.convert('RGB'), return_tensors='pt')
     # Don't forget to include the labels!
-    inputs['labels'] = example_batch['scene_category']
-    return inputs
-imagenet_data = torchvision.datasets.SUN397(root = cache_dir, download = True)
+    return image
 
+sun_data = torchvision.datasets.SUN397(root = cache_dir, transform=transform,  download = True)
+generator = torch.Generator().manual_seed(42)
+train_set, val_set = torch.utils.data.random_split(sun_data, [0.8, 0.2], generator=generator)
+train_dl = DataLoader(train_set, batch_size = 16)
+test_dl = DataLoader(val_set, batch_size = 16)
 
-print(len(set(final_dataset['train']['scene_category'])))
-datasets_processed = final_dataset.with_transform(transform)
-
-import torch
-device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-   
 def collate_fn(batch):
     return {
         'pixel_values': batch[0],
         'labels': batch[1]
     }
+
+import torch
+device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
 # define function to compute metrics
 import numpy as np
@@ -116,8 +111,8 @@ trainer = Trainer(
     model_init=model_init,
     args=training_args,
     data_collator=collate_fn,
-    train_dataset=datasets_processed['train'],
-    eval_dataset=datasets_processed['test'],
+    train_dataset=train_dl,
+    eval_dataset=test_dl,
     compute_metrics=compute_metrics_fn
 )
 
@@ -129,6 +124,6 @@ trainer.save_metrics("train", train_results.metrics)
 trainer.save_state()
 
 # Eval
-metrics = trainer.evaluate(datasets_processed['test'])
+metrics = trainer.evaluate(test_dl)
 trainer.log_metrics("eval", metrics)
 trainer.save_metrics("eval", metrics)
