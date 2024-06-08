@@ -11,6 +11,7 @@ checkpoint = 'google/vit-base-patch16-224'
 processor = ViTImageProcessor.from_pretrained(checkpoint, cache_dir= cache_dir)
 
 def transform(example_batch):
+    print(example_batch)
     # Take a list of PIL images and turn them to pixel values
     inputs = processor([x.convert('RGB') for x in example_batch], return_tensors='pt')
     # Don't forget to include the labels!
