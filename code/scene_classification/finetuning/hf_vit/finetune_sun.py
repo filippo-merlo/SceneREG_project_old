@@ -16,7 +16,7 @@ from torch.utils.data import DataLoader
 from transformers import ViTImageProcessor
 
 checkpoint = 'google/vit-base-patch16-224'
-cache_dir = '/mnt/cimec-storage6/users/filippo.merlo/cache_dir'
+cache_dir =  '/mnt/cimec-storage6/users/filippo.merlo'
 processor = ViTImageProcessor.from_pretrained(checkpoint, cache_dir= cache_dir)
 
 # Define the transform function
