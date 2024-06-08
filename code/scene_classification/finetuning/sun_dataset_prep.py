@@ -20,8 +20,17 @@ sun_data = torchvision.datasets.SUN397(root = cache_dir, transform=transform,  d
 generator = torch.Generator().manual_seed(42)
 train_set, val_set = torch.utils.data.random_split(sun_data, [0.8, 0.2], generator=generator)
 dt = DataLoader(train_set, batch_size = 16)
+
+
+def collate_fn(batch):
+    return {
+        'pixel_values': batch[0],
+        'labels': batch[1]
+    }
+
+from pprint import pprint 
 for batch in dt:
-    print(batch[1])        
+    pprint(collate_fn(batch))        
 '''
 #%%
 # Inspect the dataset and counting the number of occurrences of each label 'name'
