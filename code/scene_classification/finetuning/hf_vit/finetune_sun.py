@@ -46,8 +46,9 @@ def convert_to_hf_dataset(torch_dataset):
     return hf_dataset
 
 train_hf_dataset = convert_to_hf_dataset(train_set)
+print('Converted_train')
 test_hf_dataset = convert_to_hf_dataset(val_set)
-print('Converted')
+print('Converted_test')
 del train_set
 del val_set
 # Manually run garbage collection
