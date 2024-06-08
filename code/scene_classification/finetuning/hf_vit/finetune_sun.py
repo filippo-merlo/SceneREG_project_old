@@ -19,16 +19,8 @@ checkpoint = 'google/vit-base-patch16-224'
 cache_dir =  '/mnt/cimec-storage6/users/filippo.merlo'
 processor = ViTImageProcessor.from_pretrained(checkpoint, cache_dir= cache_dir)
 
-# Define the transform function
-def transform(image):
-    # Take a list of PIL images and turn them to pixel values
-    image = processor(image.convert('RGB'), return_tensors='pt')
-    # Don't forget to include the labels!
-    return image
-
 # Load the dataset
-sun_data = torchvision.datasets.SUN397(root = cache_dir, transform=transform,  download = True)
-print(sun_data.format['type'])
+sun_data = torchvision.datasets.SUN397(root = cache_dir, download = True)
 id2label = {v:k for k,v in sun_data.class_to_idx.items()}
 label2id = sun_data.class_to_idx
 label_len = len(label2id)
@@ -36,15 +28,36 @@ label_len = len(label2id)
 # Split the dataset
 generator = torch.Generator().manual_seed(42)
 train_set, val_set = torch.utils.data.random_split(sun_data, [0.8, 0.2], generator=generator)
-train_dl = DataLoader(train_set, batch_size = 16)
-test_dl = DataLoader(val_set, batch_size = 16)
 
-# Define the collate function
-def collate_fn(batch):
-    return {
-        'pixel_values': batch[0],
-        'labels': batch[1]
-    }
+from datasets import Dataset, DatasetDict
+import numpy as np
+
+# Convert to Hugging Face Dataset format
+def convert_to_hf_dataset(torch_dataset):
+    # Extract data and labels
+    data = [torch_dataset[i][0].numpy() for i in range(len(torch_dataset))]
+    labels = [torch_dataset[i][1] for i in range(len(torch_dataset))]
+    
+    # Create a dictionary
+    data_dict = {"pixel_values": data, "labels": labels}
+    
+    # Convert to Hugging Face Dataset
+    hf_dataset = Dataset.from_dict(data_dict)
+    return hf_dataset
+
+train_hf_dataset = convert_to_hf_dataset(train_set)
+test_hf_dataset = convert_to_hf_dataset(val_set)
+
+# Combine into a DatasetDict
+dataset = DatasetDict({"train": train_hf_dataset, "test": test_hf_dataset})
+
+# Define the transform function
+def preprocess_data(examples):
+    # Take a list of PIL images and turn them to pixel values
+    examples['pixel_values'] = [processor(img.convert('RGB'), return_tensors='pt') for img in examples['pixel_values']]
+    return examples
+
+dataset = dataset.map(preprocess_data, batched=True)
 
 # Define the compute metrics function
 import torch
@@ -115,9 +128,8 @@ training_args = TrainingArguments(
 trainer = Trainer(
     model_init=model_init,
     args=training_args,
-    data_collator=collate_fn,
-    train_dataset=train_set,
-    eval_dataset=val_set,
+    train_dataset=dataset['train'],
+    eval_dataset=dataset['test'],
     compute_metrics=compute_metrics_fn
 )
 
@@ -129,6 +141,6 @@ trainer.save_metrics("train", train_results.metrics)
 trainer.save_state()
 
 # Eval
-metrics = trainer.evaluate(val_set)
+metrics = trainer.evaluate(dataset['test'])
 trainer.log_metrics("eval", metrics)
 trainer.save_metrics("eval", metrics)
