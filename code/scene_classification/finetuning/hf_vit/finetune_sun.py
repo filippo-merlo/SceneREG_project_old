@@ -30,6 +30,7 @@ generator = torch.Generator().manual_seed(42)
 train_set, val_set = torch.utils.data.random_split(sun_data, [0.8, 0.2], generator=generator)
 del sun_data
 gc.collect()
+print('Dataset loaded')
 
 from datasets import Dataset, DatasetDict
 import numpy as np
@@ -42,7 +43,9 @@ def convert_to_hf_dataset(torch_dataset):
     
     # Create a dictionary
     data_dict = {"pixel_values": data, "labels": labels}
-    
+    del data
+    del labels
+    gc.collect()
     # Convert to Hugging Face Dataset
     hf_dataset = Dataset.from_dict(data_dict)
     return hf_dataset
