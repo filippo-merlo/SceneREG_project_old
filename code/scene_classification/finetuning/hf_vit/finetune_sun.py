@@ -5,7 +5,7 @@ import os
 wandb.login()
 
 ### Set a single environment variable
-project_name = 'vit-base-patch16-224'
+project_name = 'vit-base-patch16-224_SUN397'
 os.environ["WANDB_PROJECT"] = project_name
 os.environ["WANDB_LOG_MODEL"] = 'true'
 
@@ -104,7 +104,6 @@ training_args = TrainingArguments(
     remove_unused_columns=False,
     fp16=True
 )
-
 
 # define training loop
 trainer = Trainer(
