@@ -27,7 +27,6 @@ def preprocess_data(img):
 
 # Load the dataset
 sun_data = torchvision.datasets.SUN397(root = cache_dir, transform=preprocess_data, download = True)
-print(type(sun_data))
 id2label = {v:k for k,v in sun_data.class_to_idx.items()}
 label2id = sun_data.class_to_idx
 label_len = len(label2id)
@@ -39,6 +38,9 @@ del sun_data
 gc.collect()
 print('Dataset loaded')
 
+# initialize dta loaders
+train_loader = DataLoader(train_set, batch_size=16, shuffle=True)
+val_loader = DataLoader(val_set, batch_size=16, shuffle=True)
 
 # Define the compute metrics function
 import torch
@@ -110,8 +112,8 @@ training_args = TrainingArguments(
 trainer = Trainer(
     model_init=model_init,
     args=training_args,
-    train_dataset=dataset['train'],
-    eval_dataset=dataset['test'],
+    train_dataset=train_loader,
+    eval_dataset=val_loader,
     compute_metrics=compute_metrics_fn
 )
 
@@ -123,6 +125,6 @@ trainer.save_metrics("train", train_results.metrics)
 trainer.save_state()
 
 # Eval
-metrics = trainer.evaluate(dataset['test'])
+metrics = trainer.evaluate(val_loader)
 trainer.log_metrics("eval", metrics)
 trainer.save_metrics("eval", metrics)
