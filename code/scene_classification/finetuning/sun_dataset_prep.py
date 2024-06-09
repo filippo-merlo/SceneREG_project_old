@@ -7,7 +7,7 @@ import torch
 from torch.utils.data import DataLoader
 
 sun_data = torchvision.datasets.SUN397(root = cache_dir, download = True)
-sun_classes = list(sun_data.class_to_idx.keys())
+sun_classes = [x.replace('/', '_') for x in list(sun_data.class_to_idx.keys())]
 
 from datasets import load_dataset, concatenate_datasets, DatasetDict, ClassLabel
 ade_data = load_dataset("scene_parse_150", cache_dir=cache_dir)
