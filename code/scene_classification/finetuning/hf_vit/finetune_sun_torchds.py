@@ -113,8 +113,8 @@ training_args = TrainingArguments(
 trainer = Trainer(
     model_init=model_init,
     args=training_args,
-    train_dataset=train_loader,
-    eval_dataset=val_loader,
+    train_dataset=train_set,
+    eval_dataset=val_set,
     compute_metrics=compute_metrics_fn
 )
 
@@ -126,6 +126,6 @@ trainer.save_metrics("train", train_results.metrics)
 trainer.save_state()
 
 # Eval
-metrics = trainer.evaluate(val_loader)
+metrics = trainer.evaluate(val_set)
 trainer.log_metrics("eval", metrics)
 trainer.save_metrics("eval", metrics)
