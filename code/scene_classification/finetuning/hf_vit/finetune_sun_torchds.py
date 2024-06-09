@@ -41,7 +41,7 @@ print('Dataset loaded')
 
 def collate_fn(batch):
     d = {
-        'pixel_values': torch.stack([x[0]['pixel_values'] for x in batch]),
+        'pixel_values': torch.stack([x[0]['pixel_values'].squeeze() for x in batch]),
         'labels': torch.tensor([x[1] for x in batch])
     }
     print(d['pixel_values'].shape)
