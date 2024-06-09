@@ -40,12 +40,10 @@ gc.collect()
 print('Dataset loaded')
 
 def collate_fn(batch):
-    d = {
+    return {
         'pixel_values': torch.stack([x[0]['pixel_values'].squeeze() for x in batch]),
         'labels': torch.tensor([x[1] for x in batch])
     }
-    print(d['pixel_values'].shape)
-    return d
 
 # Define the compute metrics function
 import torch
