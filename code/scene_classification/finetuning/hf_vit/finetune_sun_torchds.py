@@ -34,6 +34,7 @@ label_len = len(label2id)
 # Split the dataset
 generator = torch.Generator().manual_seed(42)
 train_set, val_set = torch.utils.data.random_split(sun_data, [0.7, 0.3], generator=generator)
+
 del sun_data
 gc.collect()
 print('Dataset loaded')
@@ -41,8 +42,11 @@ print('Dataset loaded')
 # initialize dta loaders
 train_loader = DataLoader(train_set, batch_size=16, shuffle=True)
 val_loader = DataLoader(val_set, batch_size=16, shuffle=True)
-print(type(train_loader))
+print(train_loader.__getitem__(0))
 
+
+
+'''
 # Define the compute metrics function
 import torch
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
@@ -129,3 +133,5 @@ trainer.save_state()
 metrics = trainer.evaluate(val_set)
 trainer.log_metrics("eval", metrics)
 trainer.save_metrics("eval", metrics)
+
+'''
