@@ -41,6 +41,7 @@ print('Dataset loaded')
 # initialize dta loaders
 train_loader = DataLoader(train_set, batch_size=16, shuffle=True)
 val_loader = DataLoader(val_set, batch_size=16, shuffle=True)
+print(type(train_loader))
 
 # Define the compute metrics function
 import torch
