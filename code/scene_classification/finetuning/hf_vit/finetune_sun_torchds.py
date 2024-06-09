@@ -39,10 +39,7 @@ del sun_data
 gc.collect()
 print('Dataset loaded')
 
-# initialize dta loaders
-train_loader = DataLoader(train_set, batch_size=16, shuffle=True)
-val_loader = DataLoader(val_set, batch_size=16, shuffle=True)
-print(train_loader.__getitem__(0))
+print(val_set.__getitem__(0))
 
 
 
