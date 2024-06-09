@@ -33,7 +33,7 @@ label_len = len(label2id)
 
 # Split the dataset
 generator = torch.Generator().manual_seed(42)
-train_set, val_set = torch.utils.data.random_split(sun_data, [0.7, 0.3], generator=generator)
+train_set, val_set = torch.utils.data.random_split(sun_data, [0.8, 0.2], generator=generator)
 
 del sun_data
 gc.collect()
