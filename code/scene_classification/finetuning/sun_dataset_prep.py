@@ -15,7 +15,7 @@ ade_classes = list(ade_data['train'].features['scene_category'].names)
 
 from pprint import pprint
 print('SUN classes:', len(sun_classes))
-pprint(sun_classes[0:20])
+print(sun_classes[0:20])
 print('ADE classes:', len(ade_classes))
 print(ade_classes[0:20])
 print('Classes in SUN but not in ADE:')
