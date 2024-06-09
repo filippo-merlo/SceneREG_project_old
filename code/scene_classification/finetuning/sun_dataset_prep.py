@@ -19,4 +19,21 @@ print(sun_classes[0:20])
 print('ADE classes:', len(ade_classes))
 print(ade_classes[0:20])
 print('Classes in SUN but not in ADE:')
-pprint(set(sun_classes)-set(ade_classes))
+not_matched = set(sun_classes)-set(ade_classes)
+pprint(not_matched)
+
+possible_matches = {}
+for x in not_matched:
+    possible_matches[x] = []
+    l = x.split('_')
+    if 'indoor' in l:
+        l.remove('indoor')
+    if 'outdoor' in l:
+        l.remove('outdoor')
+    for y in ade_classes:
+        l2 = y.split('_')
+        for i in l:
+            if i in l2:
+                possible_matches[x].append(y)
+
+pprint(possible_matches)
