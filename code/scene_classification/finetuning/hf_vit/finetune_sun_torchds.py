@@ -118,7 +118,7 @@ trainer = Trainer(
     train_dataset=train_set,
     eval_dataset=val_set,
     compute_metrics=compute_metrics_fn,
-    collate_fn=collate_fn
+    data_collator=collate_fn
 )
 
 # start training loop
