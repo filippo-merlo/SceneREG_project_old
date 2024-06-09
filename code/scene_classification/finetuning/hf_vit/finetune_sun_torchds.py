@@ -39,9 +39,13 @@ del sun_data
 gc.collect()
 print('Dataset loaded')
 
-print(val_set.__getitem__(0))
+def collate_fn(batch):
+    return {
+        'pixel_values': torch.stack([x[0]['pixel_values'] for x in batch]),
+        'labels': torch.tensor([x[1] for x in batch])
+    }
 
-
+print(collate_fn([train_set[0]]))
 
 '''
 # Define the compute metrics function
