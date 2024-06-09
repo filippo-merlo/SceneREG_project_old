@@ -45,9 +45,6 @@ def collate_fn(batch):
         'labels': torch.tensor([x[1] for x in batch])
     }
 
-print(collate_fn([train_set[0]]))
-
-'''
 # Define the compute metrics function
 import torch
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
@@ -120,7 +117,8 @@ trainer = Trainer(
     args=training_args,
     train_dataset=train_set,
     eval_dataset=val_set,
-    compute_metrics=compute_metrics_fn
+    compute_metrics=compute_metrics_fn,
+    collate_fn=collate_fn
 )
 
 # start training loop
@@ -134,5 +132,3 @@ trainer.save_state()
 metrics = trainer.evaluate(val_set)
 trainer.log_metrics("eval", metrics)
 trainer.save_metrics("eval", metrics)
-
-'''
