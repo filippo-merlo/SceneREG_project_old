@@ -19,63 +19,31 @@ checkpoint = 'google/vit-base-patch16-224'
 cache_dir =  '/mnt/cimec-storage6/users/filippo.merlo'
 processor = ViTImageProcessor.from_pretrained(checkpoint, cache_dir= cache_dir)
 
+# Define the transform function
+def preprocess_data(img):
+    # Take a list of PIL images and turn them to pixel values
+    return processor(img.convert('RGB'), return_tensors='pt')
+
+
 # Load the dataset
-sun_data = torchvision.datasets.SUN397(root = cache_dir, download = True)
+sun_data = torchvision.datasets.SUN397(root = cache_dir, transform=preprocess_data, download = True)
 id2label = {v:k for k,v in sun_data.class_to_idx.items()}
 label2id = sun_data.class_to_idx
 label_len = len(label2id)
 
 # Split the dataset
 generator = torch.Generator().manual_seed(42)
-train_set, val_set = torch.utils.data.random_split(sun_data, [0.7, 0.3], generator=generator)
+train_set, val_set = torch.utils.data.random_split(sun_data, [0.9, 0.1], generator=generator)
+
 del sun_data
 gc.collect()
 print('Dataset loaded')
 
-from datasets import Dataset, DatasetDict
-import numpy as np
-from tqdm import tqdm
-# Convert to Hugging Face Dataset format
-def convert_to_hf_dataset(torch_dataset):
-    # Extract data and labels
-    data = []
-    labels = []
-    for i in tqdm(range(len(torch_dataset))):
-        data.append(torch_dataset[i][0])
-        labels.append(torch_dataset[i][1])
-    # Create a dictionary
-    data_dict = {"pixel_values": data, "labels": labels}
-    del data
-    del labels
-    gc.collect()
-    # Convert to Hugging Face Dataset
-    hf_dataset = Dataset.from_dict(data_dict)
-    return hf_dataset
-
-test_hf_dataset = convert_to_hf_dataset(val_set)
-print('Converted_test')
-del val_set
-gc.collect()
-
-train_hf_dataset = convert_to_hf_dataset(train_set)
-print('Converted_train')
-del train_set
-gc.collect()
-
-# Combine into a DatasetDict
-dataset = DatasetDict({"train": train_hf_dataset, "test": test_hf_dataset})
-# Remove individual datasets to free memory
-del train_hf_dataset
-del test_hf_dataset
-gc.collect()
-
-# Define the transform function
-def preprocess_data(examples):
-    # Take a list of PIL images and turn them to pixel values
-    examples['pixel_values'] = [processor(img.convert('RGB'), return_tensors='pt') for img in examples['pixel_values']]
-    return examples
-
-dataset = dataset.map(preprocess_data, batched=True)
+def collate_fn(batch):
+    return {
+        'pixel_values': torch.stack([x[0]['pixel_values'].squeeze() for x in batch]),
+        'labels': torch.tensor([x[1] for x in batch])
+    }
 
 # Define the compute metrics function
 import torch
@@ -130,11 +98,11 @@ from transformers import TrainingArguments, Trainer
 training_args = TrainingArguments(
     output_dir=f'/mnt/cimec-storage6/users/filippo.merlo/{project_name}',
     report_to='wandb',  # Turn on Weights & Biases logging
-    num_train_epochs=10,
+    num_train_epochs=15,
     learning_rate=float(2e-4),
     weight_decay=0.1,
-    per_device_train_batch_size=16,
-    per_device_eval_batch_size=16,
+    per_device_train_batch_size=32,
+    per_device_eval_batch_size=32,
     save_strategy='epoch',
     evaluation_strategy='epoch',
     logging_strategy='epoch',
@@ -147,9 +115,10 @@ training_args = TrainingArguments(
 trainer = Trainer(
     model_init=model_init,
     args=training_args,
-    train_dataset=dataset['train'],
-    eval_dataset=dataset['test'],
-    compute_metrics=compute_metrics_fn
+    train_dataset=train_set,
+    eval_dataset=val_set,
+    compute_metrics=compute_metrics_fn,
+    data_collator=collate_fn
 )
 
 # start training loop
@@ -160,6 +129,6 @@ trainer.save_metrics("train", train_results.metrics)
 trainer.save_state()
 
 # Eval
-metrics = trainer.evaluate(dataset['test'])
+metrics = trainer.evaluate(val_set)
 trainer.log_metrics("eval", metrics)
 trainer.save_metrics("eval", metrics)
