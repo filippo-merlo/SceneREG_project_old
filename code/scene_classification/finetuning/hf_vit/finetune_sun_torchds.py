@@ -33,7 +33,7 @@ label_len = len(label2id)
 
 # Split the dataset
 generator = torch.Generator().manual_seed(42)
-train_set, val_set = torch.utils.data.random_split(sun_data, [0.8, 0.2], generator=generator)
+train_set, val_set = torch.utils.data.random_split(sun_data, [0.9, 0.1], generator=generator)
 
 del sun_data
 gc.collect()
@@ -98,11 +98,11 @@ from transformers import TrainingArguments, Trainer
 training_args = TrainingArguments(
     output_dir=f'/mnt/cimec-storage6/users/filippo.merlo/{project_name}',
     report_to='wandb',  # Turn on Weights & Biases logging
-    num_train_epochs=10,
+    num_train_epochs=15,
     learning_rate=float(2e-4),
     weight_decay=0.1,
-    per_device_train_batch_size=16,
-    per_device_eval_batch_size=16,
+    per_device_train_batch_size=32,
+    per_device_eval_batch_size=32,
     save_strategy='epoch',
     evaluation_strategy='epoch',
     logging_strategy='epoch',
