@@ -157,33 +157,65 @@ else:
    print ("MPS device not found.")
 
 #%% COUMPUTE SIMILARITY WITH BERT
-from sentence_transformers import SentenceTransformer
+import torch
+from transformers import AutoTokenizer, AutoModelForMaskedLM
+from torch.nn.functional import softmax
 
-model = SentenceTransformer('bert-base-nli-mean-tokens').to(device)
+# Load the pre-trained model and tokenizer
+model_name = "bert-base-cased"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForMaskedLM.from_pretrained(model_name).to(device)
 
-object_names = list(index_ade20k['objectnames'])
-scene_names = list(set([assign_category_name(scene) for scene in index_ade20k['scene']]))
-#Encoding:
-with torch.no_grad():
-    objects_name_embeddings = model.encode(object_names)
-    scene_name_embeddings = model.encode(scene_names)
+# Define the input sentence with a masked word
+input_text = "There is a [MASK] in the [SCENE]."
+# get objects and scenes names 
+candidates = index_ade20k['objectnames']
+from datasets import load_dataset
+cache_dir = '/Users/filippomerlo/Documents/GitHub/SceneREG_project/code/object_scene_rel/map_hfADE_2_starndardADE/cache'
+ade_hf_data = load_dataset("scene_parse_150", cache_dir=cache_dir)
+scenes_categories = ade_hf_data['train'].features['scene_category'].names
 
-# cosine similarity 
-from sklearn.metrics.pairwise import cosine_similarity
-cosine_similarity_matrix = cosine_similarity(objects_name_embeddings, scene_name_embeddings)
+# Function to calculate the probability of a candidate
+def get_candidate_probability(candidate_tokens):
 
-# Uniform with cooccurrencies matrices Matrices
-nfiles = len(index_ade20k['filename'])
-scenes_categories = [assign_category_name(scene) for scene in index_ade20k['scene']]
-scenes_categories = list(set(scenes_categories))
-object_indexes = range(len(index_ade20k['objectnames']))
-bert_similarities_mat = pd.DataFrame(columns=scenes_categories, index=object_indexes)
+    # Replace the masked token with the candidate tokens
+    tokenized_candidate = ["[CLS]"] + tokenized_text[:mask_token_index] + candidate_tokens + tokenized_text[mask_token_index + 1:]
 
-for scene_name in scenes_categories:
-    scene_idx = name2idx(scene_name, scenes_categories)
-    for obj_idx in object_indexes:
-        bert_similarities_mat.loc[obj_idx,scene_name] = cosine_similarity_matrix[obj_idx,scene_idx]
+    # Convert tokenized sentence to input IDs
+    input_ids = tokenizer.convert_tokens_to_ids(tokenized_candidate)
 
+    # Convert input IDs to tensors
+    input_tensor = torch.tensor([input_ids]).to(device)
+
+    # Get the logits from the model
+    with torch.no_grad():
+        logits = model(input_tensor).logits[0].to('cpu')
+
+    # Calculate the probability of the candidate word
+    probs = softmax(logits, dim=-1)
+    probs = probs[range(len(input_ids)), input_ids]
+    prob = (
+        torch.prod(probs[1:mask_token_index+1])
+        * torch.prod(probs[mask_token_index+len(candidate_tokens)+1:])
+    )
+
+    return prob.item()
+
+bert_similarities_mat = pd.DataFrame(columns=scenes_categories, index=range(len(index_ade20k['objectnames'])))
+
+for scene in tqdm(scenes_categories):
+    input_text = input_text.replace("[SCENE]", scene.replace('_', ' '))
+    # Tokenize the input sentence
+    tokenized_text = tokenizer.tokenize(input_text)
+    mask_token_index = tokenized_text.index("[MASK]")
+    
+    # Evaluate the probability of each candidate word
+    for candidate in candidates:
+        candidate_tokens = tokenizer.tokenize(candidate)
+        candidate_probability = get_candidate_probability(candidate_tokens)
+        bert_similarities_mat.loc[name2idx(candidate, candidates), scene] = candidate_probability
+bert_similarities_mat.head()
+bert_similarities_mat.to_pickle("bert_similarities.pkl")
 #%% COMPUTE SIMILARITY WITH CLIP
 from transformers import AutoTokenizer, AutoProcessor, CLIPModel
 
@@ -292,3 +324,4 @@ for metric_name, metric_df in relatedness_metrics.items():
             print('\n\n')
             # Add the pair to printed_pairs set
             printed_pairs.add((metric_name, metric_name2))
+

@@ -242,7 +242,7 @@ import pandas as pd
 from pprint import pprint
 
 # Load the object_scene_rel_matrix file
-with open("/Users/filippomerlo/Documents/GitHub/SceneREG_project/code/object_scene_rel/tf_idf_scores.pkl", "rb") as file:
+with open("/Users/filippomerlo/Documents/GitHub/SceneREG_project/code/object_scene_rel/tf_scores.pkl", "rb") as file:
     object_scene_rel_matrix = pkl.load(file)
 
 # Load the size_mean_matrix file
@@ -483,6 +483,54 @@ def get_all_names(path):
     return names
 
 #%%
+import torch
+from transformers import AutoTokenizer, AutoModelForMaskedLM
+from torch.nn.functional import softmax
+
+# Load the pre-trained model and tokenizer
+model_name = "bert-base-cased"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForMaskedLM.from_pretrained(model_name)
+
+# Define the input sentence with a masked word
+input_text = "The [MASK] was stuck in the tree."
+candidates = ["fancy hot dog", "dog", "cat", "bird", "run"]
+
+# Tokenize the input sentence
+tokenized_text = tokenizer.tokenize(input_text)
+mask_token_index = tokenized_text.index("[MASK]")
+
+# Function to calculate the probability of a candidate
+def get_candidate_probability(candidate_tokens):
+
+    # Replace the masked token with the candidate tokens
+    tokenized_candidate = ["[CLS]"] + tokenized_text[:mask_token_index] + candidate_tokens + tokenized_text[mask_token_index + 1:]
+
+    # Convert tokenized sentence to input IDs
+    input_ids = tokenizer.convert_tokens_to_ids(tokenized_candidate)
+
+    # Convert input IDs to tensors
+    input_tensor = torch.tensor([input_ids])
+
+    # Get the logits from the model
+    with torch.no_grad():
+        logits = model(input_tensor).logits[0]
+
+    # Calculate the probability of the candidate word
+    probs = softmax(logits, dim=-1)
+    probs = probs[range(len(input_ids)), input_ids]
+    prob = (
+        torch.prod(probs[1:mask_token_index+1])
+        * torch.prod(probs[mask_token_index+len(candidate_tokens)+1:])
+    )
+    return prob.item()
+
+# Evaluate the probability of each candidate word
+for candidate in candidates:
+    candidate_tokens = tokenizer.tokenize(candidate)
+    candidate_probability = get_candidate_probability(candidate_tokens)
+    print(f"{candidate:<20} {candidate_probability}")
+
 '''
 # find ade object in things 
 path = '/Users/filippomerlo/Desktop/Datasets/ADE20K_2021_17_01/index_ade20k.pkl'
