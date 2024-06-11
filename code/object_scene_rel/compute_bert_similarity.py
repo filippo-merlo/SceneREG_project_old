@@ -11,23 +11,23 @@ if torch.cuda.is_available():
 else:
     device = "cpu"
 
+CACHE_DIR = '/mnt/cimec-storage6/users/filippo.merlo'
 # Load the pre-trained model and tokenizer
 model_name = "bert-base-cased"
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModelForMaskedLM.from_pretrained(model_name).to(device)
+tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir = CACHE_DIR)
+model = AutoModelForMaskedLM.from_pretrained(model_name, cache_dir = CACHE_DIR).to(device)
 
 # Define the input sentence with a masked word
 input_text = "There is a [MASK] in the [SCENE]."
 # get objects and scenes names 
 # Load index with global information about ADE20K
-DATASET_PATH = '/Users/filippomerlo/Desktop/Datasets/ADE20K_2021_17_01'
+DATASET_PATH = '/mnt/cimec-storage6/users/filippo.merlo/ADE20K_2016_07_26'
 index_file = 'index_ade20k.pkl'
 with open('{}/{}'.format(DATASET_PATH, index_file), 'rb') as f:
     index_ade20k = pkl.load(f)
 
 candidates = index_ade20k['objectnames']
 from datasets import load_dataset
-CACHE_DIR = '/mnt/cimec-storage6/users/filippo.merlo'
 ade_hf_data = load_dataset("scene_parse_150", cache_dir=CACHE_DIR)
 scenes_categories = ade_hf_data['train'].features['scene_category'].names
 
@@ -75,5 +75,5 @@ for scene in tqdm(scenes_categories):
         bert_similarities_mat.loc[name2idx(candidate, candidates), scene] = candidate_probability
 
 bert_similarities_mat.head()
-bert_similarities_mat.to_pickle(CACHE_DIR.replace('cache', '')+"ade_scenes_bert_similarities.pkl")
+bert_similarities_mat.to_pickle('{}/{}'.format(CACHE_DIR, "ade_scenes_bert_similarities.pkl"))
 
