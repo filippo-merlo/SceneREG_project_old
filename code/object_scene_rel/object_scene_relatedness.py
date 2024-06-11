@@ -214,8 +214,9 @@ for scene in tqdm(scenes_categories):
         candidate_tokens = tokenizer.tokenize(candidate)
         candidate_probability = get_candidate_probability(candidate_tokens)
         bert_similarities_mat.loc[name2idx(candidate, candidates), scene] = candidate_probability
+
 bert_similarities_mat.head()
-bert_similarities_mat.to_pickle("bert_similarities.pkl")
+bert_similarities_mat.to_pickle("ade_scenes_bert_similarities.pkl")
 #%% COMPUTE SIMILARITY WITH CLIP
 from transformers import AutoTokenizer, AutoProcessor, CLIPModel
 
