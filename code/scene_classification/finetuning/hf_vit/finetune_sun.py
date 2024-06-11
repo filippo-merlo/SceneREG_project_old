@@ -30,6 +30,8 @@ sun_data = torchvision.datasets.SUN397(root = cache_dir, transform=preprocess_da
 id2label = {v:k for k,v in sun_data.class_to_idx.items()}
 label2id = sun_data.class_to_idx
 label_len = len(label2id)
+print('***********************************')
+print(label2id.keys())
 
 # Split the dataset
 generator = torch.Generator().manual_seed(42)
@@ -101,8 +103,8 @@ training_args = TrainingArguments(
     num_train_epochs=15,
     learning_rate=float(2e-4),
     weight_decay=0.1,
-    per_device_train_batch_size=32,
-    per_device_eval_batch_size=32,
+    per_device_train_batch_size=64,
+    per_device_eval_batch_size=64,
     save_strategy='epoch',
     evaluation_strategy='epoch',
     logging_strategy='epoch',
