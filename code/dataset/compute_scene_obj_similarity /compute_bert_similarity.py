@@ -17,8 +17,6 @@ model_name = "bert-base-cased"
 tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir = CACHE_DIR)
 model = AutoModelForMaskedLM.from_pretrained(model_name, cache_dir = CACHE_DIR).to(device)
 
-# Define the input sentence with a masked word
-input_text = "There is a [MASK] in the [SCENE]."
 # get objects and scenes names 
 # Load index with global information about ADE20K
 DATASET_PATH = '/mnt/cimec-storage6/users/filippo.merlo/ADE20K_2016_07_26'
@@ -63,7 +61,8 @@ def name2idx(name, name_list):
 bert_similarities_mat = pd.DataFrame(columns=scenes_categories, index=range(len(index_ade20k['objectnames'])))
 print(scenes_categories)
 for scene in tqdm(scenes_categories):
-    print(scene)
+    # Define the input sentence with a masked word
+    input_text = "There is a [MASK] in the [SCENE]."
     input_text = input_text.replace("[SCENE]", scene.replace('_', ' '))
     print(input_text)
     # Tokenize the input sentence
