@@ -61,8 +61,9 @@ def name2idx(name, name_list):
     return name_list.index(name)
 
 bert_similarities_mat = pd.DataFrame(columns=scenes_categories, index=range(len(index_ade20k['objectnames'])))
-
+print(scenes_categories)
 for scene in tqdm(scenes_categories):
+    print(scene)
     input_text = input_text.replace("[SCENE]", scene.replace('_', ' '))
     print(input_text)
     # Tokenize the input sentence
