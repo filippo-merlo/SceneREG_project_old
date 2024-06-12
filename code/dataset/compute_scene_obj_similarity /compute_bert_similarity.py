@@ -59,7 +59,7 @@ def name2idx(name, name_list):
     return name_list.index(name)
 
 bert_similarities_mat = pd.DataFrame(columns=scenes_categories, index=range(len(index_ade20k['objectnames'])))
-print(scenes_categories)
+
 for scene in tqdm(scenes_categories):
     # Define the input sentence with a masked word
     input_text = "There is a [MASK] in the [SCENE]."
