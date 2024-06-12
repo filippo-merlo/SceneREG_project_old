@@ -73,9 +73,8 @@ for scene in tqdm(scenes_categories):
     for candidate in candidates:
         candidate_tokens = tokenizer.tokenize(candidate)
         candidate_probability = get_candidate_probability(candidate_tokens)
-        print(scene, candidate)
         bert_similarities_mat.loc[name2idx(candidate, candidates), scene] = candidate_probability
 
-bert_similarities_mat.head()
+
 bert_similarities_mat.to_pickle('{}/{}'.format(CACHE_DIR, "ade_scenes_bert_similarities.pkl"))
 
