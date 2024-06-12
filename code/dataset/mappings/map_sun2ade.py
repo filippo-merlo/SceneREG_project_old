@@ -3,6 +3,7 @@
 from config import *
 import torchvision
 
+cache_dir = '/mnt/cimec-storage6/users/filippo.merlo'
 sun_data = torchvision.datasets.SUN397(root = cache_dir, download = True)
 sun_classes = [x.replace('/', '_') for x in list(sun_data.class_to_idx.keys())]
 
