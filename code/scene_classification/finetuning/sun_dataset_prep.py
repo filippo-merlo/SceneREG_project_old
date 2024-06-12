@@ -35,7 +35,7 @@ for x in not_matched_sun:
         for i in l:
             if i in l2:
                 possible_matches[x].append(y)
-
+pprint(possible_matches)
 '''
 # Ajust manually possible matches
 possible_matches = {'bakery_shop': [] ,
