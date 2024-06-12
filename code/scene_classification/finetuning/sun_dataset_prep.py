@@ -1,10 +1,7 @@
 #%%
 ### PREPARE THE DATASET   
 from config import *
-import random
 import torchvision
-import torch
-from torch.utils.data import DataLoader
 
 sun_data = torchvision.datasets.SUN397(root = cache_dir, download = True)
 sun_classes = [x.replace('/', '_') for x in list(sun_data.class_to_idx.keys())]
@@ -83,3 +80,7 @@ for sun_c in sun_classes:
     if sun_c_r in possible_matches.keys():
         sun2ade_map[sun_c] = possible_matches[sun_c_r][0]
 print(len(sun2ade_map))
+
+import json
+with open('sun2ade_map.json', 'w') as f:
+    json.dump(sun2ade_map, f, indent=4)
