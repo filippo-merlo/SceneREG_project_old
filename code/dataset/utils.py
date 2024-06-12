@@ -1,7 +1,6 @@
 #%%
 import os 
 from config import *
-from pprint import pprint
 import torch
 
 # Is MPS even available? macOS 12.3+
@@ -317,10 +316,10 @@ def find_object_to_replace(target_object_name, scene_name):
             ade_size_score = ade_size_score/len(ade_idx)
 
         size_diff = abs(target_size_score - ade_size_score)
-        total_score = bert_score #+ size_diff + scene_relatedness_score 
+        total_score = bert_score + size_diff + scene_relatedness_score 
         scores.append(total_score)
     # get top k lower scores idxs
-    kidxs, kvls = lowest_k(scores, 20)
+    kidxs, kvls = lowest_k(scores, 5)
     print(kvls)
     adeknames = [list(map_ade2things.keys())[i] for i in kidxs[1:]]
     things_names = [map_ade2things[ade_name] for ade_name in adeknames]

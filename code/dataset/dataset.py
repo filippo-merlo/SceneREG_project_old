@@ -72,7 +72,35 @@ class Dataset:
     def save_dataset(self, path):
         with open(path, 'w') as f:
             json.dump(self.data, f, indent=4)
-    
+        from diffusers import AutoPipelineForInpainting
+    from diffusers.utils import load_image
+
+    def generate_edited_image(self, init_image, target_box, new_object):
+        from PIL import Image, ImageDraw
+        # Given data
+        x, y, w, h = target_box  # Coordinates and dimensions of the white box
+        max_w, max_h = init_image.size  # Size of the image
+        # Create a black background image
+        mask = Image.new("RGB", (max_w, max_h), "black")
+        # Create a drawing object
+        draw = ImageDraw.Draw(mask)
+        # Define the coordinates of the white box
+        left = x
+        top = y
+        right = x + w
+        bottom = y + h
+        # Draw the white box on the black background
+        draw.rectangle([left, top, right, bottom], outline="white", fill="white")
+        # Save or display the image
+        mask.show()
+        pipeline = AutoPipelineForInpainting.from_pretrained("runwayml/stable-diffusion-v1-5", torch_dtype=torch.float16).to(device)
+        blurred_mask = pipeline.mask_processor.blur(mask, blur_factor=33)
+        prompt = f"a {new_object}, realistic, highly detailed, 8k"
+        negative_prompt = "bad anatomy, deformed, ugly, disfigured"
+        image = pipeline(prompt=prompt, negative_prompt=negative_prompt, image=init_image, mask_image=blurred_mask).images[0]
+        grid_image = make_image_grid([init_image, blurred_mask, image], rows=1, cols=3)
+        grid_image.show()
+
     def visualize_img(self, img_name = None):
         
         if img_name != None:
@@ -169,6 +197,9 @@ class Dataset:
         images_paths = compare_imgs(cropped_image, objects_to_replace)
 
         visualize_images(images_paths)
+
+        generate_edited_image(image_picture, target_bbox, objects_to_replace[0])
+
     # check predictions
 
     def get_scene_predictions(self):
@@ -273,13 +304,33 @@ class Dataset:
         plt.imshow(cropped_image)
         plt.axis('off')  # Turn off axis
         plt.show()
-       
-        # Classify scene
-        #classify_scene_clip_llava(image_picture, scene_labels_context)
-        scene_category = classify_scene_vit(image_picture)
-        print(scene_category)
     
+def make_image_grid(images, rows, cols):
+    """
+    Create a grid of images.
+    
+    :param images: List of PIL Image objects.
+    :param rows: Number of rows in the grid.
+    :param cols: Number of columns in the grid.
+    :return: PIL Image object representing the grid.
+    """
+    assert len(images) == rows * cols, "Number of images does not match rows * cols"
 
+    # Get the width and height of the images
+    width, height = images[0].size
+    
+    # Create a new blank image with the correct size
+    grid_width = width * cols
+    grid_height = height * rows
+    grid_image = Image.new('RGB', (grid_width, grid_height))
+
+    # Paste the images into the grid
+    for i, img in enumerate(images):
+        row = i // cols
+        col = i % cols
+        grid_image.paste(img, (col * width, row * height))
+
+    return grid_image
 dataset = Dataset(dataset_path = '/Users/filippomerlo/Desktop/Datasets/data/coco_search18_annotated.json')
 
 #%%
