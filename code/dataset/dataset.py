@@ -72,7 +72,8 @@ class Dataset:
     def save_dataset(self, path):
         with open(path, 'w') as f:
             json.dump(self.data, f, indent=4)
-        from diffusers import AutoPipelineForInpainting
+    
+    from diffusers import AutoPipelineForInpainting
     from diffusers.utils import load_image
 
     def generate_edited_image(self, init_image, target_box, new_object):
