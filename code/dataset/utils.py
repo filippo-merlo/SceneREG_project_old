@@ -242,7 +242,7 @@ import pandas as pd
 from pprint import pprint
 
 # Load the object_scene_rel_matrix file
-with open("/Users/filippomerlo/Documents/GitHub/SceneREG_project/code/dataset/mappings/tf_scores.pkl", "rb") as file:
+with open("/Users/filippomerlo/Documents/GitHub/SceneREG_project/code/dataset/compute_scene_obj_similarity /tf_scores.pkl", "rb") as file:
     object_scene_rel_matrix = pkl.load(file)
 
 # Load the size_mean_matrix file
@@ -271,7 +271,7 @@ ade20k_object_names = ade20k_index['objectnames']
 
 #%%
 def find_object_to_replace(target_object_name, scene_name):
-    scene_name = map_sun2ade['scene_name']
+    scene_name = map_sun2ade[scene_name]
     # get the more similar in size with the less semantic relatedness to the scene
     scores = []
     for ade_name in map_ade2things.keys():
