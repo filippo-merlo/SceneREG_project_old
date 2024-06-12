@@ -262,10 +262,10 @@ with open('/Users/filippomerlo/Documents/GitHub/SceneREG_project/code/dataset/ma
 with open('/Users/filippomerlo/Documents/GitHub/SceneREG_project/code/dataset/mappings/object_map_ade2things.json', "r") as file:
     map_ade2things = json.load(file)
 
-import json
 # Load the map SUN 2 ADE
 with open('/Users/filippomerlo/Documents/GitHub/SceneREG_project/code/dataset/mappings/sun2ade_map.json', "r") as file:
     map_sun2ade = json.load(file)
+
 
 # Load ade names
 path = '/Users/filippomerlo/Desktop/Datasets/ADE20K_2021_17_01/index_ade20k.pkl'
@@ -273,9 +273,8 @@ with open(path, 'rb') as f:
     ade20k_index = pkl.load(f)
 ade20k_object_names = ade20k_index['objectnames']
 
-#%%
 def find_object_to_replace(target_object_name, scene_name):
-    scene_name = map_sun2ade[scene_name]
+    scene_name = map_sun2ade[scene_name.replace('/', '_')]
     # get the more similar in size with the less semantic relatedness to the scene
     scores = []
     for ade_name in map_ade2things.keys():
@@ -318,10 +317,11 @@ def find_object_to_replace(target_object_name, scene_name):
             ade_size_score = ade_size_score/len(ade_idx)
 
         size_diff = abs(target_size_score - ade_size_score)
-        total_score = size_diff + scene_relatedness_score + bert_score
+        total_score = bert_score #+ size_diff + scene_relatedness_score 
         scores.append(total_score)
     # get top k lower scores idxs
-    kidxs, kvls = lowest_k(scores, 100)
+    kidxs, kvls = lowest_k(scores, 20)
+    print(kvls)
     adeknames = [list(map_ade2things.keys())[i] for i in kidxs[1:]]
     things_names = [map_ade2things[ade_name] for ade_name in adeknames]
     return things_names
@@ -444,7 +444,6 @@ def compare_imgs(target_patch, substitutes_list):
     # get top 5
     k = 5
     v, indices = torch.topk(torch.tensor(similarities), k)
-    print(v)
     print([images_names_list[i] for i in indices])
     return [images_path_list[i] for i in indices]
 
