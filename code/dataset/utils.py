@@ -245,6 +245,10 @@ from pprint import pprint
 with open("/Users/filippomerlo/Documents/GitHub/SceneREG_project/code/dataset/compute_scene_obj_similarity /tf_scores.pkl", "rb") as file:
     object_scene_rel_matrix = pkl.load(file)
 
+# Load the bert object-scene relatedness scores
+with open('/Users/filippomerlo/Documents/GitHub/SceneREG_project/code/dataset/compute_scene_obj_similarity /ade_scenes_bert_similarities.pkl', "rb") as file:
+    bert_scene_object_rel_matrix = pkl.load(file)
+
 # Load the size_mean_matrix file
 tp_size_mean_path = '/Users/filippomerlo/Desktop/Datasets/osfstorage-archive/THINGSplus/Metadata/Concept-specific/size_meanRatings.tsv'
 size_mean_matrix = pd.read_csv(tp_size_mean_path, sep='\t', engine='python', encoding='utf-8')
@@ -279,12 +283,13 @@ def find_object_to_replace(target_object_name, scene_name):
         scene_relatedness_score = object_scene_rel_matrix.at[ade20k_object_names.index(ade_name), scene_name]
         if scene_relatedness_score != 0:
             scene_relatedness_score = 100
-        # target, coco object --> ade object --> emb
-        target_distr = object_scene_rel_matrix.iloc[ade20k_object_names.index(map_coco2ade[target_object_name][1])]
-        # non target, ade object --> emb
-        sde_name_distr = object_scene_rel_matrix.iloc[ade20k_object_names.index(ade_name)]
-        # target - non target cos sim
-        cos_sim = cosine_similarity(target_distr,sde_name_distr)
+        bert_score = bert_scene_object_rel_matrix.at[ade20k_object_names.index(ade_name), scene_name]
+        ## target, coco object --> ade object --> emb
+        #target_distr = object_scene_rel_matrix.iloc[ade20k_object_names.index(map_coco2ade[target_object_name][1])]
+        ## non target, ade object --> emb
+        #sde_name_distr = object_scene_rel_matrix.iloc[ade20k_object_names.index(ade_name)]
+        ## target - non target cos sim
+        #cos_sim = cosine_similarity(target_distr,sde_name_distr)
 
         # target size
         # coco obj --> ade obj --> things obj
@@ -313,7 +318,7 @@ def find_object_to_replace(target_object_name, scene_name):
             ade_size_score = ade_size_score/len(ade_idx)
 
         size_diff = abs(target_size_score - ade_size_score)
-        total_score = size_diff + scene_relatedness_score #+ cos_sim
+        total_score = size_diff + scene_relatedness_score + bert_score
         scores.append(total_score)
     # get top k lower scores idxs
     kidxs, kvls = lowest_k(scores, 100)
