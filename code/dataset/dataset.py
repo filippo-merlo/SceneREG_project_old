@@ -12,7 +12,12 @@ import numpy as np
 from collections import Counter
 from diffusers import AutoPipelineForInpainting
 
-pipeline =  AutoPipelineForInpainting.from_pretrained("runwayml/stable-diffusion-v1-5", torch_dtype=torch.float16).to(device)
+pipeline =  AutoPipelineForInpainting.from_pretrained("kandinsky-community/kandinsky-2-2-decoder-inpaint", torch_dtype=torch.float16).to(device)
+pipeline.enable_model_cpu_offload()
+# remove following line if xFormers is not installed or you have PyTorch 2.0 or higher installed
+pipeline.enable_xformers_memory_efficient_attention()
+generator = torch.Generator("cuda").manual_seed(92)
+
 # check predictions
 def generate(init_image, target_box, new_object):
     # Given data
@@ -33,7 +38,7 @@ def generate(init_image, target_box, new_object):
     blurred_mask = pipeline.mask_processor.blur(mask, blur_factor=33)
     prompt = f"a {new_object}, realistic, highly detailed, 8k"
     negative_prompt = "bad anatomy, deformed, ugly, disfigured"
-    image = pipeline(prompt=prompt, negative_prompt=negative_prompt, image=init_image, mask_image=blurred_mask).images[0]
+    image = pipeline(prompt=prompt, negative_prompt=negative_prompt, image=init_image, mask_image=blurred_mask, generator=generator).images[0]
     grid_image = make_image_grid([init_image, blurred_mask, image], rows=1, cols=3)
     grid_image.show()
 
