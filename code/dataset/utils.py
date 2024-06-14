@@ -2,6 +2,7 @@
 import os 
 from config import *
 import torch
+import math
 
 # Is MPS even available? macOS 12.3+
 device = torch.device("mps")
@@ -102,7 +103,7 @@ def add_in_bounds(x, y, max):
         return int(max)
 
 # FIND OBJECT TO REPLACE 
-
+#%%
 import pickle as pkl
 import json
 import pandas as pd
@@ -117,10 +118,11 @@ with open('/Users/filippomerlo/Documents/GitHub/SceneREG_project/code/dataset/co
     bert_scene_object_rel_matrix = pkl.load(file)
 
 # Load the size_mean_matrix file
-tp_size_mean_path = '/Users/filippomerlo/Desktop/Datasets/osfstorage-archive/THINGSplus/Metadata/Concept-specific/size_meanRatings.tsv'
+tp_size_mean_path = '/Users/filippomerlo/Desktop/Datasets/sceneREG_data/THINGS/THINGSplus/Metadata/Concept-specific/size_meanRatings.tsv'
 size_mean_matrix = pd.read_csv(tp_size_mean_path, sep='\t', engine='python', encoding='utf-8')
 things_words = list(size_mean_matrix['Word'])
 
+#%%
 # Load the map_coco2ade file
 with open('/Users/filippomerlo/Documents/GitHub/SceneREG_project/code/dataset/mappings/object_map_coco2ade.json', "r") as file:
     map_coco2ade = json.load(file)
@@ -133,7 +135,6 @@ with open('/Users/filippomerlo/Documents/GitHub/SceneREG_project/code/dataset/ma
 with open('/Users/filippomerlo/Documents/GitHub/SceneREG_project/code/dataset/mappings/sun2ade_map.json', "r") as file:
     map_sun2ade = json.load(file)
 
-
 # Load ade names
 path = '/Users/filippomerlo/Desktop/Datasets/ADE20K_2021_17_01/index_ade20k.pkl'
 with open(path, 'rb') as f:
@@ -143,12 +144,15 @@ ade20k_object_names = ade20k_index['objectnames']
 def find_object_to_replace(target_object_name, scene_name):
     scene_name = map_sun2ade[scene_name.replace('/', '_')]
     # get the more similar in size with the less semantic relatedness to the scene
-    scores = []
+    final_scores = []
+    z_size_scores = []
+    relatedness_scores = []
     for ade_name in map_ade2things.keys():
         # ade object --> scene relatedness
         scene_relatedness_score = object_scene_rel_matrix.at[ade20k_object_names.index(ade_name), scene_name]
         if scene_relatedness_score != 0:
             scene_relatedness_score = 100
+
         bert_score = bert_scene_object_rel_matrix.at[ade20k_object_names.index(ade_name), scene_name]
         ## target, coco object --> ade object --> emb
         #target_distr = object_scene_rel_matrix.iloc[ade20k_object_names.index(map_coco2ade[target_object_name][1])]
@@ -163,12 +167,16 @@ def find_object_to_replace(target_object_name, scene_name):
         if target_object_name in things_name_target:
             target_idx = things_words.index(target_object_name)
             target_size_score = size_mean_matrix.at[target_idx, 'Size_mean']
+            target_sd_size_score = size_mean_matrix.at[target_idx, 'Size_SD']
         else:
             target_idx = [things_words.index(n) for n in things_name_target]
             target_size_score = 0
+            target_sd_size_score = 0
             for id in target_idx:
                 target_size_score += size_mean_matrix.at[id, 'Size_mean']
+                target_sd_size_score += size_mean_matrix.at[id, 'Size_SD']
             target_size_score = target_size_score/len(target_idx)
+            target_sd_size_score = target_sd_size_score/len(target_idx)
 
         # ade obj size
         # ade obj --> things obj
@@ -176,24 +184,46 @@ def find_object_to_replace(target_object_name, scene_name):
         if len(things_name_ade_name) == 1:
             ade_idx = things_words.index(things_name_ade_name[0])
             ade_size_score = size_mean_matrix.at[ade_idx, 'Size_mean']
+            ade_sd_size_score = size_mean_matrix.at[ade_idx, 'Size_SD']
         else:
             ade_idx = [things_words.index(n) for n in things_name_ade_name]
             ade_size_score = 0
+            ade_sd_size_score = 0
             for id in ade_idx:
                 ade_size_score += size_mean_matrix.at[id, 'Size_mean']
+                ade_sd_size_score += size_mean_matrix.at[id, 'Size_SD']
             ade_size_score = ade_size_score/len(ade_idx)
+            ade_sd_size_score = ade_sd_size_score/len(ade_idx)
 
-        size_diff = abs(target_size_score - ade_size_score)
-        total_score = bert_score + size_diff + scene_relatedness_score 
-        scores.append(total_score)
-    # get top k lower scores idxs
-    kidxs, kvls = lowest_k(scores, 5)
-    print(kvls)
-    adeknames = [list(map_ade2things.keys())[i] for i in kidxs[1:]]
+        z_size_score = abs((target_size_score - ade_size_score)/math.sqrt(target_sd_size_score**2 + ade_sd_size_score**2))
+
+        total_score = bert_score
+        z_size_scores.append(z_size_score)
+        relatedness_scores.append(bert_score + scene_relatedness_score)
+        if ade_name == map_coco2ade[target_object_name][1]:
+            total_score = 100
+        final_scores.append(total_score)
+
+    ## get top k lower scores idxs
+    #kidxs_0, _ = lowest_k(final_scores, 100)
+    #for i, _ in enumerate(final_scores):
+    #    if i not in kidxs_0:
+    #        final_scores[i] = 100
+    #
+    #final_scores = sum_lists(relatedness_scores, final_scores) 
+    kidxs, vals = highest_k(final_scores, 20)
+    print(vals)
+    adeknames = [list(map_ade2things.keys())[i] for i in kidxs]
+    print(adeknames)
     things_names = [map_ade2things[ade_name] for ade_name in adeknames]
     return things_names
 
 import numpy as np
+def sum_lists(list1, list2):
+    if len(list1) != len(list2):
+        raise ValueError("Lists must have the same length")
+    
+    return [x + y for x, y in zip(list1, list2)]
 
 def cosine_similarity(vec1, vec2):
     # Compute the dot product of the vectors
@@ -221,6 +251,24 @@ def lowest_k(alist, k):
     
     return lowest_k_indices, lowest_k_values
 
+def highest_k(alist, k):
+    # Step 1: Enumerate the list to pair each element with its index
+    enumerated_list = list(enumerate(alist))
+    
+    # Step 2: Sort the enumerated list by the element values in descending order
+    sorted_list = sorted(enumerated_list, key=lambda x: x[1], reverse=True)
+    
+    # Step 3: Extract the indices and values of the first k elements
+    highest_k_indices = [index for index, value in sorted_list[:k]]
+    highest_k_values = [value for index, value in sorted_list[:k]]
+    
+    return highest_k_indices, highest_k_values
+
+#%%
+id, val = lowest_k(list(bert_scene_object_rel_matrix['airport_terminal']),10)
+for i in id:
+    print(ade20k_object_names[i])
+#%%
 # get object scene relatedness score
 
 def object_scene_rel(object_name, scene_name):
@@ -251,7 +299,7 @@ vitc_image_processor = AutoImageProcessor.from_pretrained("google/vit-base-patch
 vitc_model = ViTModel.from_pretrained("google/vit-base-patch16-224-in21k").to(device)
 
 
-things_images_path = '/Users/filippomerlo/Desktop/Datasets/osfstorage-archive/THINGS/Images'
+things_images_path = '/Users/filippomerlo/Desktop/Datasets/sceneREG_data/THINGS/THINGS/Images'
 
 divisions = {
   "object_images_A-C": range(ord('a'), ord('c') + 1),  # a-c (inclusive)
@@ -291,7 +339,6 @@ def compare_imgs(target_patch, substitutes_list):
 
     # embed images
     images_embeddings = []
-    print(images_path_list)
     with torch.no_grad():
         for i_path in images_path_list:
             image = Image.open(i_path)

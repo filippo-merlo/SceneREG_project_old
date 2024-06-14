@@ -12,11 +12,11 @@ import numpy as np
 from collections import Counter
 from diffusers import AutoPipelineForInpainting
 
-pipeline =  AutoPipelineForInpainting.from_pretrained("kandinsky-community/kandinsky-2-2-decoder-inpaint", torch_dtype=torch.float16).to(device)
-pipeline.enable_model_cpu_offload()
-# remove following line if xFormers is not installed or you have PyTorch 2.0 or higher installed
-pipeline.enable_xformers_memory_efficient_attention()
-generator = torch.Generator("cuda").manual_seed(92)
+#pipeline =  AutoPipelineForInpainting.from_pretrained("kandinsky-community/kandinsky-2-2-decoder-inpaint", torch_dtype=torch.float16).to(device)
+#pipeline.enable_model_cpu_offload()
+## remove following line if xFormers is not installed or you have PyTorch 2.0 or higher installed
+#pipeline.enable_xformers_memory_efficient_attention()
+#generator = torch.Generator("cuda").manual_seed(92)
 
 # check predictions
 def generate(init_image, target_box, new_object):
@@ -68,6 +68,7 @@ def make_image_grid(images, rows, cols):
             grid_image.paste(img, (col * width, row * height))
 
         return grid_image
+
 class Dataset:
 
     def __init__(self, dataset_path = None):
@@ -160,7 +161,7 @@ class Dataset:
         # Convert PIL image to OpenCV format
         image_cv2 = cv2.cvtColor(np.array(image_picture), cv2.COLOR_RGB2BGR)
 
-        # Draw the box on the image
+        # Draw the box of the image
         ann_key = 'instances_train2017_annotations'
         try:
             image[ann_key]
@@ -179,6 +180,8 @@ class Dataset:
             if target in object_names:
                 color = (0, 0, 255)
                 target_bbox = ann['bbox']
+                target_segmentation = ann['segmentation']
+                target_area = ann['area']
             x, y, width, height = ann['bbox']
             thickness = 2
             cv2.rectangle(image_cv2, (int(x), int(y)), (int(x + width), int(y + height)), color, thickness)
@@ -204,17 +207,34 @@ class Dataset:
         plt.axis('off')  # Turn off axis
         plt.show()
 
+        # Crop
+        # Segmentation
+        image_mask_cv2 = cv2.cvtColor(np.array(image_picture), cv2.COLOR_RGB2BGR)
+        target_segmentation = np.array(target_segmentation, dtype=np.int32).reshape((-1, 2))
+        # Create a mask
+        target_mask = np.zeros(image_mask_cv2.shape[:2], dtype=np.uint8)
+        cv2.fillPoly(target_mask, [target_segmentation], 255)
+        # Apply the mask to the image
+        masked_image = cv2.bitwise_and(image_mask_cv2, image_mask_cv2, mask=target_mask)
+        # Crop image 
+        # Box
         x,y,w,h = target_bbox
         max_w, max_h = image_picture.size
         x_c = subtract_in_bounds(x,20)
         y_c = subtract_in_bounds(y,20)
         w_c = add_in_bounds(x,w+20,max_w)
         h_c = add_in_bounds(y,h+20,max_h)
-        cropped_image = image_picture.crop((x_c,y_c,w_c,h_c))
-        # Display the cropped image
-        plt.imshow(cropped_image)
+        cropped_masked_image = masked_image[y_c:h_c, x_c:w_c]
+        # Step 3: Convert the cropped image from BGR to RGB
+        cropped_masked_image_rgb = cv2.cvtColor(cropped_masked_image, cv2.COLOR_BGR2RGB)
+        # Step 4: Convert the cropped image to a PIL image
+        cropped_masked_image_pil = Image.fromarray(cropped_masked_image_rgb)
+        # Show
+        plt.imshow(cropped_masked_image_pil)
         plt.axis('off')  # Turn off axis
         plt.show()
+
+        cropped_image = image_picture.crop((x_c,y_c,w_c,h_c))
        
         # Classify scene
         #classify_scene_clip_llava(image_picture, scene_labels_context)
@@ -223,8 +243,8 @@ class Dataset:
         # retrieve info from obscene
         objects_to_replace = find_object_to_replace(target, scene_category)
         print(objects_to_replace)
-        images_paths = compare_imgs(cropped_image, objects_to_replace)
-        generate(image_picture, target_bbox, objects_to_replace[0])
+        images_paths = compare_imgs(cropped_masked_image_pil, objects_to_replace)
+        #generate(image_picture, target_bbox, objects_to_replace[0])
         visualize_images(images_paths)
 
     def get_scene_predictions(self):
@@ -331,7 +351,7 @@ class Dataset:
         plt.show()
     
 
-dataset = Dataset(dataset_path = '/Users/filippomerlo/Desktop/Datasets/data/coco_search18_annotated.json')
+dataset = Dataset(dataset_path = '/Users/filippomerlo/Desktop/Datasets/sceneREG_data/coco_search18/coco_search18_annotated.json')
 
 #%%
 count, label_with_paths = dataset.get_scene_predictions()
