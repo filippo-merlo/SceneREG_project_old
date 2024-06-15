@@ -58,24 +58,24 @@ def get_candidate_probability(candidate_tokens):
 def name2idx(name, name_list):
     return name_list.index(name)
 
-#bert_similarities_mat = pd.DataFrame(columns=scenes_categories, index=range(len(index_ade20k['objectnames'])))
-#
-#for scene in tqdm(scenes_categories):
-#    # Define the input sentence with a masked word
-#    input_text = "There is a [MASK] in the [SCENE]."
-#    input_text = input_text.replace("[SCENE]", scene.replace('_', ' '))
-#    print(input_text)
-#    # Tokenize the input sentence
-#    tokenized_text = tokenizer.tokenize(input_text)
-#    mask_token_index = tokenized_text.index("[MASK]")
-#    
-#    # Evaluate the probability of each candidate word
-#    for candidate in candidates:
-#        candidate_tokens = tokenizer.tokenize(candidate)
-#        candidate_probability = get_candidate_probability(candidate_tokens)
-#        bert_similarities_mat.loc[name2idx(candidate, candidates), scene] = candidate_probability
-#
-#bert_similarities_mat.to_pickle('{}/{}'.format(CACHE_DIR, "ade_scenes_bert_similarities.pkl"))
+bert_similarities_mat = pd.DataFrame(columns=scenes_categories, index=range(len(index_ade20k['objectnames'])))
+
+for scene in tqdm(scenes_categories):
+    # Define the input sentence with a masked word
+    input_text = "In the [SCENE] there is a [MASK]."
+    input_text = input_text.replace("[SCENE]", scene.replace('_', ' '))
+    print(input_text)
+    # Tokenize the input sentence
+    tokenized_text = tokenizer.tokenize(input_text)
+    mask_token_index = tokenized_text.index("[MASK]")
+    
+    # Evaluate the probability of each candidate word
+    for candidate in candidates:
+        candidate_tokens = tokenizer.tokenize(candidate)
+        candidate_probability = get_candidate_probability(candidate_tokens)
+        bert_similarities_mat.loc[name2idx(candidate, candidates), scene] = candidate_probability
+
+bert_similarities_mat.to_pickle('{}/{}'.format(CACHE_DIR, "ade_scenes_bert_similarities.pkl"))
 
 #%%
 # Author: Shivika Sharma
