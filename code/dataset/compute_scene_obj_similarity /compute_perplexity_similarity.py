@@ -45,7 +45,7 @@ model_id = "meta-llama/Meta-Llama-Guard-2-8B"
 device = "cuda"
 dtype = torch.bfloat16
 
-tokenizer = AutoTokenizer.from_pretrained(model_id, cache_dir=CACHE_DIR, token=ACCESS_TOKEN)
+tokenizer = AutoTokenizer.from_pretrained(model_id, cache_dir=CACHE_DIR)
 model = AutoModelForCausalLM.from_pretrained(model_id, torch_dtype=dtype, device_map=device, cache_dir=CACHE_DIR, token=ACCESS_TOKEN)
 
 #%%
