@@ -12,7 +12,11 @@ def generate_ranking(prompt, options, model=None, tokenizer=None, log=False):
     results = []
     for option in options:
         input_ids = tokenizer(prompt, return_tensors="pt").input_ids.to("cuda")
+        print('input_ids')
+        print(input_ids)
         target_ids = tokenizer(option, return_tensors="pt", add_special_tokens=False).input_ids.to("cuda")
+        print('target_ids')
+        print(target_ids)
         # list to store logits of each token in the option
         current_option_logits = []
         # Get the initial input tokens
@@ -21,6 +25,8 @@ def generate_ranking(prompt, options, model=None, tokenizer=None, log=False):
         for i in range(target_ids.size(1)):
             # Get the model output (logits) and compute log probabilities
             outputs = model(input_ids=current_input_ids)
+            print('outputs')
+            print(outputs)
             logprobs = torch.nn.functional.log_softmax(outputs.logits, dim=-1)
             # Store the logits for the current step
             next_target_token_id = target_ids[:, i].item()
@@ -64,16 +70,16 @@ from datasets import load_dataset
 ade_hf_data = load_dataset("scene_parse_150", cache_dir='/mnt/cimec-storage6/shared/hf_datasets')
 scenes_categories = ade_hf_data['train'].features['scene_category'].names
 
-for scene_name in scenes_categories[10:15]:
+for scene_name in scenes_categories[:1]:
     if scene_name[0] in ['a', 'e', 'i', 'o', 'u']:
         art = "an"
     else:
         art = "a"
     prompt = f"In {art} {scene_name.replace('_',' ')} there is a"
-    for candidate in candidates[100:110]:
+    for candidate in candidates[1:2]:
         single_candidate_list = candidate.split(', ')
         results = generate_ranking(prompt, single_candidate_list, model=model, tokenizer=tokenizer)
         print(f"Scene: {prompt}")
         for i, (option, score) in enumerate(results[:5]):
-            print(f"{i+1}. {option} - {score:.2f}")
+            print(f"{i+1}. {option}: {score:.2f}")
         print("\n")
