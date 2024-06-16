@@ -1,6 +1,6 @@
 import  torch
 import numpy as np
-
+print('\n\n\n\n')
 def generate_ranking(prompt, options, model=None, tokenizer=None, log=False):
     '''
             Parameters:
@@ -32,6 +32,8 @@ def generate_ranking(prompt, options, model=None, tokenizer=None, log=False):
             print(logprobs.size())
             # Store the logits for the current step
             next_target_token_id = target_ids[:, i].item()
+            print('next_target_token_id')
+            print(next_target_token_id)
             target_logproba = logprobs[:, -1, next_target_token_id].unsqueeze(1)
             current_option_logits.append(target_logproba.item())
             # Get the next target token and append it to the input
