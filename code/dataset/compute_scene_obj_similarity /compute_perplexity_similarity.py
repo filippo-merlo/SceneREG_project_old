@@ -1,6 +1,6 @@
 import  torch
 import numpy as np
-print('\n\n\n\n')
+
 def generate_ranking(prompt, options, model=None, tokenizer=None, log=False):
     '''
             Parameters:
@@ -23,6 +23,9 @@ def generate_ranking(prompt, options, model=None, tokenizer=None, log=False):
         current_input_ids = input_ids
         # Loop through each target token
         for i in range(target_ids.size(1)):
+            print('\n********\n')
+            print('current_input_ids')
+            print(current_input_ids.size())
             # Get the model output (logits) and compute log probabilities
             outputs = model(input_ids=current_input_ids)
             print('outputs')
