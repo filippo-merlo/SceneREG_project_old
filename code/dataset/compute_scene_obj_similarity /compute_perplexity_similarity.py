@@ -40,7 +40,7 @@ CACHE_DIR = '/mnt/cimec-storage6/shared'
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
 
-ACCESS_TOKEN = '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'
+ACCESS_TOKEN = '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'
 model_id = "meta-llama/Meta-Llama-Guard-2-8B"
 device = "cuda"
 dtype = torch.bfloat16
