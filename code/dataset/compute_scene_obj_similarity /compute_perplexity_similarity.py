@@ -25,7 +25,7 @@ def generate_ranking(prompt, options, model=None, tokenizer=None, log=False):
         for i in range(target_ids.size(1)):
             # Get the model output (logits) and compute log probabilities
             outputs = model(input_ids=current_input_ids)
-            print(outputs.logiuts.size())
+            print(outputs.logits.size())
             logprobs = torch.nn.functional.log_softmax(outputs.logits, dim=-1)
             # Store the logits for the current step
             next_target_token_id = target_ids[:, i].item()
