@@ -31,9 +31,8 @@ def generate_ranking(prompt, options, model=None, tokenizer=None, log=False):
             current_input_ids = torch.cat((current_input_ids, next_target_token), dim=1)
         # Append option and sequence score to results
         results.append((option, (-1*np.mean(current_option_logits))))
-    # Sort result in ascending order
-    results = sorted(results, key=lambda x: x[1], reverse=True)
-
+    ## Sort result in ascending order
+    #results = sorted(results, key=lambda x: x[1], reverse=True)
     return results
 
 #%%
@@ -71,10 +70,14 @@ for scene_name in scenes_categories[:1]:
     else:
         art = "a"
     prompt = f"In {art} {scene_name.replace('_',' ')} there is a"
+    candidate_scores = []
     for candidate in candidates:
         single_candidate_list = candidate.split(', ')
         results = generate_ranking(prompt, single_candidate_list, model=model, tokenizer=tokenizer)
-        print(f"Scene: {prompt}")
-        for i, (option, score) in enumerate(results[:5]):
-            print(f"{i+1}. {option}: {score:.2f}")
-        print("\n")
+        candidate_scores.append((candidate, np.mean([score for _, score in results])))
+
+    sorted_candidate_score = sorted(candidate_scores, key=lambda x: x[1], reverse=True)
+    print(f"Scene: {prompt}")
+    for i, (option, score) in enumerate(sorted_candidate_score[:10]):
+        print(f"{i+1}. {option}: {score:.2f}")
+    print("\n")
