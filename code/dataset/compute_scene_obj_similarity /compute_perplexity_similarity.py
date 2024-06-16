@@ -41,7 +41,7 @@ def generate_ranking(prompt, options, model=None, tokenizer=None, log=False):
             print('current_input_ids')
             print(current_input_ids)
         # Append option and sequence score to results
-        results.append((option, np.mean(current_option_logits)))
+        results.append((option, (-1/target_ids.size(1)*np.sum(current_option_logits))))
     # Sort result in ascending order
     results = sorted(results, key=lambda x: x[1], reverse=True)
 
