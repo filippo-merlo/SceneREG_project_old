@@ -76,8 +76,8 @@ for scene_name in scenes_categories[:1]:
         results = generate_ranking(prompt, single_candidate_list, model=model, tokenizer=tokenizer)
         candidate_scores.append((candidate, np.mean([score for _, score in results])))
 
-    sorted_candidate_score = sorted(candidate_scores, key=lambda x: x[1], reverse=True)
+    sorted_candidate_score = sorted(candidate_scores, key=lambda x: x[1])
     print(f"Scene: {prompt}")
-    for i, (option, score) in enumerate(sorted_candidate_score[:10]):
+    for i, (option, score) in enumerate(sorted_candidate_score[:100]):
         print(f"{i+1}. {option}: {score:.2f}")
     print("\n")
