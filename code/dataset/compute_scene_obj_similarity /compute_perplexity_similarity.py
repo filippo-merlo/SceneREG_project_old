@@ -42,7 +42,7 @@ def generate_ranking(prompt, options, model=None, tokenizer=None, log=False):
             print(next_target_token_id)
             target_logproba = logprobs[:, -1, next_target_token_id].unsqueeze(1)
             current_option_logits.append(target_logproba.item())
-            
+
             # Get the next target token and append it to the input
             next_target_token = target_ids[:, i].unsqueeze(1)
             current_input_ids = torch.cat((current_input_ids, next_target_token), dim=1)
@@ -87,7 +87,7 @@ for scene_name in scenes_categories[:1]:
     else:
         art = "a"
     prompt = f"In {art} {scene_name.replace('_',' ')} there is a"
-    for candidate in candidates[1:2]:
+    for candidate in ['plane','suitcase','anchor']:
         single_candidate_list = candidate.split(', ')
         results = generate_ranking(prompt, single_candidate_list, model=model, tokenizer=tokenizer)
         print(f"Scene: {prompt}")
