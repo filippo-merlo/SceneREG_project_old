@@ -65,11 +65,8 @@ ade_hf_data = load_dataset("scene_parse_150", cache_dir='/mnt/cimec-storage6/sha
 scenes_categories = ade_hf_data['train'].features['scene_category'].names
 
 for scene_name in scenes_categories[:1]:
-    if scene_name[0] in ['a', 'e', 'i', 'o', 'u']:
-        art = "an"
-    else:
-        art = "a"
-    prompt = f"In {art} {scene_name.replace('_',' ')} there is a"
+
+    prompt = f"In the {scene_name.replace('_',' ')} there is a"
     candidate_scores = []
     for candidate in candidates:
         single_candidate_list = candidate.split(', ')
