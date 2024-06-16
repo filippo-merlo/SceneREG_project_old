@@ -12,8 +12,6 @@ def generate_ranking(prompt, options, model=None, tokenizer=None, log=False):
     results = []
     for option in options:
         input_ids = tokenizer(prompt, return_tensors="pt").input_ids.to("cuda")
-        print('input_ids')
-        print(input_ids)
         target_ids = tokenizer(option, return_tensors="pt", add_special_tokens=False).input_ids.to("cuda")
         print('target_ids')
         print(target_ids)
@@ -24,13 +22,8 @@ def generate_ranking(prompt, options, model=None, tokenizer=None, log=False):
         # Loop through each target token
         for i in range(target_ids.size(1)):
             print('\n********\n')
-            print('current_input_ids')
-            print(current_input_ids.size())
             # Get the model output (logits) and compute log probabilities
             outputs = model(input_ids=current_input_ids)
-            print('\n---------')
-            print('outputs')
-            print(outputs.logits.size())
             logprobs = torch.nn.functional.log_softmax(outputs.logits, dim=-1)
             print('\n---------')
             print('logprobs')
@@ -87,7 +80,7 @@ for scene_name in scenes_categories[:1]:
     else:
         art = "a"
     prompt = f"In {art} {scene_name.replace('_',' ')} there is a"
-    for candidate in ['plane','suitcase','anchor']:
+    for candidate in ['plane']:
         single_candidate_list = candidate.split(', ')
         results = generate_ranking(prompt, single_candidate_list, model=model, tokenizer=tokenizer)
         print(f"Scene: {prompt}")
