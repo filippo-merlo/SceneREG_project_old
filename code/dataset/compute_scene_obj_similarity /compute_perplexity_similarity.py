@@ -19,18 +19,15 @@ def generate_ranking(prompt, options, model=None, tokenizer=None, log=False):
         current_option_logits = []
         # Get the initial input tokens
         current_input_ids = input_ids
+        print('current_input_ids')
+        print(current_input_ids)
         # Loop through each target token
         for i in range(target_ids.size(1)):
-            print('\n********\n')
             # Get the model output (logits) and compute log probabilities
             outputs = model(input_ids=current_input_ids)
             logprobs = torch.nn.functional.log_softmax(outputs.logits, dim=-1)
-            print('\n---------')
-            print('logprobs')
-            print(logprobs.size())
             # Store the logits for the current step
             next_target_token_id = target_ids[:, i].item()
-            print('\n---------')
             print('next_target_token_id')
             print(next_target_token_id)
             target_logproba = logprobs[:, -1, next_target_token_id].unsqueeze(1)
@@ -38,7 +35,11 @@ def generate_ranking(prompt, options, model=None, tokenizer=None, log=False):
 
             # Get the next target token and append it to the input
             next_target_token = target_ids[:, i].unsqueeze(1)
+            print('next_target_token')
+            print(next_target_token)
             current_input_ids = torch.cat((current_input_ids, next_target_token), dim=1)
+            print('current_input_ids')
+            print(current_input_ids)
         # Append option and sequence score to results
         results.append((option, np.mean(current_option_logits)))
     # Sort result in ascending order
@@ -46,51 +47,6 @@ def generate_ranking(prompt, options, model=None, tokenizer=None, log=False):
 
     return results
 
-
-def perplexity(prompt, options, model=None, tokenizer=None, log=False):
-    '''
-            Parameters:
-                    prompt (str): A input for a language model
-                    options (list(str)): A list of possible continuations for the given input
-            Returns:
-                    results (list(tuple)): A list of tuples of option and associated scores
-    '''
-    results = []
-    for option in options:
-        input_ids = tokenizer(prompt, return_tensors="pt").input_ids.to("cuda")
-        target_ids = tokenizer(option, return_tensors="pt", add_special_tokens=False).input_ids.to("cuda")
-        
-        # Concatenate the input_ids and target_ids to form the full input
-        full_input_ids = torch.cat([input_ids, target_ids], dim=-1)
-        
-        # Get the model's output logits
-        with torch.no_grad():
-            outputs = model(input_ids=full_input_ids)
-        logits = outputs.logits
-
-        # Calculate the loss (negative log likelihood)
-        shift_logits = logits[..., :-1, :].contiguous()
-        shift_labels = full_input_ids[..., 1:].contiguous()
-        loss_fct = torch.nn.CrossEntropyLoss(ignore_index=tokenizer.pad_token_id, reduction='none')
-        loss = loss_fct(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1))
-        
-        # Calculate perplexity
-        # Mask the loss tensor to exclude padding tokens
-        mask = shift_labels.view(-1) != tokenizer.pad_token_id
-        loss = loss * mask
-        mean_loss = loss.sum() / mask.sum()
-        perplexity = torch.exp(mean_loss)
-        
-        results.append((option, perplexity.item()))
-        
-    # Sort the results by perplexity in ascending order (lower perplexity means better prediction)
-    results.sort(key=lambda x: x[1])
-    
-    if log:
-        for option, score in results:
-            print(f"Option: {option}, Perplexity: {score}")
-    
-    return results
 #%%
 CACHE_DIR = '/mnt/cimec-storage6/shared'
 from transformers import AutoTokenizer, AutoModelForCausalLM
@@ -128,7 +84,7 @@ for scene_name in scenes_categories[:1]:
     prompt = f"In {art} {scene_name.replace('_',' ')} there is a"
     for candidate in ['plane']:
         single_candidate_list = candidate.split(', ')
-        results = perplexity(prompt, single_candidate_list, model=model, tokenizer=tokenizer)
+        results = generate_ranking(prompt, single_candidate_list, model=model, tokenizer=tokenizer)
         print(f"Scene: {prompt}")
         for i, (option, score) in enumerate(results[:5]):
             print(f"{i+1}. {option}: {score:.2f}")
