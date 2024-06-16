@@ -13,14 +13,10 @@ def generate_ranking(prompt, options, model=None, tokenizer=None, log=False):
     for option in options:
         input_ids = tokenizer(prompt, return_tensors="pt").input_ids.to("cuda")
         target_ids = tokenizer(option, return_tensors="pt", add_special_tokens=False).input_ids.to("cuda")
-        print('target_ids')
-        print(target_ids)
         # list to store logits of each token in the option
         current_option_logits = []
         # Get the initial input tokens
         current_input_ids = input_ids
-        print('current_input_ids')
-        print(current_input_ids)
         # Loop through each target token
         for i in range(target_ids.size(1)):
             # Get the model output (logits) and compute log probabilities
@@ -28,20 +24,13 @@ def generate_ranking(prompt, options, model=None, tokenizer=None, log=False):
             logprobs = torch.nn.functional.log_softmax(outputs.logits, dim=-1)
             # Store the logits for the current step
             next_target_token_id = target_ids[:, i].item()
-            print('next_target_token_id')
-            print(next_target_token_id)
             target_logproba = logprobs[:, -1, next_target_token_id].unsqueeze(1)
             current_option_logits.append(target_logproba.item())
-
             # Get the next target token and append it to the input
             next_target_token = target_ids[:, i].unsqueeze(1)
-            print('next_target_token')
-            print(next_target_token)
             current_input_ids = torch.cat((current_input_ids, next_target_token), dim=1)
-            print('current_input_ids')
-            print(current_input_ids)
         # Append option and sequence score to results
-        results.append((option, (-1/target_ids.size(1)*np.sum(current_option_logits))))
+        results.append((option, (-1*np.mean(current_option_logits))))
     # Sort result in ascending order
     results = sorted(results, key=lambda x: x[1], reverse=True)
 
@@ -82,7 +71,7 @@ for scene_name in scenes_categories[:1]:
     else:
         art = "a"
     prompt = f"In {art} {scene_name.replace('_',' ')} there is a"
-    for candidate in ['fleebag']:
+    for candidate in candidates:
         single_candidate_list = candidate.split(', ')
         results = generate_ranking(prompt, single_candidate_list, model=model, tokenizer=tokenizer)
         print(f"Scene: {prompt}")
