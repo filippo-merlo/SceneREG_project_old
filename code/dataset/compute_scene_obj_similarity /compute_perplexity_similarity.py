@@ -64,13 +64,13 @@ from datasets import load_dataset
 ade_hf_data = load_dataset("scene_parse_150", cache_dir='/mnt/cimec-storage6/shared/hf_datasets')
 scenes_categories = ade_hf_data['train'].features['scene_category'].names
 
-for scene_name in scenes_categories[:2]:
+for scene_name in scenes_categories[10:15]:
     if scene_name[0] in ['a', 'e', 'i', 'o', 'u']:
         art = "an"
     else:
         art = "a"
     prompt = f"In {art} {scene_name.replace('_',' ')} there is a"
-    for candidate in candidates[:10]:
+    for candidate in candidates[100:110]:
         single_candidate_list = candidate.split(', ')
         results = generate_ranking(prompt, single_candidate_list, model=model, tokenizer=tokenizer)
         print(f"Scene: {prompt}")
