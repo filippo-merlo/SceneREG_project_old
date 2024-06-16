@@ -65,9 +65,11 @@ ade_hf_data = load_dataset("scene_parse_150", cache_dir='/mnt/cimec-storage6/sha
 scenes_categories = ade_hf_data['train'].features['scene_category'].names
 
 for scene_name in scenes_categories[:2]:
-    prompt = f"In a {scene_name} there is a"
-    results = generate_ranking(prompt, candidates[:10], model=model, tokenizer=tokenizer)
-    print(f"Scene: {scene_name}")
-    for i, (option, score) in enumerate(results[:5]):
-        print(f"{i+1}. {option} - {score:.2f}")
-    print("\n")
+    prompt = f"In a {scene_name.replace('_',' ')} there is a"
+    for candidate in candidates[:10]:
+        single_candidate_list = candidate.split(', ')
+        results = generate_ranking(prompt, single_candidate_list, model=model, tokenizer=tokenizer)
+        print(f"Scene: {scene_name}")
+        for i, (option, score) in enumerate(results[:5]):
+            print(f"{i+1}. {option} - {score:.2f}")
+        print("\n")
