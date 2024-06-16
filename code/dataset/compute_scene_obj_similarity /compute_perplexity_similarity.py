@@ -82,7 +82,7 @@ for scene_name in scenes_categories[:1]:
     else:
         art = "a"
     prompt = f"In {art} {scene_name.replace('_',' ')} there is a"
-    for candidate in ['plane']:
+    for candidate in ['fleebag']:
         single_candidate_list = candidate.split(', ')
         results = generate_ranking(prompt, single_candidate_list, model=model, tokenizer=tokenizer)
         print(f"Scene: {prompt}")
