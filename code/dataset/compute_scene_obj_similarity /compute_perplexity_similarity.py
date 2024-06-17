@@ -73,7 +73,7 @@ CACHE_DIR = '/mnt/cimec-storage6/shared'
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
 
-ACCESS_TOKEN = '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'
+ACCESS_TOKEN = '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'
 model_id = "meta-llama/Llama-2-13b-chat-hf"
 dtype = torch.bfloat16
 
