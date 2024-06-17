@@ -98,7 +98,7 @@ scenes_categories = ade_hf_data['train'].features['scene_category'].names
 
 for scene_name in scenes_categories[:1]:
     candidate_scores = []
-    for candidate in candidates[:300]:
+    for candidate in candidates[:1000]:
         single_candidate_list = candidate.split(', ')
         single_candidate_list_scores = []
         for single_candidate in single_candidate_list:
