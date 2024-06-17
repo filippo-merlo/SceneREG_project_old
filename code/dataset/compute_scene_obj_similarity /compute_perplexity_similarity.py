@@ -35,7 +35,6 @@ def get_perplexity_target_only(prompt, options, model=None, tokenizer=None, log=
     #results = sorted(results, key=lambda x: x[1], reverse=True)
     return results
 
-
 def get_perplexity(prompt, option, model=None, tokenizer=None, log=False):
     '''
         Parameters:
@@ -51,7 +50,6 @@ def get_perplexity(prompt, option, model=None, tokenizer=None, log=False):
     current_option_logits = []
     # Get the initial input tokens
     current_input_ids = input_ids
-    # Loop through each target token
     # Loop through each target token
     for i in range(target_ids.size(1)):
         # Get the model output (logits) and compute log probabilities
@@ -98,7 +96,7 @@ scenes_categories = ade_hf_data['train'].features['scene_category'].names
 
 for scene_name in scenes_categories[:1]:
     candidate_scores = []
-    for candidate in candidates[:1000]:
+    for candidate in candidates:
         single_candidate_list = candidate.split(', ')
         single_candidate_list_scores = []
         for single_candidate in single_candidate_list:
