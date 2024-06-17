@@ -1,6 +1,6 @@
 import  torch
 import numpy as np
-
+device = "cuda:1"
 def get_perplexity_target_only(prompt, options, model=None, tokenizer=None, log=False):
     '''
             Parameters:
@@ -11,8 +11,8 @@ def get_perplexity_target_only(prompt, options, model=None, tokenizer=None, log=
     '''
     results = []
     for option in options:
-        input_ids = tokenizer(prompt, return_tensors="pt").input_ids.to("cuda")
-        target_ids = tokenizer(option, return_tensors="pt", add_special_tokens=False).input_ids.to("cuda")
+        input_ids = tokenizer(prompt, return_tensors="pt").input_ids.to(device)
+        target_ids = tokenizer(option, return_tensors="pt", add_special_tokens=False).input_ids.to(device)
         # list to store logits of each token in the option
         current_option_logits = []
         # Get the initial input tokens
@@ -46,9 +46,9 @@ def get_perplexity_full_prompt(prompt, options, model=None, tokenizer=None, log=
     '''
     results = []
     for option in options:
-        start_ids = tokenizer('Complete the sentence:', return_tensors="pt").input_ids.to("cuda")
+        start_ids = tokenizer('Complete the sentence:', return_tensors="pt").input_ids.to(device)
         prompt = prompt + ' ' + option + '.'
-        input_ids = tokenizer(prompt, return_tensors="pt", add_special_tokens=False).input_ids.to("cuda")
+        input_ids = tokenizer(prompt, return_tensors="pt", add_special_tokens=False).input_ids.to(device)
         # list to store logits of each token in the option
         current_option_logits = []
         # Get the initial input tokens
@@ -76,11 +76,10 @@ import torch
 
 ACCESS_TOKEN = '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'
 model_id = "meta-llama/Meta-Llama-Guard-2-8B"
-device = "cuda:1"
 dtype = torch.bfloat16
 
 tokenizer = AutoTokenizer.from_pretrained(model_id, cache_dir=CACHE_DIR, token=ACCESS_TOKEN)
-model = AutoModelForCausalLM.from_pretrained(model_id, torch_dtype=dtype, device_map=device, cache_dir=CACHE_DIR, token=ACCESS_TOKEN)
+model = AutoModelForCausalLM.from_pretrained(model_id, torch_dtype=dtype, device_map=device, cache_dir=CACHE_DIR, token=ACCESS_TOKEN).to(device)
 
 #%%
 import pickle as pkl
