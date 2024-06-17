@@ -107,7 +107,7 @@ for scene_name in scenes_categories[:1]:
                 article = 'a'
             prompt = f"In the {scene_name.replace('_',' ')} there is " + article 
             single_candidate_list_scores.append(get_perplexity_full_prompt(prompt, single_candidate, model=model, tokenizer=tokenizer))
-        candidate_scores.append((candidate, np.mean([score in single_candidate_list_scores])))
+        candidate_scores.append((candidate, np.mean([score for score in single_candidate_list_scores])))
 
     sorted_candidate_score = sorted(candidate_scores, key=lambda x: x[1])
     print(f"Scene: {prompt}")
