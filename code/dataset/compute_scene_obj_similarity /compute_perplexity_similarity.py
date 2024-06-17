@@ -96,7 +96,7 @@ from datasets import load_dataset
 ade_hf_data = load_dataset("scene_parse_150", cache_dir='/mnt/cimec-storage6/shared/hf_datasets')
 scenes_categories = ade_hf_data['train'].features['scene_category'].names
 print(scenes_categories[100:200])
-'''
+
 for scene_name in scenes_categories[:1]:
     candidate_scores = []
     for candidate in candidates[:300]:
@@ -117,4 +117,3 @@ for scene_name in scenes_categories[:1]:
     for i, (option, score) in enumerate(sorted_candidate_score[:100]):
         print(f"{i+1}. {option}: {score:.2f}")
     print("\n")
-'''
