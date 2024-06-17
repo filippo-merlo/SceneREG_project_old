@@ -46,7 +46,7 @@ def get_perplexity_full_prompt(prompt, options, model=None, tokenizer=None, log=
     '''
     results = []
     for option in options:
-        start_ids = tokenizer('', return_tensors="pt").input_ids.to("cuda")
+        start_ids = tokenizer('Complete the sentence:', return_tensors="pt").input_ids.to("cuda")
         prompt = prompt + ' ' + option + '.'
         input_ids = tokenizer(prompt, return_tensors="pt", add_special_tokens=False).input_ids.to("cuda")
         # list to store logits of each token in the option
