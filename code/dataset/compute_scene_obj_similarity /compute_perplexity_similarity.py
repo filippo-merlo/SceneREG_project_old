@@ -74,7 +74,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
 
 ACCESS_TOKEN = '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'
-model_id = "meta-llama/Meta-Llama-Guard-2-8B"
+model_id = "meta-llama/Meta-Llama-3-8B-Instruct"
 dtype = torch.bfloat16
 
 tokenizer = AutoTokenizer.from_pretrained(model_id, cache_dir=CACHE_DIR, token=ACCESS_TOKEN)
