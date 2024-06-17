@@ -109,7 +109,7 @@ for scene_name in scenes_categories[:1]:
             prompt = f"Complete the following sentence with the name of the appropriate object: In the {scene_name.replace('_',' ')} there is " + article
             option = single_candidate + "."
             single_candidate_list_scores.append(get_perplexity(prompt, option, model=model, tokenizer=tokenizer))
-        candidate_scores.append((candidate, np.mean([score for score in single_candidate_list_scores])))
+        candidate_scores.append((candidate, np.sum([score for score in single_candidate_list_scores])))
 
     sorted_candidate_score = sorted(candidate_scores, key=lambda x: x[1], reverse=True)
     print(f"Scene: {prompt}")
