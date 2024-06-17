@@ -4,7 +4,7 @@ from transformers import BertTokenizer, BertModel
 # Load pre-trained BERT tokenizer and model
 CACHE_DIR = '/mnt/cimec-storage6/users/filippo.merlo'
 model_name = "bert-large-cased"
-device='cuda'
+device='cuda:2'
 tokenizer = BertTokenizer.from_pretrained(model_name, cache_dir=CACHE_DIR)
 model = BertModel.from_pretrained(model_name, cache_dir=CACHE_DIR).to(device='cuda')
 
