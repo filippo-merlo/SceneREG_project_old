@@ -59,7 +59,7 @@ outputs = model.generate(
     max_new_tokens=256,
     eos_token_id=terminators,
     do_sample=True,
-    temperature=0.6,
+    temperature=0.1,
     top_p=0.9,
 )
 response = outputs[0][input_ids.shape[-1]:]
