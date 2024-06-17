@@ -36,7 +36,7 @@ def get_perplexity_target_only(prompt, options, model=None, tokenizer=None, log=
     return results
 
 
-def get_perplexity_full_prompt(prompt, option, model=None, tokenizer=None, log=False):
+def get_perplexity(prompt, option, model=None, tokenizer=None, log=False):
     '''
         Parameters:
                 prompt (str): A input for a language model
@@ -98,7 +98,7 @@ scenes_categories = ade_hf_data['train'].features['scene_category'].names
 
 for scene_name in scenes_categories[:1]:
     candidate_scores = []
-    for candidate in candidates[:100]:
+    for candidate in candidates[:300]:
         single_candidate_list = candidate.split(', ')
         single_candidate_list_scores = []
         for single_candidate in single_candidate_list:
@@ -107,7 +107,7 @@ for scene_name in scenes_categories[:1]:
             else:
                 article = 'a'
             prompt = f"Complete the sentence with the name of the appropriate object: In the {scene_name.replace('_',' ')} there is " + article 
-            single_candidate_list_scores.append(get_perplexity_full_prompt(prompt, single_candidate, model=model, tokenizer=tokenizer))
+            single_candidate_list_scores.append(get_perplexity(prompt, single_candidate, model=model, tokenizer=tokenizer))
         candidate_scores.append((candidate, np.mean([score for score in single_candidate_list_scores])))
 
     sorted_candidate_score = sorted(candidate_scores, key=lambda x: x[1])
