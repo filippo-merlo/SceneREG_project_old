@@ -1,5 +1,5 @@
 #%%
-device = "cuda:1"
+device = "cuda:0"
 CACHE_DIR = '/mnt/cimec-storage6/shared'
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
