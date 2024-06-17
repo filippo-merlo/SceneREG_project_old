@@ -44,7 +44,7 @@ def get_perplexity_full_prompt(prompt, option, model=None, tokenizer=None, log=F
         Returns:
                 results (list(tuple)): A list of tuples of option and associated scores
     '''
-    start_ids = tokenizer('Complete the sentence:', return_tensors="pt").input_ids.to(device)
+    start_ids = tokenizer('Complete the sentence with the name of the appropriate object:', return_tensors="pt").input_ids.to(device)
     prompt = prompt + ' ' + option + '.'
     input_ids = tokenizer(prompt, return_tensors="pt", add_special_tokens=False).input_ids.to(device)
     # list to store logits of each token in the option
