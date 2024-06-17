@@ -36,38 +36,36 @@ def get_perplexity_target_only(prompt, options, model=None, tokenizer=None, log=
     return results
 
 
-def get_perplexity_full_prompt(prompt, options, model=None, tokenizer=None, log=False):
+def get_perplexity_full_prompt(prompt, option, model=None, tokenizer=None, log=False):
     '''
-            Parameters:
-                    prompt (str): A input for a language model
-                    options (list(str)): A list of possible continuations for the given input
-            Returns:
-                    results (list(tuple)): A list of tuples of option and associated scores
+        Parameters:
+                prompt (str): A input for a language model
+                options (list(str)): A list of possible continuations for the given input
+        Returns:
+                results (list(tuple)): A list of tuples of option and associated scores
     '''
-    results = []
-    for option in options:
-        start_ids = tokenizer('Complete the sentence:', return_tensors="pt").input_ids.to(device)
-        prompt = prompt + ' ' + option + '.'
-        input_ids = tokenizer(prompt, return_tensors="pt", add_special_tokens=False).input_ids.to(device)
-        # list to store logits of each token in the option
-        current_option_logits = []
-        # Get the initial input tokens
-        current_input_ids = start_ids
-        # Loop through each target token
-        for i in range(input_ids.size(1)):
-            # Get the model output (logits) and compute log probabilities
-            outputs = model(input_ids=current_input_ids)
-            logprobs = torch.nn.functional.log_softmax(outputs.logits, dim=-1)
-            # Store the logits for the current step
-            next_target_token_id = input_ids[:, i].item()
-            target_logproba = logprobs[:, -1, next_target_token_id].unsqueeze(1)
-            current_option_logits.append(target_logproba.item())
-            # Get the next target token and append it to the input
-            next_target_token = input_ids[:, i].unsqueeze(1)
-            current_input_ids = torch.cat((current_input_ids, next_target_token), dim=1)
-        # Append option and sequence score to results
-        results.append((option, (-1*np.mean(current_option_logits))))
-    return results
+    start_ids = tokenizer('Complete the sentence:', return_tensors="pt").input_ids.to(device)
+    prompt = prompt + ' ' + option + '.'
+    input_ids = tokenizer(prompt, return_tensors="pt", add_special_tokens=False).input_ids.to(device)
+    # list to store logits of each token in the option
+    current_option_logits = []
+    # Get the initial input tokens
+    current_input_ids = start_ids
+    # Loop through each target token
+    for i in range(input_ids.size(1)):
+        # Get the model output (logits) and compute log probabilities
+        outputs = model(input_ids=current_input_ids)
+        logprobs = torch.nn.functional.log_softmax(outputs.logits, dim=-1)
+        # Store the logits for the current step
+        next_target_token_id = input_ids[:, i].item()
+        target_logproba = logprobs[:, -1, next_target_token_id].unsqueeze(1)
+        current_option_logits.append(target_logproba.item())
+        # Get the next target token and append it to the input
+        next_target_token = input_ids[:, i].unsqueeze(1)
+        current_input_ids = torch.cat((current_input_ids, next_target_token), dim=1)
+    # Append option and sequence score to results
+    result = -1*np.mean(current_option_logits)
+    return result
 
 #%%
 CACHE_DIR = '/mnt/cimec-storage6/shared'
@@ -98,13 +96,18 @@ ade_hf_data = load_dataset("scene_parse_150", cache_dir='/mnt/cimec-storage6/sha
 scenes_categories = ade_hf_data['train'].features['scene_category'].names
 
 for scene_name in scenes_categories[:1]:
-
-    prompt = f"In the {scene_name.replace('_',' ')} there is a"
     candidate_scores = []
     for candidate in candidates:
         single_candidate_list = candidate.split(', ')
-        results = get_perplexity_full_prompt(prompt, single_candidate_list, model=model, tokenizer=tokenizer)
-        candidate_scores.append((candidate, np.mean([score for _, score in results])))
+        single_candidate_list_scores = []
+        for single_candidate in single_candidate_list:
+            if single_candidate[0] in ['a', 'e', 'i', 'o', 'u']:
+                article = 'an'
+            else:
+                article = 'a'
+            prompt = f"In the {scene_name.replace('_',' ')} there is " + article 
+            single_candidate_list_scores.append(get_perplexity_full_prompt(prompt, single_candidate, model=model, tokenizer=tokenizer))
+        candidate_scores.append((candidate, np.mean([score in single_candidate_list_scores])))
 
     sorted_candidate_score = sorted(candidate_scores, key=lambda x: x[1])
     print(f"Scene: {prompt}")
