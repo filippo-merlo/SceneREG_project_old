@@ -46,12 +46,13 @@ def get_perplexity_full_prompt(prompt, options, model=None, tokenizer=None, log=
     '''
     results = []
     for option in options:
+        start_ids = tokenizer('', return_tensors="pt").input_ids.to("cuda")
         prompt = prompt + ' ' + option + '.'
-        input_ids = tokenizer(prompt, return_tensors="pt").input_ids.to("cuda")
+        input_ids = tokenizer(prompt, return_tensors="pt", add_special_tokens=False).input_ids.to("cuda")
         # list to store logits of each token in the option
         current_option_logits = []
         # Get the initial input tokens
-        current_input_ids = ''
+        current_input_ids = start_ids
         # Loop through each target token
         for i in range(input_ids.size(1)):
             # Get the model output (logits) and compute log probabilities
