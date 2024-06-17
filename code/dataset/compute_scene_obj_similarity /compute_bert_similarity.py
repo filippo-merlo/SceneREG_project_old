@@ -48,6 +48,7 @@ for scene in ['airport_terminal']:
         scores = []
         for i, object in enumerate(candidate_list):
             candidate_embedding = get_bert_embedding(object)
+            print(candidate_embedding.shape)
             scene_embedding = get_bert_embedding(scene.replace('_', ' '))
             similarity = cosine_similarity(candidate_embedding, scene_embedding)
             scores.append(similarity)
