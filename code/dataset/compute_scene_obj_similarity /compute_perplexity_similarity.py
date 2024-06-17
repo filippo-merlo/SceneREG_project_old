@@ -111,7 +111,7 @@ for scene_name in scenes_categories[:1]:
             single_candidate_list_scores.append(get_perplexity(prompt, option, model=model, tokenizer=tokenizer))
         candidate_scores.append((candidate, np.mean([score for score in single_candidate_list_scores])))
 
-    sorted_candidate_score = sorted(candidate_scores, key=lambda x: x[1])
+    sorted_candidate_score = sorted(candidate_scores, key=lambda x: x[1], reverse=True)
     print(f"Scene: {prompt}")
     for i, (option, score) in enumerate(sorted_candidate_score[:100]):
         print(f"{i+1}. {option}: {score:.2f}")
