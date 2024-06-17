@@ -38,10 +38,9 @@ def collect_norm(model, tokenizer, prompt):
 prompt = 'How likely is in a scale of 1 to 100 that the object: [OBJECT] is present in the scene: [SCENE]?'
 
 
-
 messages = [
-    {"role": "system", "content": "You are a pirate chatbot who always responds in pirate speak!"},
-    {"role": "user", "content": "Who are you?"},
+    {"role": "system", "content": "You are an expert and precise scientist that knows everything about scenes and objects and responds only with probabilities!"},
+    {"role": "user", "content": "How likely is in a scale of 1 to 100 that the object: cup is present in the scene: bathroom?"},
 ]
 
 input_ids = tokenizer.apply_chat_template(
