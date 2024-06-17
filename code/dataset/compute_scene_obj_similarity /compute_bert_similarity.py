@@ -13,7 +13,7 @@ def get_bert_embedding(text):
     inputs = tokenizer(text, return_tensors="pt", truncation=True, padding=True, max_length=512).to(device)
     with torch.no_grad():
         outputs = model(**inputs)
-    return outputs['last_hidden_state'][:,0,:].to('cpu').numpy()
+    return outputs['last_hidden_state'][:,0,:].squeeze().to('cpu').numpy()
 
 from scipy.spatial.distance import cosine
 def cosine_similarity(a, b):
