@@ -76,7 +76,7 @@ import torch
 
 ACCESS_TOKEN = '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'
 model_id = "meta-llama/Meta-Llama-Guard-2-8B"
-device = "cuda"
+device = "cuda:1"
 dtype = torch.bfloat16
 
 tokenizer = AutoTokenizer.from_pretrained(model_id, cache_dir=CACHE_DIR, token=ACCESS_TOKEN)
