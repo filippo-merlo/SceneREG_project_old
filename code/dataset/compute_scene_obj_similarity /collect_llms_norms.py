@@ -39,7 +39,7 @@ prompt = 'How likely is in a scale of 1 to 100 that the object: [OBJECT] is pres
 
 
 messages = [
-    {"role": "system", "content": "You are an expert and precise scientist that knows everything about scenes and objects and responds only with probabilities!"},
+    {"role": "system", "content": "You are an expert that knows everything about scenes and objects and responds only with numbers!"},
     {"role": "user", "content": "How likely is in a scale of 1 to 100 that the object: cup is present in the scene: bathroom?"},
 ]
 
