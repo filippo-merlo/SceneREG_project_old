@@ -63,4 +63,4 @@ def get_indexes_top_n(lst, n):
 top_100 = get_indexes_top_n(airport_scores, 100)
 print('airport_terminal:')
 for i in top_100:
-    print(candidates[i], airport_scores[i])
+    print(f'{i}. ',candidates[i], airport_scores[i])
