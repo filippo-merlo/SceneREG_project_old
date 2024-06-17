@@ -56,7 +56,7 @@ def get_perplexity(prompt, option, model=None, tokenizer=None, log=False):
     for i in range(target_ids.size(1)):
         # Get the model output (logits) and compute log probabilities
         outputs = model(input_ids=current_input_ids)
-        logprobs = torch.nn.functional.log_softmax(outputs.logits, dim=-1)
+        logprobs = torch.nn.functional.softmax(outputs.logits, dim=-1)
         # Store the logits for the current step
         next_target_token_id = target_ids[:, i].item()
         target_logproba = logprobs[:, -1, next_target_token_id].unsqueeze(1)
@@ -65,7 +65,7 @@ def get_perplexity(prompt, option, model=None, tokenizer=None, log=False):
         next_target_token = target_ids[:, i].unsqueeze(1)
         current_input_ids = torch.cat((current_input_ids, next_target_token), dim=1)
     # Append option and sequence score to results
-    result = -1*np.mean(current_option_logits)
+    result = np.mean(current_option_logits)
     return result
 
 #%%
@@ -90,12 +90,11 @@ index_file = 'index_ade20k.pkl'
 with open('{}/{}'.format(DATASET_PATH, index_file), 'rb') as f:
     index_ade20k = pkl.load(f)
 candidates = index_ade20k['objectnames']
-print(candidates[100:200])
+
 # Load scene categories from ADE20K hf
 from datasets import load_dataset
 ade_hf_data = load_dataset("scene_parse_150", cache_dir='/mnt/cimec-storage6/shared/hf_datasets')
 scenes_categories = ade_hf_data['train'].features['scene_category'].names
-print(scenes_categories[100:200])
 
 for scene_name in scenes_categories[:1]:
     candidate_scores = []
