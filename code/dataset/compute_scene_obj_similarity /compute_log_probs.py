@@ -74,10 +74,10 @@ for scene_name in tqdm(scenes_categories[:4]):
         single_candidate_list_scores = []
         for single_candidate in single_candidate_list:
             if single_candidate[0] in ['a', 'e', 'i', 'o', 'u']:
-                article = 'an'
+                article = 'an '
             else:
-                article = 'a'
-            prompt = f"You are a helpful assistant. Your job is to complete the following sentence with the name of an object that is higly related to the place mentioned in the sentence. In the {scene_name.replace('_',' ')} there is " + article + ' '
+                article = 'a '
+            prompt = f"You are a helpful assistant. Your job is to complete the following sentence with the name of an object that is highly related to the place mentioned in the sentence. For example, if the place is 'kitchen', a related object could be 'refrigerator'. In the {scene_name.replace('_',' ')} there is " + article
             option = single_candidate
             single_candidate_list_scores.append(get_log_probs(prompt, option, model=model, tokenizer=tokenizer))
         candidate_scores.append((candidate, np.mean([score for score in single_candidate_list_scores])))
