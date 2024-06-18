@@ -80,7 +80,7 @@ for scene_name in tqdm(scenes_categories[:4]):
             prompt = f"In every {scene_name.replace('_',' ')} usually there is " + article
             option = single_candidate
             single_candidate_list_scores.append(get_log_probs(prompt, option, model=model, tokenizer=tokenizer))
-        candidate_scores.append((candidate, np.min([score for score in single_candidate_list_scores])))
+        candidate_scores.append((candidate, np.mean([score for score in single_candidate_list_scores])))
 
     sorted_candidate_score = sorted(candidate_scores, key=lambda x: x[1]) # higer first
     print(f"Scene: {prompt}")
@@ -88,6 +88,102 @@ for scene_name in tqdm(scenes_categories[:4]):
         print(f"{i+1}. {option}: {score:.2f}")
     print("\n")
 
-# old prompts
+'''
+### RECORDS
+# Model: meta-llama/Meta-Llama-3-8B-Instruct
 
-# "You are a helpful assistant. Your job is to complete the following sentence with the name of an object that is highly related to the place mentioned in the sentence. For example, if the place is 'kitchen', a related object could be 'refrigerator'. In the {scene_name.replace('_',' ')} there is " + article
+# Prompt:
+# "You are a helpful assistant. Your job is to complete the following sentence with the name of an object that is highly related to the place mentioned in the sentence. For example, if the place is 'kitchen', a related object could be 'refrigerator'. In the {scene_name.replace('_',' ')} there is " + article 
+
+# In the airport terminal there is a 
+1. 1: 6.03
+2.  : 6.90
+3. outhouse: 8.65
+4. scanner: 11.09
+5. sockets: 13.08
+6. plane: 13.28
+7. office: 13.41
+8. bag: 13.53
+9. baggage: 13.53
+10. terminal: 13.62
+11. equipment: 14.02
+12. symbol: 14.08
+13. entrance: 14.22
+14. desk: 14.30
+15. loudspeaker: 14.36
+16. eye: 14.41
+17. notice: 14.41
+18. calculator: 14.47
+19. sink: 14.49
+20. printer: 14.53
+
+
+# In the art gallery there is a 
+1. 1: 5.77
+2.  : 7.18
+3. outhouse: 8.22
+4. painting, picture: 11.89
+5. obelisk: 12.13
+6. piece: 12.38
+7. art: 12.51
+8. sockets: 12.71
+9. statue: 12.83
+10. scanner: 13.07
+11. display: 13.21
+12. eye: 13.53
+13. stone: 14.00
+14. calculator: 14.03
+15. canvas: 14.03
+16. arc: 14.08
+17. office: 14.17
+18. rod: 14.23
+19. paintbrush: 14.27
+20. lamp: 14.38
+
+
+# In the badlands there is a 
+1. 1: 4.60
+2. outhouse: 4.64
+3.  : 5.97
+4. stalactite: 11.59
+5. rock: 12.13
+6. rock, stone: 12.47
+7. hole: 12.61
+8. scanner: 12.79
+9. stone: 12.80
+10. sandbox: 13.43
+11. mountain, mount: 13.47
+12. turtle: 13.48
+13. oil: 13.61
+14. castle: 13.98
+15. tractor: 13.98
+16. rock formation: 14.15
+17. legs: 14.18
+18. ridge: 14.19
+19. pick: 14.20
+20. camel: 14.22
+
+
+# In the ball pit there is a 
+1. 1: 3.81
+2.  : 6.18
+3. outhouse: 6.31
+4. eye: 11.06
+5. sink: 11.62
+6. sandbox: 11.66
+7. foot: 11.90
+8. basket: 11.93
+9. pool: 11.99
+10. hole: 12.54
+11. sockets: 12.57
+12. obelisk: 12.65
+13. bucket: 12.73
+14. egg: 12.81
+15. pond: 12.82
+16. stalactite: 12.96
+17. elephant: 13.01
+18. buckets: 13.05
+19. slide: 13.06
+20. tractor: 13.13
+
+'''
