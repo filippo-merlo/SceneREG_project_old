@@ -36,7 +36,7 @@ def get_log_probs(prompt, option, model=None, tokenizer=None, log=False):
         current_input_ids = torch.cat((current_input_ids, next_target_token), dim=1)
         
     # Append option and sequence score to results
-    result = -1*np.mean(current_option_logits)
+    result = -1*np.sum(current_option_logits)
     return result
 
 #%%
@@ -80,7 +80,7 @@ for scene_name in tqdm(scenes_categories[:4]):
             prompt = f"You are a helpful assistant. Your job is to complete the following sentence with the name of an object that is related to the place mentioned in the sentence. In the {scene_name.replace('_',' ')} there is " + article
             option = single_candidate
             single_candidate_list_scores.append(get_log_probs(prompt, option, model=model, tokenizer=tokenizer))
-        candidate_scores.append((candidate, np.median([score for score in single_candidate_list_scores])))
+        candidate_scores.append((candidate, np.mean([score for score in single_candidate_list_scores])))
 
     sorted_candidate_score = sorted(candidate_scores, key=lambda x: x[1]) # higer first
     print(f"Scene: {prompt}")
