@@ -82,7 +82,7 @@ for scene_name in scenes_categories[:1]:
             single_candidate_list_scores.append(get_log_probs(prompt, option, model=model, tokenizer=tokenizer))
         candidate_scores.append((candidate, np.median([score for score in single_candidate_list_scores])))
 
-    sorted_candidate_score = sorted(candidate_scores, key=lambda x: x[1]) # higer first
+    sorted_candidate_score = sorted(candidate_scores, key=lambda x: x[1], reverse=True) # higer first
     print(f"Scene: {prompt}")
     for i, (option, score) in enumerate(sorted_candidate_score[:20]):
         print(f"{i+1}. {option}: {score:.2f}")
