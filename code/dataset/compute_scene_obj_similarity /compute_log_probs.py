@@ -46,10 +46,10 @@ import torch
 
 ACCESS_TOKEN = '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'
 model_id = "meta-llama/Meta-Llama-3-8B-Instruct"
-dtype = torch.bfloat16
+#dtype = torch.bfloat16
 
 tokenizer = AutoTokenizer.from_pretrained(model_id, cache_dir=CACHE_DIR, token=ACCESS_TOKEN)
-model = AutoModelForCausalLM.from_pretrained(model_id, torch_dtype=dtype, device_map=device, cache_dir=CACHE_DIR, token=ACCESS_TOKEN)
+model = AutoModelForCausalLM.from_pretrained(model_id, device_map=device, cache_dir=CACHE_DIR, token=ACCESS_TOKEN)#, torch_dtype=dtype)
 
 #%%
 import pickle as pkl
