@@ -48,20 +48,26 @@ def get_perplexity(prompt, option, model=None, tokenizer=None, log=False):
 
      # list to store logits of each token in the option
     current_option_logits = []
+
     # Get the initial input tokens
     current_input_ids = input_ids
+
     # Loop through each target token
     for i in range(target_ids.size(1)):
+
         # Get the model output (logits) and compute log probabilities
         outputs = model(input_ids=current_input_ids)
         logprobs = torch.nn.functional.softmax(outputs.logits, dim=-1)
+
         # Store the logits for the current step
         next_target_token_id = target_ids[:, i].item()
         target_logproba = logprobs[:, -1, next_target_token_id].unsqueeze(1)
         current_option_logits.append(target_logproba.item())
+
         # Get the next target token and append it to the input
         next_target_token = target_ids[:, i].unsqueeze(1)
         current_input_ids = torch.cat((current_input_ids, next_target_token), dim=1)
+        
     # Append option and sequence score to results
     result = np.mean(current_option_logits)
     return result
