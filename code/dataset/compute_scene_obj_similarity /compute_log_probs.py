@@ -1,41 +1,8 @@
 import  torch
 import numpy as np
 device = "cuda:1"
-def get_perplexity_target_only(prompt, options, model=None, tokenizer=None, log=False):
-    '''
-            Parameters:
-                    prompt (str): A input for a language model
-                    options (list(str)): A list of possible continuations for the given input
-            Returns:
-                    results (list(tuple)): A list of tuples of option and associated scores
-    '''
-    results = []
-    for option in options:
-        input_ids = tokenizer(prompt, return_tensors="pt").input_ids.to(device)
-        target_ids = tokenizer(option, return_tensors="pt", add_special_tokens=False).input_ids.to(device)
-        # list to store logits of each token in the option
-        current_option_logits = []
-        # Get the initial input tokens
-        current_input_ids = input_ids
-        # Loop through each target token
-        for i in range(target_ids.size(1)):
-            # Get the model output (logits) and compute log probabilities
-            outputs = model(input_ids=current_input_ids)
-            logprobs = torch.nn.functional.log_softmax(outputs.logits, dim=-1)
-            # Store the logits for the current step
-            next_target_token_id = target_ids[:, i].item()
-            target_logproba = logprobs[:, -1, next_target_token_id].unsqueeze(1)
-            current_option_logits.append(target_logproba.item())
-            # Get the next target token and append it to the input
-            next_target_token = target_ids[:, i].unsqueeze(1)
-            current_input_ids = torch.cat((current_input_ids, next_target_token), dim=1)
-        # Append option and sequence score to results
-        results.append((option, (-1*np.mean(current_option_logits))))
-    ## Sort result in ascending order
-    #results = sorted(results, key=lambda x: x[1], reverse=True)
-    return results
 
-def get_perplexity(prompt, option, model=None, tokenizer=None, log=False):
+def get_log_probs(prompt, option, model=None, tokenizer=None, log=False):
     '''
         Parameters:
                 prompt (str): A input for a language model
@@ -112,7 +79,7 @@ for scene_name in scenes_categories[:3]:
                 article = 'a'
             prompt = f"In the {scene_name.replace('_',' ')} there is " + article
             option = single_candidate
-            single_candidate_list_scores.append(get_perplexity(prompt, option, model=model, tokenizer=tokenizer))
+            single_candidate_list_scores.append(get_log_probs(prompt, option, model=model, tokenizer=tokenizer))
         candidate_scores.append((candidate, np.sum([score for score in single_candidate_list_scores])))
 
     sorted_candidate_score = sorted(candidate_scores, key=lambda x: x[1], reverse=True)
