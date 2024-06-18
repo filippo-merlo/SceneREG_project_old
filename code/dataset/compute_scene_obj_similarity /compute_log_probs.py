@@ -36,7 +36,7 @@ def get_log_probs(prompt, option, model=None, tokenizer=None, log=False):
         current_input_ids = torch.cat((current_input_ids, next_target_token), dim=1)
         
     # Append option and sequence score to results
-    result = np.mean(current_option_logits)
+    result = np.sum(current_option_logits)
     return result
 
 #%%
@@ -80,7 +80,7 @@ for scene_name in scenes_categories[:10]:
             prompt = f"In the {scene_name.replace('_',' ')} there is " + article
             option = single_candidate
             single_candidate_list_scores.append(get_log_probs(prompt, option, model=model, tokenizer=tokenizer))
-        candidate_scores.append((candidate, np.mean([score for score in single_candidate_list_scores])))
+        candidate_scores.append((candidate, np.median([score for score in single_candidate_list_scores])))
 
     sorted_candidate_score = sorted(candidate_scores, key=lambda x: x[1], reverse=True)
     print(f"Scene: {prompt}")
