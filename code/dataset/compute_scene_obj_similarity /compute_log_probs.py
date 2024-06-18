@@ -21,10 +21,10 @@ def get_log_probs(prompt, option, model=None, tokenizer=None, log=False):
 
     # Loop through each target token
     for i in range(target_ids.size(1)):
-
-        # Get the model output (logits) and compute log probabilities
-        outputs = model(input_ids=current_input_ids)
-        logprobs = torch.nn.functional.log_softmax(outputs.logits, dim=-1)
+        with torch.no_grad():
+            # Get the model output (logits) and compute log probabilities
+            outputs = model(input_ids=current_input_ids)
+        logprobs = torch.nn.functional.log_softmax(outputs.logits, dim=-1).to('cpu')
 
         # Store the logits for the current step
         next_target_token_id = target_ids[:, i].item()
@@ -82,7 +82,7 @@ for scene_name in tqdm(scenes_categories[:4]):
             single_candidate_list_scores.append(get_log_probs(prompt, option, model=model, tokenizer=tokenizer))
         candidate_scores.append((candidate, np.median([score for score in single_candidate_list_scores])))
 
-    sorted_candidate_score = sorted(candidate_scores, key=lambda x: x[1], reverse=True) # higer first
+    sorted_candidate_score = sorted(candidate_scores, key=lambda x: x[1]) # higer first
     print(f"Scene: {prompt}")
     for i, (option, score) in enumerate(sorted_candidate_score[:20]):
         print(f"{i+1}. {option}: {score:.2f}")
