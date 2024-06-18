@@ -44,7 +44,7 @@ for scene_name in scenes_categories[:1]:
             messages = [
                 {"role": "system", "content": "You are a helpful assistant. Your job is to rate how much each object is related to a specific place."},
                 {"role": "user", "content": prompt},
-                 {"role": "system", "content":+"Rate:"}
+                 {"role": "system", "content":"Rate:"}
             ]
 
             input_ids = tokenizer.apply_chat_template(
