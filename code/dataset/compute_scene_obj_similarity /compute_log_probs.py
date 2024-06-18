@@ -66,8 +66,8 @@ candidates = index_ade20k['objectnames']
 from datasets import load_dataset
 ade_hf_data = load_dataset("scene_parse_150", cache_dir='/mnt/cimec-storage6/shared/hf_datasets')
 scenes_categories = ade_hf_data['train'].features['scene_category'].names
-
-for scene_name in scenes_categories[:4]:
+from tqdm import tqdm
+for scene_name in tqdm(scenes_categories[:4]):
     candidate_scores = []
     for candidate in candidates:
         single_candidate_list = candidate.split(', ')
