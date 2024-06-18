@@ -38,8 +38,7 @@ def get_log_probs(prompt, option, model=None, tokenizer=None, log=False):
     # Append option and sequence score to results
     result = -1*np.sum(current_option_logits)
     return result
-
-#%%
+### IMPORT MODEL
 CACHE_DIR = '/mnt/cimec-storage6/shared'
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
@@ -51,10 +50,9 @@ dtype = torch.bfloat16
 tokenizer = AutoTokenizer.from_pretrained(model_id, cache_dir=CACHE_DIR, token=ACCESS_TOKEN)
 model = AutoModelForCausalLM.from_pretrained(model_id, torch_dtype=dtype, device_map=device, cache_dir=CACHE_DIR, token=ACCESS_TOKEN)
 
-#%%
+### IMPORT DATA
 import pickle as pkl
 # get objects and scenes names 
-
 # Load object categories from ADE20K 
 DATASET_PATH = '/mnt/cimec-storage6/users/filippo.merlo/ADE20K_2016_07_26'
 index_file = 'index_ade20k.pkl'
@@ -66,6 +64,8 @@ candidates = index_ade20k['objectnames']
 from datasets import load_dataset
 ade_hf_data = load_dataset("scene_parse_150", cache_dir='/mnt/cimec-storage6/shared/hf_datasets')
 scenes_categories = ade_hf_data['train'].features['scene_category'].names
+
+### COMPUTE LOG PROBS
 from tqdm import tqdm
 for scene_name in tqdm(scenes_categories[:4]):
     candidate_scores = []
