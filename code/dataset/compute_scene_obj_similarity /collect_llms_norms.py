@@ -43,7 +43,8 @@ for scene_name in scenes_categories[:1]:
             prompt = "On a scale from 1 (not related at all) to 7 (very related), how related is the object '{word}' with the place '{scene}'?".format(word=single_candidate, scene=scene_name.replace("_", " "))
             messages = [
                 {"role": "system", "content": "You are a helpful assistant. Your job is to rate how much each object is related to a specific place."},
-                {"role": "user", "content": prompt +"\n\nRate:"}
+                {"role": "user", "content": prompt},
+                 {"role": "system", "content":+"Rate:"}
             ]
 
             input_ids = tokenizer.apply_chat_template(
