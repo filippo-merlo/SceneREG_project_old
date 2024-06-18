@@ -36,7 +36,7 @@ def get_log_probs(prompt, option, model=None, tokenizer=None, log=False):
         current_input_ids = torch.cat((current_input_ids, next_target_token), dim=1)
         
     # Append option and sequence score to results
-    result = np.mean(current_option_logits)
+    result = -1*np.mean(current_option_logits)
     return result
 
 #%%
