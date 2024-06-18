@@ -80,7 +80,7 @@ for scene_name in scenes_categories[:3]:
             prompt = f"In the {scene_name.replace('_',' ')} there is " + article
             option = single_candidate
             single_candidate_list_scores.append(get_log_probs(prompt, option, model=model, tokenizer=tokenizer))
-        candidate_scores.append((candidate, np.sum([score for score in single_candidate_list_scores])))
+        candidate_scores.append((candidate, np.mean([score for score in single_candidate_list_scores])))
 
     sorted_candidate_score = sorted(candidate_scores, key=lambda x: x[1], reverse=True)
     print(f"Scene: {prompt}")
