@@ -37,7 +37,7 @@ scenes_categories = ade_hf_data['train'].features['scene_category'].names
 
 answers = {}
 for scene_name in scenes_categories[:1]:
-    answers['scene_name'] = {}
+    answers[scene_name] = {}
     candidate_scores = []
     for candidate in candidates[:100]:
         candidate_list = candidate.split(', ')
@@ -70,6 +70,6 @@ for scene_name in scenes_categories[:1]:
             )
             response = outputs[0][input_ids.shape[-1]:]
             decoded_response = tokenizer.decode(response, skip_special_tokens=True)
-            answers['scene_name']['candidate'] = decoded_response
+            answers[scene_name][candidate] = decoded_response
 from pprint import pprint
 pprint(answers)
