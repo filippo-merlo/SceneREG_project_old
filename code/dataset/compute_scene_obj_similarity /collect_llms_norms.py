@@ -40,9 +40,9 @@ for scene_name in scenes_categories[:1]:
         candidate_list = candidate.split(', ')
         candidate_scores = []
         for single_candidate in candidate_list:
-            prompt = "On a scale from 1 (not related at all) to 7 (very related), how related is the object '{word}' with the place '{scene}'?".format(word=single_candidate, scene=scene_name.replace("_", " "))
+            prompt = "Is the object '{word}' related with the place '{scene}'?".format(word=single_candidate, scene=scene_name.replace("_", " "))
             messages = [
-                {"role": "system", "content": "You are a helpful assistant. Your job is to rate how much each object is related to a specific place."},
+                {"role": "system", "content": "You are a helpful assistant. Your job is to say if each object is related to a specific place. You can answer only with YES or NO."},
                 {"role": "user", "content": prompt}
             ]
 
