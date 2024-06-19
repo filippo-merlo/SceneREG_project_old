@@ -36,15 +36,17 @@ def get_log_probs(prompt, option, model=None, tokenizer=None, log=False):
         current_input_ids = torch.cat((current_input_ids, next_target_token), dim=1)
         
     # Append option and sequence score to results
-    result = -1*np.sum(current_option_logits)
+    result = -1/len(target_ids.size(1)) *np.sum(current_option_logits)
+    # try with mean 
     return result
+
 ### IMPORT MODEL
 CACHE_DIR = '/mnt/cimec-storage6/shared'
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
 
 ACCESS_TOKEN = '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'
-model_id = "meta-llama/Meta-Llama-3-8B-Instruct"
+model_id = "meta-llama/Meta-Llama-3-8B" # try with no instruct
 dtype = torch.bfloat16
 
 tokenizer = AutoTokenizer.from_pretrained(model_id, cache_dir=CACHE_DIR, token=ACCESS_TOKEN)
@@ -77,7 +79,8 @@ for scene_name in tqdm(scenes_categories[:4]):
                 article = 'an '
             else:
                 article = 'a '
-            prompt = f"You are a helpful assistant. Your job is to complete the following sentence with the name of an object that is highly related to the place mentioned in the sentence. For example, if the place is 'kitchen', a related object could be 'refrigerator'. In the {scene_name.replace('_',' ')} there is " + article 
+            prompt = f"In the {scene_name.replace('_',' ')} there is " + article # try this
+            #prompt = f"You are a helpful assistant. Your job is to complete the following sentence with the name of an object that is highly related to the place mentioned in the sentence. For example, if the place is 'kitchen', a related object could be 'refrigerator'. In the {scene_name.replace('_',' ')} there is " + article 
             option = single_candidate
             single_candidate_list_scores.append(get_log_probs(prompt, option, model=model, tokenizer=tokenizer))
         candidate_scores.append((candidate, np.mean([score for score in single_candidate_list_scores])))
