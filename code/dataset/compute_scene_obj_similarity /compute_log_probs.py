@@ -20,7 +20,10 @@ def get_log_probs(prompt, option, model=None, tokenizer=None, log=False):
     current_input_ids = input_ids
 
     # Loop through each target token
+    it = 0
     for i in range(target_ids.size(1)):
+        if it > 2:
+            continue
         with torch.no_grad():
             # Get the model output (logits) and compute log probabilities
             outputs = model(input_ids=current_input_ids)
@@ -34,7 +37,7 @@ def get_log_probs(prompt, option, model=None, tokenizer=None, log=False):
         # Get the next target token and append it to the input
         next_target_token = target_ids[:, i].unsqueeze(1)
         current_input_ids = torch.cat((current_input_ids, next_target_token), dim=1)
-        
+        it += 1
     # Append option and sequence score to results
     result = -1 * np.sum(current_option_logits)
     # try with mean 
