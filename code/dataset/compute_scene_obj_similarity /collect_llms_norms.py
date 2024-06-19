@@ -36,7 +36,7 @@ scenes_categories = ade_hf_data['train'].features['scene_category'].names
 
 
 answers = {}
-for scene_name in scenes_categories[:1]:
+for scene_name in scenes_categories[:10]:
     answers[scene_name] = {}
     candidate_scores = []
     for candidate in candidates:
@@ -68,16 +68,19 @@ for scene_name in scenes_categories[:1]:
                 temperature=0.1,
                 top_p=0.9,
             )
+
             response = outputs[0][input_ids.shape[-1]:]
             decoded_response = tokenizer.decode(response, skip_special_tokens=True)
+            
             # Add answer for the list of candidates only if a YES was not obtained yet
-            try:
-                if answers[scene_name][candidate] == 'YES':
-                    continue
-                else:
+            if decoded_response in ['YES', 'NO']:
+                try:
+                    if answers[scene_name][candidate] == 'YES':
+                        continue
+                    else:
+                        answers[scene_name][candidate] = decoded_response
+                except KeyError:
                     answers[scene_name][candidate] = decoded_response
-            except KeyError:
-                answers[scene_name][candidate] = decoded_response
 
 from pprint import pprint
 pprint(answers)
