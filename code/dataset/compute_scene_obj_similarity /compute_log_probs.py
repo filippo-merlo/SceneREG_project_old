@@ -18,7 +18,7 @@ def get_log_probs(prompt, option, model=None, tokenizer=None, log=False):
 
     # Get the initial input tokens
     current_input_ids = input_ids
-    
+
     # Loop through each target token
     for i in range(target_ids.size(1)):
         with torch.no_grad():
@@ -36,7 +36,7 @@ def get_log_probs(prompt, option, model=None, tokenizer=None, log=False):
         current_input_ids = torch.cat((current_input_ids, next_target_token), dim=1)
         
     # Append option and sequence score to results
-    result = -1/target_ids.size(1) *np.sum(current_option_logits)
+    result = -1 * np.sum(current_option_logits)
     # try with mean 
     return result
 
