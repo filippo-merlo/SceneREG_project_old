@@ -22,8 +22,6 @@ def get_log_probs(prompt, option, model=None, tokenizer=None, log=False):
     # Loop through each target token
     it = 0
     for i in range(target_ids.size(1)):
-        if it > 3:
-            continue
         with torch.no_grad():
             # Get the model output (logits) and compute log probabilities
             outputs = model(input_ids=current_input_ids)
@@ -82,8 +80,8 @@ for scene_name in tqdm(scenes_categories[:4]):
                 article = 'an '
             else:
                 article = 'a '
-            prompt = f"In the {scene_name.replace('_',' ')} there is " + article # try this
-            #prompt = f"You are a helpful assistant. Your job is to complete the following sentence with the name of an object that is highly related to the place mentioned in the sentence. For example, if the place is 'kitchen', a related object could be 'refrigerator'. In the {scene_name.replace('_',' ')} there is " + article 
+            #prompt = f"In the {scene_name.replace('_',' ')} there is " + article # try this
+            prompt = f"You are a helpful assistant. Your job is to complete the following sentence with the name of an object that is highly related to the place mentioned in the sentence. For example, if the place is 'kitchen', a related object could be 'refrigerator'. In the {scene_name.replace('_',' ')} there is " + article 
             option = single_candidate
             single_candidate_list_scores.append(get_log_probs(prompt, option, model=model, tokenizer=tokenizer))
         candidate_scores.append((candidate, np.mean([score for score in single_candidate_list_scores])))
