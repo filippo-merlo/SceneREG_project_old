@@ -190,3 +190,79 @@ for scene_name in tqdm(scenes_categories[:4]):
 20. tractor: 13.13
 
 '''
+'''
+# Model: meta-llama/Meta-Llama-3-8B
+
+with avg
+
+# Prompt:
+# In the {scene_name.replace('_',' ')} there is " + article 
+
+In the airport terminal there is a 
+1. outhouse: 2.72
+2. 1: 2.93
+3. elliptical machine: 4.61
+4. ice hockey rink: 4.72
+5. ice rink: 4.87
+6. amphitheater: 5.03
+7. electrical substation: 5.19
+8. ashtray: 5.19
+9. stained-glass window: 5.29
+10. sculpture of the globe: 5.31
+11. umbrella stand: 5.34
+12. outhouse wc: 5.42
+13. mausoleum: 5.47
+14. ice cream machine: 5.48
+15. salt and pepper shakers: 5.66
+16. hippopotamus head: 5.68
+17. skating rink: 5.76
+18. bulldozer: 5.79
+19. ice creme stand: 5.89
+20. earthenware jar: 5.90
+
+
+In the art gallery there is a 
+1. 1: 2.98
+2. outhouse: 3.85
+3. stained-glass window: 4.95
+4. earthenware jar: 4.96
+5. hippopotamus head: 5.05
+6. amphitheater: 5.27
+7. sculpture of the globe: 5.28
+8. wooden cutlery: 5.42
+9. ashtray: 5.56
+10. violoncello: 5.57
+11. mausoleum: 5.66
+12. salt and pepper shakers: 5.70
+13. baby rhinoceros: 5.88
+14. weathervane: 5.89
+15. ice hockey rink: 5.93
+16. altarpiece: 5.93
+17. skating rink: 5.98
+18. orchestra: 6.01
+19. electrical substation: 6.06
+20. fluorescent bulb: 6.09
+
+In the badlands there is a 
+1. outhouse: 0.82
+2. 1: 3.18
+3. amphitheater: 4.40
+4. hippopotamus head: 4.95
+5. mausoleum: 4.99
+6. ice hockey rink: 5.01
+7. rhinoceros: 5.10
+8. bulldozer: 5.15
+9. escarpment: 5.26
+10. stained-glass window: 5.40
+11. quagmire: 5.41
+12. baby rhinoceros: 5.47
+13. embankment: 5.49
+14. sculpture of the globe: 5.50
+15. outhouse wc: 5.58
+16. electrical substation: 5.62
+17. ice floe: 5.72
+18. crevasse: 5.74
+19. volleyball court: 5.74
+20. ice rink: 5.74
+
+'''
