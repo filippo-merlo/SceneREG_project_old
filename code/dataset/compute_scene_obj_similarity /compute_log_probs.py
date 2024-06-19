@@ -19,6 +19,7 @@ def get_log_probs(prompt, option, model=None, tokenizer=None, log=False):
     # Get the initial input tokens
     current_input_ids = input_ids
     print(target_ids.size(1))
+    print(target_ids)
     # Loop through each target token
     for i in range(target_ids.size(1)):
         with torch.no_grad():
