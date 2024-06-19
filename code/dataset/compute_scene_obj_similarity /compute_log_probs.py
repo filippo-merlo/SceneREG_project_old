@@ -22,7 +22,7 @@ def get_log_probs(prompt, option, model=None, tokenizer=None, log=False):
     # Loop through each target token
     it = 0
     for i in range(target_ids.size(1)):
-        if it > 2:
+        if it > 3:
             continue
         with torch.no_grad():
             # Get the model output (logits) and compute log probabilities
