@@ -34,15 +34,18 @@ from datasets import load_dataset
 ade_hf_data = load_dataset("scene_parse_150", cache_dir='/mnt/cimec-storage6/shared/hf_datasets')
 scenes_categories = ade_hf_data['train'].features['scene_category'].names
 
+
+answers = {}
 for scene_name in scenes_categories[:1]:
+    answers['scene_name'] = {}
     candidate_scores = []
     for candidate in candidates[:2]:
         candidate_list = candidate.split(', ')
-        candidate_scores = []
+
         for single_candidate in candidate_list:
-            prompt = "Is the object '{word}' related with the place '{scene}'?".format(word=single_candidate, scene=scene_name.replace("_", " "))
+            prompt = "Is possible to find the object '{word}' in the place '{scene}'?".format(word=single_candidate, scene=scene_name.replace("_", " "))
             messages = [
-                {"role": "system", "content": "You are a helpful assistant. Your job is to say if each object is related to a specific place. You can answer only with YES or NO."},
+                {"role": "system", "content": "You are a helpful assistant. Your job is to say if an object can be found in a specific place. You can answer only with YES or NO."},
                 {"role": "user", "content": prompt}
             ]
 
@@ -67,5 +70,6 @@ for scene_name in scenes_categories[:1]:
             )
             response = outputs[0][input_ids.shape[-1]:]
             decoded_response = tokenizer.decode(response, skip_special_tokens=True)
-            candidate_scores.append(decoded_response)
-    print(candidate_scores)
+            answers['scene_name']['candidate'] = decoded_response
+from pprint import pprint
+pprint(answers)
