@@ -39,11 +39,11 @@ answers = {}
 for scene_name in scenes_categories[:1]:
     answers[scene_name] = {}
     candidate_scores = []
-    for candidate in candidates[:100]:
+    for candidate in candidates:
         candidate_list = candidate.split(', ')
 
         for single_candidate in candidate_list:
-            prompt = "Is possible to find the object '{word}' in the place '{scene}'?".format(word=single_candidate, scene=scene_name.replace("_", " "))
+            prompt = "Is it possible to find the object '{word}' in the place '{scene}'?".format(word=single_candidate, scene=scene_name.replace("_", " "))
             messages = [
                 {"role": "system", "content": "You are a helpful assistant. Your job is to say if an object can be found in a specific place. You can answer only with YES or NO."},
                 {"role": "user", "content": prompt}
@@ -70,6 +70,118 @@ for scene_name in scenes_categories[:1]:
             )
             response = outputs[0][input_ids.shape[-1]:]
             decoded_response = tokenizer.decode(response, skip_special_tokens=True)
-            answers[scene_name][candidate] = decoded_response
+            # Add answer for the list of candidates only if a YES was not obtained yet
+            try:
+                if answers[scene_name][candidate] == 'YES':
+                    continue
+                else:
+                    answers[scene_name][candidate] = decoded_response
+            except KeyError:
+                answers[scene_name][candidate] = decoded_response
+
 from pprint import pprint
 pprint(answers)
+
+'''
+{'airport_terminal': {'-': 'YES',
+                      'aarm panel': 'YES',
+                      'abacus': 'NO',
+                      'accordion, piano accordion, squeeze box': 'NO',
+                      'acropolis': 'NO',
+                      'ad, advertisement, advertizement, advertising, advertizing, advert': 'YES',
+                      'adding machine': 'NO',
+                      'advertisement board': 'YES',
+                      'aerial': 'YES',
+                      'air conditioner, air conditioning': 'YES',
+                      'air hockey table': 'NO',
+                      'air machine': 'YES',
+                      'aircraft carrier': 'NO',
+                      'airplane, aeroplane, plane': 'YES',
+                      'airport cart': 'YES',
+                      'alarm': 'YES',
+                      'alarm clock': 'YES',
+                      'alembic': 'NO',
+                      'alga': 'NO',
+                      'algae': 'NO',
+                      "altar, communion table, Lord's table": 'NO',
+                      'altarpiece': 'NO',
+                      'amphitheater': 'NO',
+                      'amphora': 'NO',
+                      'anchor': 'NO',
+                      'andiron': 'NO',
+                      'andirons': 'NO',
+                      'animal toy': 'YES',
+                      'animal, animate being, beast, brute, creature, fauna': 'NO',
+                      'animals': 'YES',
+                      'antenna': 'YES',
+                      'antenna, aerial, transmitting aerial': 'YES',
+                      'antler': 'NO',
+                      'antlers': 'NO',
+                      'anvil': 'NO',
+                      'aperture': 'YES',
+                      'apparatus': 'YES',
+                      'apparel, wearing apparel, dress, clothes': 'YES',
+                      'apple': 'YES',
+                      'apples': 'YES',
+                      'appliance': 'NO',
+                      'apron': 'NO',
+                      'aquarium': 'NO',
+                      'aqueduct': 'NO',
+                      'arbor': 'NO',
+                      'arcade': 'NO',
+                      'arcade machine': 'NO',
+                      'arcade machines': 'NO',
+                      'arcade, colonnade': 'NO',
+                      'arcades': 'NO',
+                      'arch': 'YES',
+                      'arch, archway': 'YES',
+                      'arches': 'YES',
+                      'arm': 'YES',
+                      'arm panel': 'YES',
+                      'arm support': 'NO',
+                      'armchair': 'NO',
+                      'armor': 'NO',
+                      'armrest': 'YES',
+                      'art': 'YES',
+                      'art mannequin': 'NO',
+                      'articulated lamp': 'NO',
+                      'artificial golf green': 'NO',
+                      'ashcan, trash can, garbage can, wastebin, ash bin, ash-bin, ashbin, dustbin, trash barrel, trash bin': 'YES',
+                      'ashtray': 'YES',
+                      'asymmetric bars': 'NO',
+                      'athletic field': 'NO',
+                      'athletics track': 'NO',
+                      'atm': 'YES',
+                      'autoclave': 'NO',
+                      'autopsy table': 'NO',
+                      'auxiliary trolley': 'YES',
+                      'aviary': 'YES',
+                      'avocados': 'NO',
+                      'award': 'YES',
+                      'awards': 'YES',
+                      'awning, sunshade, sunblind': 'NO',
+                      'ax': 'NO',
+                      'baby buggy, baby carriage, carriage, perambulator, pram, stroller, go-cart, pushchair, pusher': 'YES',
+                      'baby chair': 'NO',
+                      'baby walker': 'NO',
+                      'baby weighs': 'NO',
+                      'back': 'YES',
+                      'back control': 'YES',
+                      'back cushion': 'NO',
+                      'back pillow': 'NO',
+                      'backdrop': 'YES',
+                      'backdrops': 'NO',
+                      'background': 'YES',
+                      'backpack, back pack, knapsack, packsack, rucksack, haversack': 'YES',
+                      'backpacks': 'YES',
+                      'backplate': 'YES',
+                      'badge': 'YES',
+                      'badlands': 'NO',
+                      'bag': 'YES',
+                      'bag, handbag, pocketbook, purse': 'YES',
+                      'bag, traveling bag, travelling bag, grip, suitcase': 'YES',
+                      'baggage': 'YES',
+                      'baggage carts': 'YES',
+                      'bagpipes': 'NO'}}
+
+'''
