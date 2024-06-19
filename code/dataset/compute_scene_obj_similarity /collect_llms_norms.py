@@ -55,8 +55,6 @@ for scene_name in scenes_categories[:1]:
                 return_tensors="pt",
             ).to(model.device)
 
-            attention_mask = input_ids["attention_mask"]
-            print(attention_mask)
             terminators = [
                 tokenizer.eos_token_id,
                 tokenizer.convert_tokens_to_ids("<|eot_id|>")
@@ -64,7 +62,6 @@ for scene_name in scenes_categories[:1]:
 
             outputs = model.generate(
                 input_ids,
-                attention_mask=attention_mask,
                 max_new_tokens=1,
                 eos_token_id=terminators
             )
