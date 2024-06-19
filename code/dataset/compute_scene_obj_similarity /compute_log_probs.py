@@ -265,4 +265,25 @@ In the badlands there is a
 19. volleyball court: 5.74
 20. ice rink: 5.74
 
+In the ball pit there is a 
+1. 1: 2.24
+2. outhouse: 2.98
+3. ashtray: 5.19
+4. hippopotamus head: 5.28
+5. ice hockey rink: 5.32
+6. sculpture of the globe: 5.36
+7. amphitheater: 5.40
+8. ice cream machine: 5.53
+9. wooden cutlery: 5.57
+10. elliptical machine: 5.58
+11. salt and pepper shakers: 5.61
+12. rhinoceros: 5.76
+13. bulldozer: 5.86
+14. mausoleum: 5.86
+15. stained-glass window: 5.89
+16. ice rink: 5.90
+17. orchestra: 5.92
+18. quagmire: 5.97
+19. baby rhinoceros: 5.98
+20. cocktail shaker: 6.12
 '''
