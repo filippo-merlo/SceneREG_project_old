@@ -55,7 +55,7 @@ for scene_name in scenes_categories[:1]:
                 return_tensors="pt",
             ).to(model.device)
 
-            attention_mask = attention_mask = input_ids["attention_mask"]
+            attention_mask = input_ids["attention_mask"]
 
             terminators = [
                 tokenizer.eos_token_id,
