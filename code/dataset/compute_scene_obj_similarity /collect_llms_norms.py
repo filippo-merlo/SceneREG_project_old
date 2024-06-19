@@ -65,11 +65,8 @@ for scene_name in scenes_categories[:10]:
             outputs = model.generate(
                 input_ids,
                 attention_mask=attention_mask,
-                max_new_tokens=10,
-                eos_token_id=terminators,
-                do_sample=True,
-                temperature=0.1,
-                top_p=0.9,
+                max_new_tokens=1,
+                eos_token_id=terminators
             )
 
             response = outputs[0][input_ids.shape[-1]:]
