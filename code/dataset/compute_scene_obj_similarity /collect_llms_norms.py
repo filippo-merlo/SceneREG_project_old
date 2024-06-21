@@ -66,9 +66,9 @@ for scene_name in scenes_categories[:1]:
                 eos_token_id=terminators
             )
             distribution = model(input_ids=input_ids)
-            logprobs = torch.nn.functional.log_softmax(outputs.logits, dim=-1).to('cpu')
+            logprobs = torch.nn.functional.log_softmax(distribution.logits, dim=-1).to('cpu')
             print(logprobs)
-            
+
             response = outputs[0][input_ids.shape[-1]:]
             decoded_response = tokenizer.decode(response, skip_special_tokens=True)
 
