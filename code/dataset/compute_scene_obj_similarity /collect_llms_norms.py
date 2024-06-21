@@ -54,7 +54,8 @@ for scene_name in scenes_categories[:1]:
                 add_generation_prompt=True,
                 return_tensors="pt",
             ).to(model.device)
-
+            print(input_ids)
+            print(input_ids.shape[-1])
             terminators = [
                 tokenizer.eos_token_id,
                 tokenizer.convert_tokens_to_ids("<|eot_id|>")
