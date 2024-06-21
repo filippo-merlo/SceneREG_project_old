@@ -39,7 +39,7 @@ answers = {}
 for scene_name in scenes_categories[:1]:
     answers[scene_name] = {}
     candidate_scores = []
-    for candidate in candidates[:200]:
+    for candidate in candidates[:10]:
         candidate_list = candidate.split(', ')
 
         for single_candidate in candidate_list:
@@ -65,7 +65,7 @@ for scene_name in scenes_categories[:1]:
                 max_new_tokens=1,
                 eos_token_id=terminators
             )
-
+            print(outputs)
             response = outputs[0][input_ids.shape[-1]:]
             decoded_response = tokenizer.decode(response, skip_special_tokens=True)
 
@@ -79,8 +79,6 @@ for scene_name in scenes_categories[:1]:
                 except KeyError:
                     answers[scene_name][candidate] = decoded_response
 
-from pprint import pprint
-pprint(answers)
 
 '''
 {'airport_terminal': {'-': 'YES',
