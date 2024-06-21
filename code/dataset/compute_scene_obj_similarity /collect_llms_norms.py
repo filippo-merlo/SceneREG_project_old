@@ -58,10 +58,6 @@ for scene_name in scenes_categories[:1]:
                 return_tensors="pt",
             ).to(model.device)
             
-            terminators = [
-                tokenizer.eos_token_id,
-                tokenizer.convert_tokens_to_ids("<|eot_id|>")
-            ]
             with torch.no_grad():
                 distribution = model(input_ids=input_ids)
             probs = torch.nn.functional.softmax(distribution.logits, dim=-1).to('cpu')
