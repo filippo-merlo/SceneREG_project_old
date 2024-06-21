@@ -70,7 +70,7 @@ for scene_name in tqdm(scenes_categories):
             # Add answer and probabilities to the list
             answers[scene_name][candidate].append([single_candidate, yes_prob, no_prob])
 
-with open('llama_8b_instruct_object_scene_norms.pkl', 'wb') as f:
+with open('llama3_8b_instruct_object_scene_norms.pkl', 'wb') as f:
     pkl.dump(answers, f)
 
 '''
