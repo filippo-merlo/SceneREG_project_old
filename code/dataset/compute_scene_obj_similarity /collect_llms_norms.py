@@ -60,10 +60,12 @@ for scene_name in scenes_categories[:1]:
             
             with torch.no_grad():
                 distribution = model(input_ids=input_ids)
+
             probs = torch.nn.functional.softmax(distribution.logits, dim=-1).to('cpu')
             yes_prob = probs[0, -1, yes_token].squeeze().item()
             no_prob = probs[0, -1, no_token].squeeze().item()
-            # Add answer for the list of candidates only if a YES was not obtained yet
+
+            # Add answer and probabilities to the list
             answers[scene_name][candidate].append([single_candidate, yes_prob, no_prob])
 
 from pprint import pprint
