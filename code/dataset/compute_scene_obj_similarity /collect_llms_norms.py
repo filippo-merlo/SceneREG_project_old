@@ -41,8 +41,9 @@ answers = {}
 for scene_name in scenes_categories[:1]:
     answers[scene_name] = {}
     candidate_scores = []
-    for candidate in candidates[:3]:
+    for candidate in candidates[:10]:
         candidate_list = candidate.split(', ')
+        answers[scene_name][candidate] = []
 
         for single_candidate in candidate_list:
             prompt = "Is it possible to find the object '{word}' in the place '{scene}'?".format(word=single_candidate, scene=scene_name.replace("_", " "))
@@ -62,31 +63,15 @@ for scene_name in scenes_categories[:1]:
                 tokenizer.convert_tokens_to_ids("<|eot_id|>")
             ]
             with torch.no_grad():
-                outputs = model.generate(
-                    input_ids,
-                    max_new_tokens=1,
-                    eos_token_id=terminators
-                )
                 distribution = model(input_ids=input_ids)
             probs = torch.nn.functional.softmax(distribution.logits, dim=-1).to('cpu')
             yes_prob = probs[0, -1, yes_token].squeeze().item()
             no_prob = probs[0, -1, no_token].squeeze().item()
-            print(yes_prob,no_prob)
-
-            response = outputs[0][input_ids.shape[-1]:]
-            print(response)
-            decoded_response = tokenizer.decode(response, skip_special_tokens=True)
-
             # Add answer for the list of candidates only if a YES was not obtained yet
-            if decoded_response in ['YES', 'NO']:
-                try:
-                    if answers[scene_name][candidate] == 'YES':
-                        continue
-                    else:
-                        answers[scene_name][candidate] = decoded_response
-                except KeyError:
-                    answers[scene_name][candidate] = decoded_response
+            answers[scene_name][candidate].append([single_candidate, yes_prob, no_prob])
 
+from pprint import pprint
+pprint(answers)
 
 '''
 {'airport_terminal': {'-': 'YES',
