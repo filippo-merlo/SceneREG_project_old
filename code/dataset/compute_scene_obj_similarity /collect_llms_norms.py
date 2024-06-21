@@ -76,6 +76,7 @@ for scene_name in scenes_categories[:1]:
 
 
             response = outputs[0][input_ids.shape[-1]:]
+            print(response)
             decoded_response = tokenizer.decode(response, skip_special_tokens=True)
 
             # Add answer for the list of candidates only if a YES was not obtained yet
