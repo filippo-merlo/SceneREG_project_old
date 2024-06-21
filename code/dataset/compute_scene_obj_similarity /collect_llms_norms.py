@@ -34,6 +34,8 @@ from datasets import load_dataset
 ade_hf_data = load_dataset("scene_parse_150", cache_dir='/mnt/cimec-storage6/shared/hf_datasets')
 scenes_categories = ade_hf_data['train'].features['scene_category'].names
 
+yes_token = tokenizer('YES', return_tensors="pt", add_special_tokens=False).input_ids
+no_token = tokenizer('NO', return_tensors="pt", add_special_tokens=False).input_ids
 
 answers = {}
 for scene_name in scenes_categories[:1]:
@@ -66,8 +68,11 @@ for scene_name in scenes_categories[:1]:
                 eos_token_id=terminators
             )
             distribution = model(input_ids=input_ids)
-            logprobs = torch.nn.functional.log_softmax(distribution.logits, dim=-1).to('cpu')
-            print(logprobs)
+            probs = torch.nn.functional.softmax(distribution.logits, dim=-1).to('cpu')
+            yes_prob = probs[:, -1, yes_token]
+            no_prob = probs[:, -1, no_token]
+            print(yes_prob,no_prob)
+            print(tokenizer.decode(yes_token))
 
             response = outputs[0][input_ids.shape[-1]:]
             decoded_response = tokenizer.decode(response, skip_special_tokens=True)
