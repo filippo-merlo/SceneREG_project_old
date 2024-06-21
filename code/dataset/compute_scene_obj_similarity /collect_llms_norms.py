@@ -37,11 +37,13 @@ scenes_categories = ade_hf_data['train'].features['scene_category'].names
 yes_token = tokenizer('YES', return_tensors="pt", add_special_tokens=False).input_ids
 no_token = tokenizer('NO', return_tensors="pt", add_special_tokens=False).input_ids
 
+from tqdm import tqdm
+
 answers = {}
-for scene_name in scenes_categories[:1]:
+for scene_name in tqdm(scenes_categories):
     answers[scene_name] = {}
     candidate_scores = []
-    for candidate in candidates[:10]:
+    for candidate in candidates:
         candidate_list = candidate.split(', ')
         answers[scene_name][candidate] = []
 
@@ -68,8 +70,8 @@ for scene_name in scenes_categories[:1]:
             # Add answer and probabilities to the list
             answers[scene_name][candidate].append([single_candidate, yes_prob, no_prob])
 
-from pprint import pprint
-pprint(answers)
+with open('llama_8b_instruct_object_scene_norms.pkl', 'wb') as f:
+    pkl.dump(answers, f)
 
 '''
 {'airport_terminal': {'-': 'YES',
