@@ -61,19 +61,17 @@ for scene_name in scenes_categories[:1]:
                 tokenizer.eos_token_id,
                 tokenizer.convert_tokens_to_ids("<|eot_id|>")
             ]
-
-            outputs = model.generate(
-                input_ids,
-                max_new_tokens=1,
-                eos_token_id=terminators
-            )
-            distribution = model(input_ids=input_ids)
+            with torch.no_grad():
+                outputs = model.generate(
+                    input_ids,
+                    max_new_tokens=1,
+                    eos_token_id=terminators
+                )
+                distribution = model(input_ids=input_ids)
             probs = torch.nn.functional.softmax(distribution.logits, dim=-1).to('cpu')
-            yes_prob = probs[0, -1, yes_token]
-            no_prob = probs[0, -1, no_token]
+            yes_prob = probs[0, -1, yes_token].squeeze().item()
+            no_prob = probs[0, -1, no_token].squeeze().item()
             print(yes_prob,no_prob)
-
-
 
             response = outputs[0][input_ids.shape[-1]:]
             print(response)
