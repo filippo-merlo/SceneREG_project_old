@@ -39,7 +39,7 @@ answers = {}
 for scene_name in scenes_categories[:1]:
     answers[scene_name] = {}
     candidate_scores = []
-    for candidate in candidates[:10]:
+    for candidate in candidates[:3]:
         candidate_list = candidate.split(', ')
 
         for single_candidate in candidate_list:
