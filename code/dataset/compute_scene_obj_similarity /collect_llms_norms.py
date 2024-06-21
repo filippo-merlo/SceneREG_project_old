@@ -69,10 +69,11 @@ for scene_name in scenes_categories[:1]:
             )
             distribution = model(input_ids=input_ids)
             probs = torch.nn.functional.softmax(distribution.logits, dim=-1).to('cpu')
-            yes_prob = probs[:, -1, yes_token]
-            no_prob = probs[:, -1, no_token]
+            yes_prob = probs[0, -1, yes_token]
+            no_prob = probs[0, -1, no_token]
             print(yes_prob,no_prob)
-            print(tokenizer.decode(yes_token))
+
+
 
             response = outputs[0][input_ids.shape[-1]:]
             decoded_response = tokenizer.decode(response, skip_special_tokens=True)
